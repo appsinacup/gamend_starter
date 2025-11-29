@@ -1,0 +1,25 @@
+app = "game-server-starter"
+primary_region = "lax"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "4000"
+  SQLITE_DATABASE_PATH = "/data/game_server_prod.db"
+
+[http_service]
+  internal_port = 4000
+  force_https = true
+  auto_stop_machines = true
+  auto_start_machines = true
+  min_machines_running = 0
+  max_machines_running = 1
+  processes = ["app"]
+
+[[vm]]
+  size = "shared-cpu-1x"
+
+[[mounts]]
+  source = "game_server_data"
+  destination = "/data"
