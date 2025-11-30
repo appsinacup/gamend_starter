@@ -2,7 +2,7 @@
 
 ## Run locally
 
-1. Configure `.env` file (rename `.env.example` to `.env`).
+1. Configure `.env` file (copy `.env.example` to `.env`).
 2. Run the following:
 
 ```sh
