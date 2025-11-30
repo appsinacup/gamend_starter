@@ -9,6 +9,17 @@
 docker compose up
 ```
 
+You should now see on `localhost:4000`:
+
+![example](./docs/example.png)
+
+## Configure
+
+You can configure the:
+- `starter_config.json`: This has settings in webpage (eg. titles), along the reference images and css it has.
+- `starter_hook.ex`: This has custom logic you can write to extend default behaviours.
+- `.env`: This contains secrets (eg. oauth/email/etc.)
+
 ## Deploy
 
 1. Fork this repo.
