@@ -6,15 +6,13 @@ defmodule GameServer.Modules.StarterHook do
 
   @behaviour GameServer.Hooks
 
-  alias GameServer.Repo
-
   @impl true
-  def after_user_register(user) do
+  def after_user_register(_user) do
     :ok
   end
 
   @impl true
-  def after_user_login(user) do
+  def after_user_login(_user) do
     :ok
   end
 

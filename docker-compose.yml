@@ -1,0 +1,9 @@
+services:
+  app:
+    build: .
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+    volumes:
+      - ./modules:/app/modules
