@@ -20,6 +20,15 @@ You can configure the:
 - `starter_hook.ex`: This has custom logic you can write to extend default behaviours.
 - `.env`: This contains secrets (eg. oauth/email/etc.)
 
+## Module Highlight
+
+Run locally:
+
+```sh
+mix deps.get
+mix deps.compile
+```
+
 ## Deploy
 
 1. Fork this repo.

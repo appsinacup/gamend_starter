@@ -1,2 +1,5 @@
 .env
 .DS_Store
+_build/
+deps/
+.elixir_ls/
