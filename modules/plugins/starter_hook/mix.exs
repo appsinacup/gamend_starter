@@ -21,7 +21,7 @@ defmodule StarterHook.MixProject do
   defp deps do
     [
       {:game_server_sdk, github: "appsinacup/game_server", sparse: "sdk", runtime: false},
-      {:game_server_sdk_tools, github: "appsinacup/game_server", sparse: "sdk_tools", runtime: false}
+      {:game_server_plugin_tools, github: "appsinacup/game_server", sparse: "sdk_tools", runtime: false}
     ]
   end
 end

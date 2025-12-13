@@ -1,5 +1,6 @@
 %{
   "bunt": {:hex, :bunt, "1.0.0", "081c2c665f086849e6d57900292b3a161727ab40431219529f13c4ddcf3e7a44", [:mix], [], "hexpm", "dc5f86aa08a5f6fa6b8096f0735c4e76d54ae5c9fa2c143e5a1fc7c1cd9bb6b5"},
+  "game_server_plugin_tools": {:git, "https://github.com/appsinacup/game_server.git", "a063c53d45df408bf9ba97ac7681c4b9cb9d92f5", [sparse: "sdk_tools"]},
   "game_server_sdk": {:git, "https://github.com/appsinacup/game_server.git", "e5389261c82d2be22f27b2d8e5fc3716e759a8cd", [sparse: "sdk"]},
   "game_server_sdk_tools": {:git, "https://github.com/appsinacup/game_server.git", "e5389261c82d2be22f27b2d8e5fc3716e759a8cd", [sparse: "sdk_tools"]},
 }
