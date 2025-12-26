@@ -22,7 +22,7 @@ For multi-node deployment, you need Postgres, a scalable `app` service (Elixir n
 2. Start services with 2 app replicas:
 
 ```sh
-docker compose -f docker-compose.multi.yml up --build --scale app=2
+docker compose -f docker-compose.multi.yml up --scale app=2
 ```
 
 ## Configure

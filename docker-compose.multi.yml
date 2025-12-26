@@ -26,7 +26,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: game_server_dev
-      DATABASE_URL: "ecto://postgres:postgres@db:5432/game_server_dev"
     volumes:
       - ./modules:/app/modules
       - ./priv/static/images:/app/priv/static/images
