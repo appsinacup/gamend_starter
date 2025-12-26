@@ -3,8 +3,8 @@ FROM ghcr.io/appsinacup/game_server:latest
 WORKDIR /app
 
 COPY modules/ ./modules/
-COPY priv/static/assets/css/theme/ ./priv/static/assets/css/theme/
-COPY priv/static/images/ ./priv/static/images/
+COPY apps/game_server_web/priv/static/assets/css/theme/ ./apps/game_server_web/priv/static/assets/css/theme/
+COPY apps/game_server_web/priv/static/images/ ./apps/game_server_web/priv/static/images/
 
 # Build any plugins shipped in this repo (overlay) so they're available at runtime.
 ARG GAME_SERVER_PLUGINS_DIR=modules/plugins

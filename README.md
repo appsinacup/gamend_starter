@@ -19,12 +19,15 @@ You can configure the:
 - `starter_config.json`: This has settings in webpage (eg. titles), along the reference images and css it has.
 - `starter_hook.ex`: This has custom logic you can write to extend default behaviours.
 - `.env`: This contains secrets (eg. oauth/email/etc.)
+- `apps/game_server_web/priv/static/assets/css/theme/theme.css`: The theme.
+- `apps/game_server_web/priv/static/images`: The images used in website.
 
-## Module Highlight
+## Module Elixir Highlight
 
 Run locally:
 
 ```sh
+cd modules/plugins/starter_hook
 mix deps.get
 mix deps.compile
 ```
