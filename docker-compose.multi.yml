@@ -8,6 +8,11 @@ services:
       - POSTGRES_DB=game_server_dev
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d game_server_dev"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     networks:
       - web
 
@@ -16,11 +21,12 @@ services:
     env_file:
       - .env
     environment:
-      POSTGRES_HOST: localhost
+      POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: game_server_dev
+      DATABASE_URL: "ecto://postgres:postgres@db:5432/game_server_dev"
     volumes:
       - ./modules:/app/modules
       - ./priv/static/images:/app/priv/static/images
