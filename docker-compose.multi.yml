@@ -1,4 +1,13 @@
 services:
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+
   db:
     image: postgres:18
     restart: always
@@ -10,9 +19,6 @@ services:
       - pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d game_server_dev"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
     networks:
       - web
 
@@ -21,11 +27,21 @@ services:
     env_file:
       - .env
     environment:
+      # Run mix phx.gen.secret
+      SECRET_KEY_BASE: 1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb
+      PHX_HOST: localhost
+      # Disable this in prod
+      MAILBOX_PREVIEW_ENABLED: true
+      # Postgres
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: game_server_dev
+      # Cache
+      CACHE_MODE: multi
+      CACHE_L2: redis
+      CACHE_REDIS_URL: redis://redis:6379/0
     volumes:
       - ./modules:/app/modules
       - ./priv/static/images:/app/priv/static/images
@@ -52,6 +68,7 @@ services:
 
 volumes:
   pgdata:
+  redis_data:
 
 networks:
   web:
