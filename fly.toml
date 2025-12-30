@@ -7,6 +7,7 @@ primary_region = "lax"
 [env]
   PORT = "4000"
   SQLITE_DATABASE_PATH = "/data/game_server_prod.db"
+  SECRET_KEY_BASE = "1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb"
 
 [http_service]
   internal_port = 4000
