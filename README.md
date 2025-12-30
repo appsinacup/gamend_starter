@@ -1,6 +1,11 @@
 # Gamend Starter
 
-## Run locally
+Articles/Docs:
+
+- View the [Deployment Tutorial](https://appsinacup.com/gamend-deploy/).
+- View the [Scaling Article](https://appsinacup.com/gamend-scaling/).
+
+# Run locally
 
 1. Configure `.env` file (copy `.env.example` to `.env`).
 2. Run the following:
@@ -13,7 +18,7 @@ You should now see on `localhost:4000`:
 
 ![example](./docs/example.png)
 
-# Multi-node local deployment
+## Multi-node local deployment
 
 For multi-node deployment, you need Postgres, Redis, a scalable `app` service (Elixir nodes), and an `nginx` proxy that load-balances requests to the app replicas.
 
@@ -46,13 +51,9 @@ mix deps.compile
 
 Note: This can also be done from the admin console.
 
-## Deploy
+# Deploy
 
 1. Fork this repo.
 2. Go to fly.io (or another docker provider).
 3. Connect the app with the repo you forked.
 4. Launch the app and set your secrets.
-
-Note:
-- View the [Deployment Tutorial](https://appsinacup.com/gamend-deploy/).
-- View the [Scaling Article](https://appsinacup.com/gamend-scaling/).
