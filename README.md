@@ -52,3 +52,7 @@ Note: This can also be done from the admin console.
 2. Go to fly.io (or another docker provider).
 3. Connect the app with the repo you forked.
 4. Launch the app and set your secrets.
+
+Note:
+- View the [Deployment Tutorial](https://appsinacup.com/gamend-deploy/).
+- View the [Scaling Article](https://appsinacup.com/gamend-scaling/).
