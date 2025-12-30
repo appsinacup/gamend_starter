@@ -15,7 +15,7 @@ You should now see on `localhost:4000`:
 
 # Multi-node local deployment
 
-For multi-node deployment, you need Postgres, a scalable `app` service (Elixir nodes), and an `nginx` proxy that load-balances requests to the app replicas.
+For multi-node deployment, you need Postgres, Redis, a scalable `app` service (Elixir nodes), and an `nginx` proxy that load-balances requests to the app replicas.
 
 1. Configure `.env` file (copy `.env.example` to `.env`).
 
@@ -43,6 +43,8 @@ cd modules/plugins/starter_hook
 mix deps.get
 mix deps.compile
 ```
+
+Note: This can also be done from the admin console.
 
 ## Deploy
 
