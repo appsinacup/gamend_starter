@@ -1,9 +1,14 @@
-# Gamend Starter
+![gamend banner](https://github.com/appsinacup/game_server/blob/main/apps/game_server_web/priv/static/images/banner.png?raw=true)
 
-Articles/Docs:
+-----
 
-- View the [Deployment Tutorial](https://appsinacup.com/gamend-deploy/).
-- View the [Scaling Article](https://appsinacup.com/gamend-scaling/).
+**Open source _game server_ with _authentication, users, lobbies, server scripting and an admin portal_.**
+
+Game + Backend = Gamend
+
+-----
+
+[Discord](https://discord.com/invite/56dMud8HYn) | [Elixir Docs](https://appsinacup.github.io/game_server/) | [API Docs](https://gamend.appsinacup.com/api/docs) | [Guides](https://gamend.appsinacup.com/docs/setup) | [Deployment Tutorial](https://appsinacup.com/gamend-deploy/) | [Scaling Article](https://appsinacup.com/gamend-scaling/)
 
 # Run locally
 
