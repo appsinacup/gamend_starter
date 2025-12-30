@@ -34,9 +34,9 @@ You can configure the:
 - `apps/game_server_web/priv/static/assets/css/theme/theme.css`: The theme.
 - `apps/game_server_web/priv/static/images`: The images used in website.
 
-## Module Elixir Highlight
+## Module Elixir Highlight (compilation)
 
-Run locally:
+Run:
 
 ```sh
 cd modules/plugins/starter_hook
