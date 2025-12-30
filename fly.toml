@@ -1,25 +1,23 @@
-app = "game-server-starter"
-primary_region = "lax"
+# fly.toml app configuration file generated for gamend-starter on 2025-12-30T12:25:38Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'gamend-starter'
+primary_region = 'cdg'
 
 [build]
-  dockerfile = "Dockerfile"
-
-[env]
-  PORT = "4000"
-  SQLITE_DATABASE_PATH = "/data/game_server_prod.db"
 
 [http_service]
-  internal_port = 4000
+  internal_port = 8080
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
-  max_machines_running = 1
-  processes = ["app"]
+  processes = ['app']
 
 [[vm]]
-  size = "shared-cpu-1x"
-
-[[mounts]]
-  source = "game_server_data"
-  destination = "/data"
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 1024
