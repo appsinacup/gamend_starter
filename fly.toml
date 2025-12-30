@@ -5,6 +5,7 @@ primary_region = 'lax'
   dockerfile = 'Dockerfile'
 
 [env]
+  MIX_ENV = 'dev'
   PORT = '4000'
   SECRET_KEY_BASE = '1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb'
   SQLITE_DATABASE_PATH = '/data/game_server_prod.db'
@@ -22,4 +23,4 @@ primary_region = 'lax'
   processes = ['app']
 
 [[vm]]
-  size = 'shared-cpu-1x'
+  size = 'shared-cpu-2x'

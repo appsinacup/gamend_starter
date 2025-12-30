@@ -5,6 +5,22 @@ services:
       - "4000:4000"
     env_file:
       - .env
+    environment:
+      # Run mix phx.gen.secret
+      SECRET_KEY_BASE: 1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb
+      PHX_HOST: localhost
+      # Disable this in prod
+      MAILBOX_PREVIEW_ENABLED: true
+      # Postgres
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: game_server_dev
+      # Cache
+      CACHE_MODE: multi
+      CACHE_L2: redis
+      CACHE_REDIS_URL: redis://redis:6379/0
     volumes:
       - ./modules:/app/modules
       - ./priv/static/images:/app/priv/static/images
