@@ -38,6 +38,13 @@ defmodule GodotHook.GodotManager do
     :ok
   end
 
+  def call(hook_name, args, meta \\ %{}, timeout_ms \\ 2_000)
+      when is_atom(hook_name) and is_list(args) and is_map(meta) and is_integer(timeout_ms) and
+             timeout_ms > 0 do
+    _ = ensure_started()
+    GenServer.call(__MODULE__, {:call, hook_name, args, meta, timeout_ms}, timeout_ms + 500)
+  end
+
   @doc "Start the Godot process now (idempotent)."
   def start_godot do
     _ = ensure_started()
@@ -126,6 +133,8 @@ defmodule GodotHook.GodotManager do
       at: DateTime.utc_now() |> DateTime.to_iso8601()
     }
 
+    Logger.debug("godot_hook: notify hook=#{payload.hook}")
+
     try do
       GodotHook.WSClient.send_json(payload)
     catch
@@ -144,6 +153,42 @@ defmodule GodotHook.GodotManager do
   @impl true
   def handle_call(:stop_godot, _from, state) do
     {:reply, :ok, do_stop_godot(state)}
+  end
+
+  @impl true
+  def handle_call({:call, hook_name, args, meta, timeout_ms}, _from, state) do
+    state = if state.port == nil, do: do_start_godot(state), else: state
+
+    payload = %{
+      hook: Atom.to_string(hook_name),
+      args: Enum.map(args, &json_safe/1),
+      meta: json_safe(meta),
+      at: DateTime.utc_now() |> DateTime.to_iso8601()
+    }
+
+    started = System.monotonic_time(:millisecond)
+    Logger.info("godot_hook: call hook=#{payload.hook} timeout_ms=#{timeout_ms}")
+
+    reply = do_ws_rpc(payload, timeout_ms)
+
+    elapsed = System.monotonic_time(:millisecond) - started
+
+    case reply do
+      {:error, :timeout} ->
+        Logger.warning("godot_hook: call timeout hook=#{payload.hook} elapsed_ms=#{elapsed}")
+
+      {:error, reason} ->
+        Logger.warning(
+          "godot_hook: call error hook=#{payload.hook} elapsed_ms=#{elapsed} reason=#{inspect(reason)}"
+        )
+
+      other ->
+        Logger.info(
+          "godot_hook: call reply hook=#{payload.hook} elapsed_ms=#{elapsed} reply=#{inspect(other)}"
+        )
+    end
+
+    {:reply, reply, state}
   end
 
   @impl true
@@ -202,7 +247,6 @@ defmodule GodotHook.GodotManager do
           _ = write_pidfile(os_pid)
 
           Logger.info("godot_hook: started Godot (os_pid=#{inspect(os_pid)})")
-          _ = send_after_startup()
           %{state | port: port, os_pid: os_pid, last_lines: []}
       end
     end
@@ -723,13 +767,23 @@ defmodule GodotHook.GodotManager do
     inspect(other, printable_limit: 5_000, limit: 50)
   end
 
-  defp send_after_startup do
-    GodotHook.WSClient.send_json(%{
-      hook: "after_startup",
-      args: [],
-      meta: %{},
-      at: DateTime.utc_now() |> DateTime.to_iso8601()
-    })
+  defp do_ws_rpc(payload, timeout_ms) when is_map(payload) and is_integer(timeout_ms) do
+    started = System.monotonic_time(:millisecond)
+
+    try do
+      case GodotHook.WSClient.await_connected(GodotHook.WSClient, timeout_ms) do
+        :ok ->
+          elapsed = System.monotonic_time(:millisecond) - started
+          remaining = max(timeout_ms - elapsed, 1)
+          GodotHook.WSClient.rpc(GodotHook.WSClient, payload, remaining)
+
+        {:error, :timeout} ->
+          {:error, :timeout}
+      end
+    catch
+      kind, reason ->
+        {:error, {kind, reason}}
+    end
   end
 
   defp user_fields(user_struct) do

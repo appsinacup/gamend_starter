@@ -3,8 +3,18 @@ extends Node2D
 func after_user_login(user) -> Dictionary:
 	return user
 
-func after_startup() -> Dictionary:
-	return {}
+func after_startup():
+	return [{
+		"hook": "custom_hello",
+		"meta": {
+			"description": "Test",
+			"args": [{
+				"name": "name",
+				"type": "string",
+			}],
+			"example_args": ["Test String"]
+		}
+	}]
 
 func custom_call(hook: String, args: Dictionary) -> Dictionary:
 	return {}
@@ -35,12 +45,18 @@ func _message_received(peer_id: int, message: String):
 	print(json.get("meta", {}).get("caller"))
 	print(json.get("at"))
 	var hook = json.get("hook")
+	var request_id = json.get("request_id")
 	print("Hook: ", hook, " ", "args: ", args)
 	match hook:
 		"after_user_login":
-			after_user_login(args.get(0))
+			var result = after_user_login(args.get(0))
 		"after_startup":
-			after_startup.emit()
+			var result = after_startup()
+			var result_with_request_id = {
+				"request_id": request_id, "ok":true, "result": result
+			}
+			websocket_server.send(peer_id, JSON.stringify(result_with_request_id))
+			
 		
 
 func _client_connected(peer_id: int):

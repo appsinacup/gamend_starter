@@ -8,7 +8,21 @@ defmodule GameServer.Modules.GodotHook do
   `ws://127.0.0.1:4010`).
   """
 
-  use GameServer.Hooks
+  @behaviour GameServer.Hooks
+
+  @timeout_ms 5_000
+  @startup_timeout_ms 10_000
+
+  @impl true
+  def after_startup do
+    GodotHook.GodotManager.call(:after_startup, [], caller_meta(), @startup_timeout_ms)
+  end
+
+  @impl true
+  def before_stop do
+    GodotHook.GodotManager.notify_async(:before_stop, [], caller_meta())
+    :ok
+  end
 
   @impl true
   def after_user_register(user) do
@@ -24,8 +38,16 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def before_lobby_create(attrs) do
-    GodotHook.GodotManager.notify_async(:before_lobby_create, [attrs], caller_meta())
-    {:ok, attrs}
+    case GodotHook.GodotManager.call(:before_lobby_create, [attrs], caller_meta(), @timeout_ms) do
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, new_attrs} when is_map(new_attrs) ->
+        {:ok, new_attrs}
+
+      _ ->
+        {:ok, attrs}
+    end
   end
 
   @impl true
@@ -36,8 +58,10 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def before_lobby_join(user, lobby, opts) do
-    GodotHook.GodotManager.notify_async(:before_lobby_join, [user, lobby, opts], caller_meta())
-    {:ok, {user, lobby, opts}}
+    case GodotHook.GodotManager.call(:before_lobby_join, [user, lobby, opts], caller_meta(), @timeout_ms) do
+      {:error, reason} -> {:error, reason}
+      _ -> {:ok, {user, lobby, opts}}
+    end
   end
 
   @impl true
@@ -48,8 +72,10 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def before_lobby_leave(user, lobby) do
-    GodotHook.GodotManager.notify_async(:before_lobby_leave, [user, lobby], caller_meta())
-    {:ok, {user, lobby}}
+    case GodotHook.GodotManager.call(:before_lobby_leave, [user, lobby], caller_meta(), @timeout_ms) do
+      {:error, reason} -> {:error, reason}
+      _ -> {:ok, {user, lobby}}
+    end
   end
 
   @impl true
@@ -60,8 +86,16 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def before_lobby_update(lobby, attrs) do
-    GodotHook.GodotManager.notify_async(:before_lobby_update, [lobby, attrs], caller_meta())
-    {:ok, attrs}
+    case GodotHook.GodotManager.call(:before_lobby_update, [lobby, attrs], caller_meta(), @timeout_ms) do
+      {:error, reason} ->
+        {:error, reason}
+
+      {:ok, new_attrs} when is_map(new_attrs) ->
+        {:ok, new_attrs}
+
+      _ ->
+        {:ok, attrs}
+    end
   end
 
   @impl true
@@ -72,8 +106,10 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def before_lobby_delete(lobby) do
-    GodotHook.GodotManager.notify_async(:before_lobby_delete, [lobby], caller_meta())
-    {:ok, lobby}
+    case GodotHook.GodotManager.call(:before_lobby_delete, [lobby], caller_meta(), @timeout_ms) do
+      {:error, reason} -> {:error, reason}
+      _ -> {:ok, lobby}
+    end
   end
 
   @impl true
@@ -84,8 +120,10 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def before_user_kicked(host, target, lobby) do
-    GodotHook.GodotManager.notify_async(:before_user_kicked, [host, target, lobby], caller_meta())
-    {:ok, {host, target, lobby}}
+    case GodotHook.GodotManager.call(:before_user_kicked, [host, target, lobby], caller_meta(), @timeout_ms) do
+      {:error, reason} -> {:error, reason}
+      _ -> {:ok, {host, target, lobby}}
+    end
   end
 
   @impl true
@@ -100,9 +138,29 @@ defmodule GameServer.Modules.GodotHook do
     :ok
   end
 
+  @impl true
+  def before_kv_get(key, opts) do
+    case GodotHook.GodotManager.call(:before_kv_get, [key, opts], caller_meta(), @timeout_ms) do
+      {:ok, scope} when scope in [:public, :private] ->
+        {:ok, scope}
+
+      scope when scope in [:public, :private] ->
+        scope
+
+      {:error, reason} ->
+        {:error, reason}
+
+      _ ->
+        :public
+    end
+  end
+
   def get_status do
-    GodotHook.GodotManager.notify_async(:get_status, [], caller_meta())
-    :ok
+    GodotHook.GodotManager.call(:get_status, [], caller_meta())
+  end
+
+  def on_custom_hook(name, args, _opts) do
+    GodotHook.GodotManager.call(:on_custom_hook, [name, args], caller_meta(), @timeout_ms)
   end
 
   defp caller_meta do
