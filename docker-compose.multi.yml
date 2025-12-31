@@ -42,6 +42,9 @@ services:
       CACHE_MODE: multi
       CACHE_L2: redis
       CACHE_REDIS_URL: redis://redis:6379/0
+      # Godot (used by modules/plugins/godot_hook)
+      GODOT_BIN: /opt/godot/godot
+      GODOT_PROJECT_PATH: /app/godot
     volumes:
       - ./modules:/app/modules
       - ./priv/static/images:/app/priv/static/images
