@@ -223,11 +223,11 @@ defmodule GodotHook.WSClient do
 
       reply =
         cond do
-          Map.get(decoded, "ok") == true -> {:ok, Map.get(decoded, "result")}
+          Map.get(decoded, "ok") == true -> Map.get(decoded, "result")
           Map.get(decoded, "ok") == false -> {:error, Map.get(decoded, "error") || :error}
-          Map.has_key?(decoded, "result") -> {:ok, Map.get(decoded, "result")}
+          Map.has_key?(decoded, "result") -> Map.get(decoded, "result")
           Map.has_key?(decoded, "error") -> {:error, Map.get(decoded, "error")}
-          true -> {:ok, decoded}
+          true -> decoded
         end
 
       GenServer.reply(from, reply)

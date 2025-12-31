@@ -42,7 +42,7 @@ defmodule GameServer.Modules.GodotHook do
       {:error, reason} ->
         {:error, reason}
 
-      {:ok, new_attrs} when is_map(new_attrs) ->
+      new_attrs when is_map(new_attrs) ->
         {:ok, new_attrs}
 
       _ ->
@@ -90,7 +90,7 @@ defmodule GameServer.Modules.GodotHook do
       {:error, reason} ->
         {:error, reason}
 
-      {:ok, new_attrs} when is_map(new_attrs) ->
+      new_attrs when is_map(new_attrs) ->
         {:ok, new_attrs}
 
       _ ->
@@ -141,9 +141,6 @@ defmodule GameServer.Modules.GodotHook do
   @impl true
   def before_kv_get(key, opts) do
     case GodotHook.GodotManager.call(:before_kv_get, [key, opts], caller_meta(), @timeout_ms) do
-      {:ok, scope} when scope in [:public, :private] ->
-        {:ok, scope}
-
       scope when scope in [:public, :private] ->
         scope
 
@@ -155,12 +152,9 @@ defmodule GameServer.Modules.GodotHook do
     end
   end
 
-  def get_status do
-    GodotHook.GodotManager.call(:get_status, [], caller_meta())
-  end
-
-  def on_custom_hook(name, args, _opts) do
-    GodotHook.GodotManager.call(:on_custom_hook, [name, args], caller_meta(), @timeout_ms)
+  @impl true
+  def on_custom_hook(hook, args) do
+    GodotHook.GodotManager.call(:on_custom_hook, [hook, args], caller_meta(), @timeout_ms)
   end
 
   defp caller_meta do

@@ -184,7 +184,7 @@ defmodule GodotHook.GodotManager do
 
       other ->
         Logger.info(
-          "godot_hook: call reply hook=#{payload.hook} elapsed_ms=#{elapsed} reply=#{inspect(other)}"
+          "godot_hook: call reply hook=#{payload.hook} elapsed_ms=#{elapsed} result=#{inspect(other)}"
         )
     end
 

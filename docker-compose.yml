@@ -25,6 +25,7 @@ services:
       GODOT_BIN: /opt/godot/godot
       GODOT_PROJECT_PATH: /app/godot
     volumes:
+      - ./godot:/app/godot
       - ./modules:/app/modules
       - ./priv/static/images:/app/priv/static/images
       - ./priv/static/assets/css/theme:/app/priv/static/assets/css/theme

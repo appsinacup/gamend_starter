@@ -2,15 +2,9 @@
 
 Hook plugin that starts a Godot instance and forwards Gamend hook callbacks to it over WebSocket.
 
-## Why this starts Godot "on plugin startup"
-
 This plugin is an OTP application (`:godot_hook`). When it is started, it starts a supervisor which starts `GodotHook.GodotManager`.
 
 `GodotHook.GodotManager` will auto-start Godot in `init/1` when `:autostart` is true.
-
-If your Gamend build loads plugin ebin bundles and starts their OTP applications, Godot will start immediately when you enable/reload the plugin.
-
-If your setup only loads the hook module but does not start the plugin OTP app, the hook module still calls into the manager (best-effort) and will start Godot on the first hook invocation.
 
 ## Configuration
 
@@ -46,7 +40,7 @@ Godot needs to run a WebSocket server and accept JSON text frames matching:
 ```json
 {
   "hook": "after_user_register",
-  "args": ["%GameServer.Accounts.User{...}"],
+  "args": [{"apple_id": null, "authenticated_at": null, "confirmed_at": "2025-12-31T16:57:14Z", "device_id": null, "discord_id": null, "display_name": null, "email": "example@yahoo.com", "facebook_id": null, "google_id": null, "id": 1.0, "inserted_at": "2025-12-31T16:57:14Z", "is_admin": true, "lobby_id": null, "profile_url": null, "steam_id": null, "updated_at": "2025-12-31T16:57:14Z"}],
   "meta": {"caller": "..."},
   "at": "2025-12-30T12:34:56Z"
 }

@@ -1,12 +1,6 @@
-[gd_scene load_steps=3 format=3 uid="uid://cuj80bdhirjrd"]
+[gd_scene load_steps=2 format=3 uid="uid://cuj80bdhirjrd"]
 
-[ext_resource type="Script" uid="uid://0oo3vao68i57" path="res://gamend_server.gd" id="1_wtcfe"]
-[ext_resource type="Script" uid="uid://bo5rcow2yxt7p" path="res://websocket_server.gd" id="2_0e48y"]
+[ext_resource type="Script" uid="uid://cnlpn2myeornw" path="res://gamend_server_test.gd" id="1_0e48y"]
 
-[node name="Node2D" type="Node2D" node_paths=PackedStringArray("websocket_server")]
-script = ExtResource("1_wtcfe")
-websocket_server = NodePath("WebSocketServer")
-
-[node name="WebSocketServer" type="Node" parent="."]
-script = ExtResource("2_0e48y")
-metadata/_custom_type_script = "uid://bo5rcow2yxt7p"
+[node name="GamendServerTest" type="Node2D"]
+script = ExtResource("1_0e48y")
