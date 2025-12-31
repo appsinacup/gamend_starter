@@ -45,6 +45,8 @@ services:
       # Godot (used by modules/plugins/godot_hook)
       GODOT_BIN: /opt/godot/godot
       GODOT_PROJECT_PATH: /app/godot
+      # Use dev for localhost
+      MIX_ENV: dev
     volumes:
       - ./modules:/app/modules
       - ./priv/static/images:/app/priv/static/images

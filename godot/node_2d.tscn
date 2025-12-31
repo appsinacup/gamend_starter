@@ -1,6 +1,24 @@
-[gd_scene load_steps=2 format=3 uid="uid://cuj80bdhirjrd"]
+[gd_scene load_steps=4 format=3 uid="uid://cuj80bdhirjrd"]
 
 [ext_resource type="Script" uid="uid://cnlpn2myeornw" path="res://gamend_server_test.gd" id="1_0e48y"]
+[ext_resource type="Texture2D" uid="uid://datpjm807hcc1" path="res://addons/gamend/logo.png" id="2_0e48y"]
+[ext_resource type="Script" uid="uid://dnco3b7x7aue1" path="res://addons/gamend/GamendApi.gd" id="3_epypp"]
 
-[node name="GamendServerTest" type="Node2D"]
+[node name="GamendServerTest" type="Node2D" node_paths=PackedStringArray("gamend_api")]
 script = ExtResource("1_0e48y")
+gamend_api = NodePath("GamendApi")
+
+[node name="GamendApi" type="Node" parent="."]
+script = ExtResource("3_epypp")
+metadata/_custom_type_script = "uid://dnco3b7x7aue1"
+
+[node name="Logo" type="Sprite2D" parent="."]
+position = Vector2(528, 222)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("2_0e48y")
+
+[node name="Label" type="Label" parent="."]
+offset_right = 40.0
+offset_bottom = 23.0
+theme_override_font_sizes/font_size = 32
+text = "Gamend Server Godot Test"

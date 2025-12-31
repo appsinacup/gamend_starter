@@ -23,8 +23,8 @@ defmodule GodotHook.MixProject do
         godot_args: [],
         godot_ws_url: "ws://127.0.0.1:4010",
         godot_output_log_level: :info,
-        startup_timeout_ms: 10_000,
-        request_timeout_ms: 5_000
+        startup_timeout_ms: 60_000,
+        request_timeout_ms: 10_000
       ]
     ]
   end

@@ -11,19 +11,11 @@ services:
       PHX_HOST: localhost
       # Disable this in prod
       MAILBOX_PREVIEW_ENABLED: true
-      # Postgres
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: game_server_dev
-      # Cache
-      CACHE_MODE: multi
-      CACHE_L2: redis
-      CACHE_REDIS_URL: redis://redis:6379/0
       # Godot (used by modules/plugins/godot_hook)
       GODOT_BIN: /opt/godot/godot
       GODOT_PROJECT_PATH: /app/godot
+      # Use dev for localhost
+      MIX_ENV: dev
     volumes:
       - ./godot:/app/godot
       - ./modules:/app/modules

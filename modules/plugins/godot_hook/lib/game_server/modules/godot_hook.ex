@@ -10,8 +10,8 @@ defmodule GameServer.Modules.GodotHook do
 
   @behaviour GameServer.Hooks
 
-  @timeout_ms 5_000
-  @startup_timeout_ms 10_000
+  @timeout_ms 10_000
+  @startup_timeout_ms 60_000
 
   @impl true
   def after_startup do
