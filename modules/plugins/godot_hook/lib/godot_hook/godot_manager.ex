@@ -8,30 +8,8 @@ defmodule GodotHook.GodotManager do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
-  @doc """
-  Best-effort ensure the manager is running.
-
-  If the plugin application is started normally, you don't need this.
-  This is mainly a safety net when the hooks module is invoked but the OTP app
-  hasn't been started for some reason.
-  """
-  def ensure_started do
-    case Process.whereis(__MODULE__) do
-      nil ->
-        case start_link([]) do
-          {:ok, _pid} -> :ok
-          {:error, {:already_started, _pid}} -> :ok
-          {:error, reason} -> {:error, reason}
-        end
-
-      _pid ->
-        :ok
-    end
-  end
-
   def notify_async(hook_name, args, meta \\ %{}) when is_atom(hook_name) and is_list(args) do
     Task.start(fn ->
-      _ = ensure_started()
       GenServer.cast(__MODULE__, {:notify, hook_name, args, meta})
     end)
 
@@ -41,19 +19,50 @@ defmodule GodotHook.GodotManager do
   def call(hook_name, args, meta \\ %{}, timeout_ms \\ 2_000)
       when is_atom(hook_name) and is_list(args) and is_map(meta) and is_integer(timeout_ms) and
              timeout_ms > 0 do
-    _ = ensure_started()
-    GenServer.call(__MODULE__, {:call, hook_name, args, meta, timeout_ms}, timeout_ms + 500)
+    # IMPORTANT: do not block inside the manager GenServer while waiting for the RPC.
+    # The WS client supports multiple in-flight request/response pairs via request_id.
+    # We only use the manager to ensure the external Godot OS process is started.
+    _ = GenServer.call(__MODULE__, :ensure_godot_started, min(timeout_ms + 500, 10_000))
+
+    payload = %{
+      hook: Atom.to_string(hook_name),
+      args: Enum.map(args, &json_safe/1),
+      meta: json_safe(meta),
+      at: DateTime.utc_now() |> DateTime.to_iso8601()
+    }
+
+    started = System.monotonic_time(:millisecond)
+    Logger.info("godot_hook: call hook=#{payload.hook} timeout_ms=#{timeout_ms}")
+
+    reply = do_ws_rpc(payload, timeout_ms)
+
+    elapsed = System.monotonic_time(:millisecond) - started
+
+    case reply do
+      {:error, :timeout} ->
+        Logger.warning("godot_hook: call timeout hook=#{payload.hook} elapsed_ms=#{elapsed}")
+
+      {:error, reason} ->
+        Logger.warning(
+          "godot_hook: call error hook=#{payload.hook} elapsed_ms=#{elapsed} reason=#{inspect(reason)}"
+        )
+
+      other ->
+        Logger.info(
+          "godot_hook: call reply hook=#{payload.hook} elapsed_ms=#{elapsed} result=#{inspect(other)}"
+        )
+    end
+
+    reply
   end
 
   @doc "Start the Godot process now (idempotent)."
   def start_godot do
-    _ = ensure_started()
     GenServer.call(__MODULE__, :start_godot)
   end
 
   @doc "Stop the Godot process now (idempotent)."
   def stop_godot do
-    _ = ensure_started()
     GenServer.call(__MODULE__, :stop_godot)
   end
 
@@ -151,44 +160,14 @@ defmodule GodotHook.GodotManager do
   end
 
   @impl true
-  def handle_call(:stop_godot, _from, state) do
-    {:reply, :ok, do_stop_godot(state)}
+  def handle_call(:ensure_godot_started, _from, state) do
+    state = if state.port == nil, do: do_start_godot(state), else: state
+    {:reply, :ok, state}
   end
 
   @impl true
-  def handle_call({:call, hook_name, args, meta, timeout_ms}, _from, state) do
-    state = if state.port == nil, do: do_start_godot(state), else: state
-
-    payload = %{
-      hook: Atom.to_string(hook_name),
-      args: Enum.map(args, &json_safe/1),
-      meta: json_safe(meta),
-      at: DateTime.utc_now() |> DateTime.to_iso8601()
-    }
-
-    started = System.monotonic_time(:millisecond)
-    Logger.info("godot_hook: call hook=#{payload.hook} timeout_ms=#{timeout_ms}")
-
-    reply = do_ws_rpc(payload, timeout_ms)
-
-    elapsed = System.monotonic_time(:millisecond) - started
-
-    case reply do
-      {:error, :timeout} ->
-        Logger.warning("godot_hook: call timeout hook=#{payload.hook} elapsed_ms=#{elapsed}")
-
-      {:error, reason} ->
-        Logger.warning(
-          "godot_hook: call error hook=#{payload.hook} elapsed_ms=#{elapsed} reason=#{inspect(reason)}"
-        )
-
-      other ->
-        Logger.info(
-          "godot_hook: call reply hook=#{payload.hook} elapsed_ms=#{elapsed} result=#{inspect(other)}"
-        )
-    end
-
-    {:reply, reply, state}
+  def handle_call(:stop_godot, _from, state) do
+    {:reply, :ok, do_stop_godot(state)}
   end
 
   @impl true

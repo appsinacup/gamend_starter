@@ -28,6 +28,12 @@ This plugin is an OTP application (`:godot_hook`). When it is started, it starts
 
 `GodotHook.GodotManager` will auto-start Godot in `init/1` when `:autostart` is true.
 
+## Concurrency model
+
+- Per Elixir node (per running release/container), this plugin starts a single `GodotHook.GodotManager`, a single `GodotHook.WSClient`, and (by default) a single headless Godot OS process.
+- Hook payloads are sent over a single WebSocket connection.
+- Synchronous hooks (`call`-style) can have multiple in-flight RPCs concurrently over that one WebSocket connection (each request includes a `request_id` and responses are matched back).
+
 ## Configuration
 
 Environment variables (recommended):
