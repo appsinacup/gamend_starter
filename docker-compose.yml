@@ -14,6 +14,8 @@ services:
       # Godot (used by modules/plugins/godot_hook)
       GODOT_BIN: /opt/godot/godot
       GODOT_PROJECT_PATH: /app/godot
+      # Optional: override startup mode (default is export_and_run)
+      # GODOT_START_MODE: run
       # Use dev for localhost
       MIX_ENV: dev
     volumes:

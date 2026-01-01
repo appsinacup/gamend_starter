@@ -20,11 +20,15 @@ RUN set -eux; \
 		apt-get install -y --no-install-recommends ca-certificates curl unzip libfontconfig1; \
 		rm -rf /var/lib/apt/lists/*; \
 	elif command -v apk >/dev/null 2>&1; then \
-		apk add --no-cache ca-certificates curl unzip fontconfig; \
+		# Godot Linux binaries/templates are built against glibc; on Alpine (musl)
+		# we need compat packages so the loader exists.
+		apk add --no-cache ca-certificates curl unzip fontconfig gcompat libc6-compat libstdc++; \
 	else \
 		echo "Unsupported base image: need apt-get or apk"; \
 		exit 1; \
-	fi; \
+	fi
+
+RUN set -eux; \
 	arch="$(uname -m)"; \
 	case "$arch" in \
 		x86_64|amd64) godot_arch="linux.x86_64" ;; \
@@ -46,6 +50,31 @@ RUN set -eux; \
 	mv "$found_bin" /opt/godot/godot; \
 	chmod +x /opt/godot/godot; \
 	/opt/godot/godot --version || true
+
+RUN set -eux; \
+	# Install export templates so headless exports work.
+	# Godot expects: /root/.local/share/godot/export_templates/<version>/*.linux_*
+	templates_url="https://github.com/godotengine/godot/releases/download/${GODOT_RELEASE}/Godot_v${GODOT_RELEASE}_export_templates.tpz"; \
+	templates_zip="/tmp/godot_export_templates.tpz"; \
+	curl -fsSL "$templates_url" -o "$templates_zip"; \
+	# Basic sanity check: archive should be a valid zip.
+	unzip -t "$templates_zip" >/dev/null; \
+	templates_version_dir="$(printf '%s' "$GODOT_RELEASE" | tr '-' '.')"; \
+	templates_dest="/root/.local/share/godot/export_templates/${templates_version_dir}"; \
+	mkdir -p "$templates_dest"; \
+	rm -rf /tmp/godot_templates; \
+	mkdir -p /tmp/godot_templates; \
+	unzip -q "$templates_zip" -d /tmp/godot_templates; \
+	# The tpz contains a top-level templates/ directory.
+	if [ ! -d /tmp/godot_templates/templates ]; then \
+		echo "Godot templates archive did not contain templates/"; \
+		find /tmp/godot_templates -maxdepth 2 -type d -print; \
+		exit 1; \
+	fi; \
+	cp -a /tmp/godot_templates/templates/. "$templates_dest"/; \
+	rm -rf /tmp/godot_templates "$templates_zip"; \
+	# Sanity check a couple expected files for the current arch.
+	find "$templates_dest" -maxdepth 1 -type f -name 'linux_*' | head -n 20 || true
 
 COPY modules/ ./modules/
 COPY godot/ ./godot/

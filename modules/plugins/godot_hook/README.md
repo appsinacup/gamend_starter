@@ -43,6 +43,17 @@ Environment variables (recommended):
 - `GODOT_WS_URL` – where Gamend should connect over WebSocket (default: `ws://127.0.0.1:4010`)
 - `GODOT_ARGS` – extra args appended to the Godot command (space-separated)
 
+Optional startup mode:
+
+- `GODOT_START_MODE` – `export_and_run` (default) or `run`
+  - `export_and_run`: exports the project to a binary first, then runs that binary
+  - `run`: starts Godot directly
+- `GODOT_EXPORT_PRESET` – export preset name (default: `Linux arm64` on arm64, `Linux x86_64` on x86_64)
+- `GODOT_EXPORT_PATH` – output path for exported binary (default: `/tmp/godot_hook_export/godot_server`)
+- `GODOT_EXPORT_ARGS` – extra args appended to the export command (space-separated)
+- `GODOT_EXPORT_RUN_ARGS` – args passed to the exported binary when running
+  - `--headless` is always included by default
+
 If you build via this repo's Dockerfile, Godot is installed into the image and `GODOT_BIN` defaults to `/opt/godot/godot`.
 
 ## Build

@@ -58,7 +58,12 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def before_lobby_join(user, lobby, opts) do
-    case GodotHook.GodotManager.call(:before_lobby_join, [user, lobby, opts], caller_meta(), @timeout_ms) do
+    case GodotHook.GodotManager.call(
+           :before_lobby_join,
+           [user, lobby, opts],
+           caller_meta(),
+           @timeout_ms
+         ) do
       {:error, reason} -> {:error, reason}
       _ -> {:ok, {user, lobby, opts}}
     end
@@ -72,7 +77,12 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def before_lobby_leave(user, lobby) do
-    case GodotHook.GodotManager.call(:before_lobby_leave, [user, lobby], caller_meta(), @timeout_ms) do
+    case GodotHook.GodotManager.call(
+           :before_lobby_leave,
+           [user, lobby],
+           caller_meta(),
+           @timeout_ms
+         ) do
       {:error, reason} -> {:error, reason}
       _ -> {:ok, {user, lobby}}
     end
@@ -86,7 +96,12 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def before_lobby_update(lobby, attrs) do
-    case GodotHook.GodotManager.call(:before_lobby_update, [lobby, attrs], caller_meta(), @timeout_ms) do
+    case GodotHook.GodotManager.call(
+           :before_lobby_update,
+           [lobby, attrs],
+           caller_meta(),
+           @timeout_ms
+         ) do
       {:error, reason} ->
         {:error, reason}
 
@@ -120,7 +135,12 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def before_user_kicked(host, target, lobby) do
-    case GodotHook.GodotManager.call(:before_user_kicked, [host, target, lobby], caller_meta(), @timeout_ms) do
+    case GodotHook.GodotManager.call(
+           :before_user_kicked,
+           [host, target, lobby],
+           caller_meta(),
+           @timeout_ms
+         ) do
       {:error, reason} -> {:error, reason}
       _ -> {:ok, {host, target, lobby}}
     end
@@ -134,7 +154,12 @@ defmodule GameServer.Modules.GodotHook do
 
   @impl true
   def after_lobby_host_change(lobby, new_host_id) do
-    GodotHook.GodotManager.notify_async(:after_lobby_host_change, [lobby, new_host_id], caller_meta())
+    GodotHook.GodotManager.notify_async(
+      :after_lobby_host_change,
+      [lobby, new_host_id],
+      caller_meta()
+    )
+
     :ok
   end
 
@@ -152,7 +177,6 @@ defmodule GameServer.Modules.GodotHook do
     end
   end
 
-  @impl true
   def on_custom_hook(hook, args) do
     GodotHook.GodotManager.call(:on_custom_hook, [hook, args], caller_meta(), @timeout_ms)
   end
@@ -160,8 +184,14 @@ defmodule GameServer.Modules.GodotHook do
   defp caller_meta do
     caller = Process.get(:game_server_hook_caller)
 
+    caller_meta =
+      case caller do
+        %{metadata: metadata} when is_map(metadata) -> %{metadata: metadata}
+        _ -> %{}
+      end
+
     %{
-      caller: caller
+      caller: caller_meta
     }
   end
 end

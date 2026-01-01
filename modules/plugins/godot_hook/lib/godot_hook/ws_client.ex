@@ -120,10 +120,14 @@ defmodule GodotHook.WSClient do
       payload = Map.put(map, :request_id, request_id)
 
       hook = Map.get(map, :hook) || Map.get(map, "hook")
-      Logger.debug("godot_ws: rpc send hook=#{inspect(hook)} request_id=#{request_id} timeout_ms=#{timeout_ms}")
 
-      frame = {:text, Jason.encode!(payload)}
-      Logger.debug("godot_ws: rpc frame request_id=#{request_id} #{elem(frame, 1)}")
+      json = Jason.encode!(payload)
+
+      Logger.debug(fn ->
+        "godot_ws: rpc send hook=#{inspect(hook)} request_id=#{request_id} timeout_ms=#{timeout_ms} bytes=#{byte_size(json)}"
+      end)
+
+      frame = {:text, json}
       _ = WebSockex.cast(state.conn_pid, {:send, frame})
 
       Process.send_after(self(), {:rpc_timeout, request_id}, timeout_ms)
@@ -152,7 +156,14 @@ defmodule GodotHook.WSClient do
   @impl true
   def handle_cast({:send_json, map}, state) do
     if is_pid(state.conn_pid) and Process.alive?(state.conn_pid) do
-      frame = {:text, Jason.encode!(map)}
+      json = Jason.encode!(map)
+
+      Logger.debug(fn ->
+        hook = Map.get(map, :hook) || Map.get(map, "hook")
+        "godot_ws: send hook=#{inspect(hook)} bytes=#{byte_size(json)}"
+      end)
+
+      frame = {:text, json}
       _ = WebSockex.cast(state.conn_pid, {:send, frame})
       {:noreply, state}
     else

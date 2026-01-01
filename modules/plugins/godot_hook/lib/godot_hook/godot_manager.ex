@@ -9,9 +9,7 @@ defmodule GodotHook.GodotManager do
   end
 
   def notify_async(hook_name, args, meta \\ %{}) when is_atom(hook_name) and is_list(args) do
-    Task.start(fn ->
-      GenServer.cast(__MODULE__, {:notify, hook_name, args, meta})
-    end)
+    GenServer.cast(__MODULE__, {:notify, hook_name, args, meta})
 
     :ok
   end
@@ -31,26 +29,35 @@ defmodule GodotHook.GodotManager do
       at: DateTime.utc_now() |> DateTime.to_iso8601()
     }
 
-    started = System.monotonic_time(:millisecond)
-    Logger.info("godot_hook: call hook=#{payload.hook} timeout_ms=#{timeout_ms}")
+    started_native = System.monotonic_time()
+
+    Logger.debug(fn ->
+      "godot_hook: call hook=#{payload.hook} timeout_ms=#{timeout_ms}"
+    end)
 
     reply = do_ws_rpc(payload, timeout_ms)
 
-    elapsed = System.monotonic_time(:millisecond) - started
+    elapsed_us =
+      System.monotonic_time()
+      |> Kernel.-(started_native)
+      |> System.convert_time_unit(:native, :microsecond)
 
     case reply do
       {:error, :timeout} ->
-        Logger.warning("godot_hook: call timeout hook=#{payload.hook} elapsed_ms=#{elapsed}")
+        Logger.warning(fn ->
+          "godot_hook: call timeout hook=#{payload.hook} elapsed_us=#{elapsed_us}"
+        end)
 
       {:error, reason} ->
-        Logger.warning(
-          "godot_hook: call error hook=#{payload.hook} elapsed_ms=#{elapsed} reason=#{inspect(reason)}"
-        )
+        Logger.warning(fn ->
+          "godot_hook: call error hook=#{payload.hook} elapsed_us=#{elapsed_us} reason=#{inspect(reason)}"
+        end)
 
       other ->
-        Logger.info(
-          "godot_hook: call reply hook=#{payload.hook} elapsed_ms=#{elapsed} result=#{inspect(other)}"
-        )
+        Logger.debug(fn ->
+          preview = inspect(other, limit: 20, printable_limit: 2_000)
+          "godot_hook: call reply hook=#{payload.hook} elapsed_us=#{elapsed_us} result=#{preview}"
+        end)
     end
 
     reply
@@ -188,11 +195,18 @@ defmodule GodotHook.GodotManager do
     end
 
     if is_integer(ws_port) and wait_for_tcp_port_free(ws_port, 2_000) == :timeout do
-      Logger.error("godot_hook: refusing to start Godot because tcp port #{ws_port} is still in use")
+      Logger.error(
+        "godot_hook: refusing to start Godot because tcp port #{ws_port} is still in use"
+      )
+
       state
     else
       godot_bin = env_nonempty("GODOT_BIN") || config(:godot_bin)
       project_path = env_nonempty("GODOT_PROJECT_PATH") || config(:godot_project_path)
+
+      start_mode =
+        env_nonempty("GODOT_START_MODE") || config(:godot_start_mode) || "export_and_run"
+
       cond do
         not is_binary(godot_bin) or godot_bin == "" ->
           Logger.warning("godot_hook: GODOT_BIN not set; cannot start Godot")
@@ -203,13 +217,34 @@ defmodule GodotHook.GodotManager do
           state
 
         true ->
-          args =
-            ["--headless", "--path", project_path] ++
-              config(:godot_args) ++
-              (env_nonempty("GODOT_ARGS") |> parse_args_env())
+          {spawn_executable, args} =
+            case start_mode do
+              "export_and_run" ->
+                export_and_run(godot_bin, project_path)
+
+              "build_and_run" ->
+                export_and_run(godot_bin, project_path)
+
+              _ ->
+                {godot_bin,
+                 ["--headless", "--path", project_path] ++
+                   (config(:godot_args) || []) ++
+                   (env_nonempty("GODOT_ARGS") |> parse_args_env())}
+            end
+
+          Logger.info(fn ->
+            preview_args =
+              args
+              |> Enum.take(8)
+              |> Enum.join(" ")
+
+            extra = if length(args) > 8, do: " ...", else: ""
+
+            "godot_hook: starting start_mode=#{start_mode} exec=#{spawn_executable} args=#{preview_args}#{extra}"
+          end)
 
           port =
-            Port.open({:spawn_executable, godot_bin}, [
+            Port.open({:spawn_executable, spawn_executable}, [
               :binary,
               :use_stdio,
               :exit_status,
@@ -228,6 +263,138 @@ defmodule GodotHook.GodotManager do
           Logger.info("godot_hook: started Godot (os_pid=#{inspect(os_pid)})")
           %{state | port: port, os_pid: os_pid, last_lines: []}
       end
+    end
+  end
+
+  defp export_and_run(godot_bin, project_path)
+       when is_binary(godot_bin) and is_binary(project_path) do
+    export_preset =
+      env_nonempty("GODOT_EXPORT_PRESET") ||
+        config(:godot_export_preset) ||
+        default_export_preset()
+
+    export_path =
+      env_nonempty("GODOT_EXPORT_PATH") ||
+        config(:godot_export_path) ||
+        "/tmp/godot_hook_export/godot_server"
+
+    export_args = env_nonempty("GODOT_EXPORT_ARGS") |> parse_args_env()
+
+    run_args =
+      (config(:godot_export_run_args) || []) ++
+        (env_nonempty("GODOT_EXPORT_RUN_ARGS") |> parse_args_env())
+
+    run_args = ensure_headless(run_args)
+
+    export_dir = Path.dirname(export_path)
+    _ = File.mkdir_p(export_dir)
+
+    Logger.info(fn ->
+      "godot_hook: export_and_run exporting preset=#{inspect(export_preset)} to #{export_path}"
+    end)
+
+    cmd_args =
+      ["--headless", "--path", project_path, "--export-release", export_preset, export_path] ++
+        export_args
+
+    Logger.info(fn ->
+      preview =
+        cmd_args
+        |> Enum.take(10)
+        |> Enum.join(" ")
+
+      extra = if length(cmd_args) > 10, do: " ...", else: ""
+
+      "godot_hook: export cmd=#{godot_bin} args=#{preview}#{extra}"
+    end)
+
+    export_started_native = System.monotonic_time()
+
+    {out, status} =
+      try do
+        System.cmd(godot_bin, cmd_args, stderr_to_stdout: true)
+      rescue
+        e ->
+          {"export raised: #{inspect(e)}", 1}
+      end
+
+    export_elapsed_ms =
+      System.monotonic_time()
+      |> Kernel.-(export_started_native)
+      |> System.convert_time_unit(:native, :millisecond)
+
+    Logger.info(fn ->
+      "godot_hook: export finished status=#{status} elapsed_ms=#{export_elapsed_ms}"
+    end)
+
+    Logger.debug(fn ->
+      trimmed = out |> String.trim()
+
+      preview =
+        if byte_size(trimmed) > 2_000, do: binary_part(trimmed, 0, 2_000) <> "...", else: trimmed
+
+      "godot_hook: export output: #{preview}"
+    end)
+
+    if status == 0 do
+      _ = File.chmod(export_path, 0o755)
+
+      case File.stat(export_path) do
+        {:ok, stat} ->
+          Logger.info(
+            "godot_hook: export artifact ready path=#{export_path} size=#{stat.size} bytes"
+          )
+
+        {:error, reason} ->
+          Logger.warning(
+            "godot_hook: export reported success but artifact not stat'able path=#{export_path} reason=#{inspect(reason)}"
+          )
+      end
+
+      Logger.info(fn ->
+        preview =
+          run_args
+          |> Enum.take(10)
+          |> Enum.join(" ")
+
+        extra = if length(run_args) > 10, do: " ...", else: ""
+
+        "godot_hook: running exported binary path=#{export_path} args=#{preview}#{extra}"
+      end)
+
+      {export_path, run_args}
+    else
+      Logger.warning(
+        "godot_hook: export failed status=#{status} (falling back to run mode) output=#{String.trim(out)}"
+      )
+
+      {godot_bin,
+       ["--headless", "--path", project_path] ++
+         (config(:godot_args) || []) ++
+         (env_nonempty("GODOT_ARGS") |> parse_args_env())}
+    end
+  end
+
+  defp ensure_headless(args) when is_list(args) do
+    if Enum.any?(args, &(&1 == "--headless")) do
+      args
+    else
+      ["--headless" | args]
+    end
+  end
+
+  defp default_export_preset() do
+    arch = :erlang.system_info(:system_architecture) |> to_string() |> String.downcase()
+
+    cond do
+      String.contains?(arch, "aarch64") or String.contains?(arch, "arm64") ->
+        "Linux arm64"
+
+      String.contains?(arch, "x86_64") or String.contains?(arch, "amd64") ->
+        "Linux x86_64"
+
+      true ->
+        "Linux"
     end
   end
 
@@ -261,6 +428,7 @@ defmodule GodotHook.GodotManager do
     else
       _ = remove_pidfile()
     end
+
     %{state | port: nil, os_pid: nil}
   end
 
@@ -483,7 +651,10 @@ defmodule GodotHook.GodotManager do
         {{out, 0}, 0}
 
       {out, status} ->
-        Logger.warning("godot_hook: kill #{label} failed status=#{status} out=#{String.trim(out)}")
+        Logger.warning(
+          "godot_hook: kill #{label} failed status=#{status} out=#{String.trim(out)}"
+        )
+
         {{out, status}, status}
     end
   rescue
@@ -619,7 +790,9 @@ defmodule GodotHook.GodotManager do
     content = String.trim(content)
 
     case Integer.parse(content) do
-      {pid, _} when pid > 0 -> pid
+      {pid, _} when pid > 0 ->
+        pid
+
       _ ->
         case Jason.decode(content) do
           {:ok, %{"pid" => pid}} when is_integer(pid) and pid > 0 -> pid
@@ -696,7 +869,10 @@ defmodule GodotHook.GodotManager do
         user_fields(struct)
 
       true ->
-        if struct_module_name in ["Elixir.Ecto.Association.NotLoaded", "Elixir.Ecto.Schema.Metadata"] do
+        if struct_module_name in [
+             "Elixir.Ecto.Association.NotLoaded",
+             "Elixir.Ecto.Schema.Metadata"
+           ] do
           nil
         else
           # If the struct has a stable string representation (e.g., Decimal), prefer that.

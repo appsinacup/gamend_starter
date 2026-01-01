@@ -24,7 +24,9 @@ defmodule GodotHook.WSConn do
 
   @impl true
   def handle_frame({:text, msg}, state) do
-    Logger.debug("godot_ws: recv text: #{msg}")
+    Logger.debug(fn ->
+      "godot_ws: recv text bytes=#{byte_size(msg)}"
+    end)
 
     if is_map(state) and is_pid(Map.get(state, :parent)) do
       send(state.parent, {:ws_text, msg})
