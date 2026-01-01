@@ -153,12 +153,7 @@ func _get_custom_hooks():
 	
 	for method in methods:
 		var hook_name: String = method["name"]
-		if hook_name in ["after_startup",
-			"before_stop",
-			"after_user_register",
-			"after_user_login",
-			"on_custom_hook"] || \
-			hook_name.begins_with("_"):
+		if hook_name.begins_with("_"):
 			continue
 		var args: Array[Dictionary] = []
 		var example_args: Array[String] = []
