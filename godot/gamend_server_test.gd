@@ -19,10 +19,10 @@ func _after_startup():
 # RPC's
 func new_func(arg: String):
 	print("new_func: ", arg)
-	var adminCreateKvEntryRequest:= AdminCreateKvEntryRequest.new()
-	adminCreateKvEntryRequest.key = "123"
-	adminCreateKvEntryRequest.data = {"a": 123}
-	await gamend_api.admin_kv_admin_upsert_kv(adminCreateKvEntryRequest)
-	var res :GamendResult = await gamend_api.kv_get_kv("123")
-	print(JSON.stringify(res.response.data.data))
-	return arg + "abc" + JSON.stringify(res.response.data.data)
+	#var adminCreateKvEntryRequest:= AdminCreateKvEntryRequest.new()
+	#adminCreateKvEntryRequest.key = "123"
+	#adminCreateKvEntryRequest.data = {"a": 123}
+	#await gamend_api.admin_kv_admin_upsert_kv(adminCreateKvEntryRequest)
+	#var res :GamendResult = await gamend_api.kv_get_kv("123")
+	#print(JSON.stringify(res.response.data.data))
+	return arg + "abc" #+ JSON.stringify(res.response.data.data)
