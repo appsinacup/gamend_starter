@@ -7,7 +7,7 @@
   "favicon": "/images/favicon.ico",
   "banner": "/images/banner.png",
   "useful_links": [
-    { "title": "Discord", "url": "https://discord.com/invite/56dMud8HYn", "icon": "hero-chat-bubble-left-ellipsis" }
+    { "title": "Discord", "url": "https://discord.com/invite/v649emcpAu", "icon": "hero-chat-bubble-left-ellipsis" }
   ],
   "features": [
     { "title": "Starter", "description": "Change the default settings", "icon": "hero-lock-closed" }
