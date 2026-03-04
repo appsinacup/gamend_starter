@@ -4,20 +4,52 @@
 [ext_resource type="Texture2D" uid="uid://datpjm807hcc1" path="res://addons/gamend/logo.png" id="2_0e48y"]
 [ext_resource type="Script" uid="uid://drtka8t87750s" path="res://addons/gamend/GamendApi.gd" id="3_epypp"]
 
-[node name="GamendServerTest" type="Node2D" unique_id=1978972140 node_paths=PackedStringArray("gamend_api")]
+[node name="GamendServerTest" type="Node2D" unique_id=1978972140 node_paths=PackedStringArray("gamend_api", "text_edit")]
 script = ExtResource("1_0e48y")
 gamend_api = NodePath("GamendApi")
+text_edit = NodePath("CanvasLayer/VBoxContainer/TextEdit")
 
 [node name="GamendApi" type="Node" parent="." unique_id=179081723]
 script = ExtResource("3_epypp")
 
-[node name="Logo" type="Sprite2D" parent="." unique_id=1704466234]
-position = Vector2(528, 222)
-scale = Vector2(0.25, 0.25)
-texture = ExtResource("2_0e48y")
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=929032382]
 
-[node name="Label" type="Label" parent="." unique_id=1932518578]
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer" unique_id=1627253160]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/VBoxContainer" unique_id=1530711168]
+layout_mode = 2
+size_flags_horizontal = 4
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/VBoxContainer/HBoxContainer" unique_id=1877299992]
+custom_minimum_size = Vector2(128, 128)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("2_0e48y")
+expand_mode = 3
+stretch_mode = 4
+
+[node name="Label" type="Label" parent="CanvasLayer/VBoxContainer/HBoxContainer" unique_id=1932518578]
+custom_minimum_size = Vector2(128, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 32
-text = "Gamend Server Godot Test"
+text = "Gamend Starter"
+autowrap_mode = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/VBoxContainer" unique_id=2031389219]
+layout_mode = 2
+size_flags_horizontal = 4
+text = "Login and get user detail"
+
+[node name="TextEdit" type="TextEdit" parent="CanvasLayer/VBoxContainer" unique_id=1315642150]
+layout_mode = 2
+size_flags_vertical = 3
+text = "User:
+"
+wrap_mode = 1
