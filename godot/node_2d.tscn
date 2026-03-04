@@ -1,16 +1,11 @@
 [gd_scene format=3 uid="uid://cuj80bdhirjrd"]
 
-[ext_resource type="Script" uid="uid://cnlpn2myeornw" path="res://gamend_server_test.gd" id="1_0e48y"]
+[ext_resource type="Script" uid="uid://buhsx6fi7uwra" path="res://test_script.gd" id="1_epypp"]
 [ext_resource type="Texture2D" uid="uid://datpjm807hcc1" path="res://addons/gamend/logo.png" id="2_0e48y"]
-[ext_resource type="Script" uid="uid://drtka8t87750s" path="res://addons/gamend/GamendApi.gd" id="3_epypp"]
 
-[node name="GamendServerTest" type="Node2D" unique_id=1978972140 node_paths=PackedStringArray("gamend_api", "text_edit")]
-script = ExtResource("1_0e48y")
-gamend_api = NodePath("GamendApi")
+[node name="GamendServerTest" type="Node2D" unique_id=1978972140 node_paths=PackedStringArray("text_edit")]
+script = ExtResource("1_epypp")
 text_edit = NodePath("CanvasLayer/VBoxContainer/TextEdit")
-
-[node name="GamendApi" type="Node" parent="." unique_id=179081723]
-script = ExtResource("3_epypp")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=929032382]
 

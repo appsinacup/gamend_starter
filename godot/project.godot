@@ -17,7 +17,8 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 config/name="Gamend Starter"
 run/main_scene="uid://cuj80bdhirjrd"
 config/features=PackedStringArray("4.6", "GL Compatibility")
-config/icon="res://icon.svg"
+boot_splash/image="uid://datpjm807hcc1"
+config/icon="uid://datpjm807hcc1"
 
 [display]
 
@@ -29,3 +30,4 @@ window/stretch/scale=2.0
 
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
