@@ -396,5 +396,3 @@ func update_current_user_password_threaded(
 	)
 	bzz_thread.start(bzz_callable)
 	return bzz_thread
-
-

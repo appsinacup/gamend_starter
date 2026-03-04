@@ -11,7 +11,7 @@ Method | HTTP request | Description
 # **get_kv**   { #get_kv }
 <a name="get_kv"></a>
 
-> `get_kv(key: String,userId = null, on_success: Callable, on_failure: Callable)`
+> `get_kv(key: String,userId = null,lobbyId = null, on_success: Callable, on_failure: Callable)`
 
 Get a key/value entry
 
@@ -44,6 +44,9 @@ api.get_kv(
 	# userId: int   Eg: 56
 	# Optional owner user id
 	userId,
+	# lobbyId: int   Eg: 56
+	# Optional owner lobby id
+	lobbyId,
 	# On Success
 	func(response):  # response is ApiApiResponseClient
 		prints("Success!", "get_kv", response)

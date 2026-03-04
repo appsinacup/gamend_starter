@@ -75,4 +75,3 @@ static func bzz_denormalize_multiple(from_array: Array):
 		else:
 			mes.append(element)
 	return mes
-

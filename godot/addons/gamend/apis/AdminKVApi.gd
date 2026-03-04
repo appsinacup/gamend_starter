@@ -95,6 +95,8 @@ func admin_delete_kv(
 	key: String,
 	# userId: int   Eg: 56
 	userId = null,
+	# lobbyId: int   Eg: 56
+	lobbyId = null,
 	on_success: Callable = Callable(),  # func(response: ApiApiResponseClient)
 	on_failure: Callable = Callable(),  # func(error: ApiApiErrorClient)
 ):
@@ -118,6 +120,7 @@ func admin_delete_kv(
 	var bzz_query := Dictionary()
 	bzz_query["key"] = key
 	bzz_query["user_id"] = userId
+	bzz_query["lobby_id"] = lobbyId
 
 	var bzz_body = null
 
@@ -137,6 +140,8 @@ func admin_delete_kv_threaded(
 	key: String,
 	# userId: int   Eg: 56
 	userId = null,
+	# lobbyId: int   Eg: 56
+	lobbyId = null,
 	on_success: Callable = Callable(),  # func(response: ApiApiResponseClient)
 	on_failure: Callable = Callable(),  # func(error: ApiApiErrorClient)
 ) -> Thread:
@@ -145,6 +150,7 @@ func admin_delete_kv_threaded(
 	bzz_callable.bind(
 		key,
 		userId,
+		lobbyId,
 		on_success,
 		on_failure,
 	)
@@ -220,8 +226,10 @@ func admin_list_kv_entries(
 	key = "",
 	# userId: int   Eg: 56
 	userId = null,
-	# globalOnly: String = ""   Eg: globalOnly_example
-	globalOnly = "",
+	# lobbyId: int   Eg: 56
+	lobbyId = null,
+	# globalOnly: bool   Eg: true
+	globalOnly = null,
 	on_success: Callable = Callable(),  # func(response: ApiApiResponseClient)
 	on_failure: Callable = Callable(),  # func(error: ApiApiErrorClient)
 ):
@@ -247,6 +255,7 @@ func admin_list_kv_entries(
 	bzz_query["page_size"] = pageSize
 	bzz_query["key"] = key
 	bzz_query["user_id"] = userId
+	bzz_query["lobby_id"] = lobbyId
 	bzz_query["global_only"] = globalOnly
 
 	var bzz_body = null
@@ -272,8 +281,10 @@ func admin_list_kv_entries_threaded(
 	key = "",
 	# userId: int   Eg: 56
 	userId = null,
-	# globalOnly: String = ""   Eg: globalOnly_example
-	globalOnly = "",
+	# lobbyId: int   Eg: 56
+	lobbyId = null,
+	# globalOnly: bool   Eg: true
+	globalOnly = null,
 	on_success: Callable = Callable(),  # func(response: ApiApiResponseClient)
 	on_failure: Callable = Callable(),  # func(error: ApiApiErrorClient)
 ) -> Thread:
@@ -284,6 +295,7 @@ func admin_list_kv_entries_threaded(
 		pageSize,
 		key,
 		userId,
+		lobbyId,
 		globalOnly,
 		on_success,
 		on_failure,

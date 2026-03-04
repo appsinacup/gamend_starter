@@ -50,6 +50,15 @@ var __metadata__was__set := false
 		password = value
 var __password__was__set := false
 
+# Chat slowdown in seconds (0 = disabled)
+# Required: False
+# isArray: false
+@export var slowdown: int:
+	set(value):
+		__slowdown__was__set = true
+		slowdown = value
+var __slowdown__was__set := false
+
 # Required: False
 # isArray: false
 @export var title: String = "":
@@ -76,6 +85,8 @@ func bzz_normalize() -> Dictionary:
 		bzz_dictionary["metadata"] = self.metadata
 	if self.__password__was__set:
 		bzz_dictionary["password"] = self.password
+	if self.__slowdown__was__set:
+		bzz_dictionary["slowdown"] = self.slowdown
 	if self.__title__was__set:
 		bzz_dictionary["title"] = self.title
 	return bzz_dictionary
@@ -94,6 +105,8 @@ static func bzz_denormalize_single(from_dict: Dictionary):
 		me.metadata = from_dict["metadata"]
 	if from_dict.has("password"):
 		me.password = from_dict["password"]
+	if from_dict.has("slowdown"):
+		me.slowdown = from_dict["slowdown"]
 	if from_dict.has("title"):
 		me.title = from_dict["title"]
 	return me

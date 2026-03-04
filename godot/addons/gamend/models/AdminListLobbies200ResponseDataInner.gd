@@ -74,6 +74,24 @@ var __max_users__was__set := false
 		metadata = value
 var __metadata__was__set := false
 
+# Chat slowdown in seconds (0 = disabled)
+# Required: False
+# isArray: false
+@export var slowdown: int:
+	set(value):
+		__slowdown__was__set = true
+		slowdown = value
+var __slowdown__was__set := false
+
+# Number of current spectators
+# Required: False
+# isArray: false
+@export var spectator_count: int:
+	set(value):
+		__spectator_count__was__set = true
+		spectator_count = value
+var __spectator_count__was__set := false
+
 # Required: False
 # isArray: false
 @export var title: String = "":
@@ -106,6 +124,10 @@ func bzz_normalize() -> Dictionary:
 		bzz_dictionary["max_users"] = self.max_users
 	if self.__metadata__was__set:
 		bzz_dictionary["metadata"] = self.metadata
+	if self.__slowdown__was__set:
+		bzz_dictionary["slowdown"] = self.slowdown
+	if self.__spectator_count__was__set:
+		bzz_dictionary["spectator_count"] = self.spectator_count
 	if self.__title__was__set:
 		bzz_dictionary["title"] = self.title
 	return bzz_dictionary
@@ -130,6 +152,10 @@ static func bzz_denormalize_single(from_dict: Dictionary):
 		me.max_users = from_dict["max_users"]
 	if from_dict.has("metadata"):
 		me.metadata = from_dict["metadata"]
+	if from_dict.has("slowdown"):
+		me.slowdown = from_dict["slowdown"]
+	if from_dict.has("spectator_count"):
+		me.spectator_count = from_dict["spectator_count"]
 	if from_dict.has("title"):
 		me.title = from_dict["title"]
 	return me

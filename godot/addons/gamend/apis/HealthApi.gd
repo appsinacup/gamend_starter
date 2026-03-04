@@ -67,5 +67,3 @@ func index_threaded(
 	)
 	bzz_thread.start(bzz_callable)
 	return bzz_thread
-
-

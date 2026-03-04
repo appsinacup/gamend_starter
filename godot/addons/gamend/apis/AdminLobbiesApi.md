@@ -59,7 +59,7 @@ api.admin_delete_lobby(
 # **admin_list_lobbies**   { #admin_list_lobbies }
 <a name="admin_list_lobbies"></a>
 
-> `admin_list_lobbies(title = "",isHidden = "",isLocked = "",hasPassword = "",minUsers = null,maxUsers = null,page = null,pageSize = null, on_success: Callable, on_failure: Callable)`
+> `admin_list_lobbies(title = "",isHidden = null,isLocked = null,hasPassword = null,minUsers = null,maxUsers = null,page = null,pageSize = null, on_success: Callable, on_failure: Callable)`
 
 List all lobbies (admin)
 
@@ -88,11 +88,11 @@ var api = AdminLobbiesApi.new(config)
 api.admin_list_lobbies(
 	# title: String = ""   Eg: title_example
 	title,
-	# isHidden: String = ""   Eg: isHidden_example
+	# isHidden: bool   Eg: true
 	isHidden,
-	# isLocked: String = ""   Eg: isLocked_example
+	# isLocked: bool   Eg: true
 	isLocked,
-	# hasPassword: String = ""   Eg: hasPassword_example
+	# hasPassword: bool   Eg: true
 	hasPassword,
 	# minUsers: int   Eg: 56
 	minUsers,

@@ -76,12 +76,12 @@ func admin_delete_lobby_threaded(
 func admin_list_lobbies(
 	# title: String = ""   Eg: title_example
 	title = "",
-	# isHidden: String = ""   Eg: isHidden_example
-	isHidden = "",
-	# isLocked: String = ""   Eg: isLocked_example
-	isLocked = "",
-	# hasPassword: String = ""   Eg: hasPassword_example
-	hasPassword = "",
+	# isHidden: bool   Eg: true
+	isHidden = null,
+	# isLocked: bool   Eg: true
+	isLocked = null,
+	# hasPassword: bool   Eg: true
+	hasPassword = null,
 	# minUsers: int   Eg: 56
 	minUsers = null,
 	# maxUsers: int   Eg: 56
@@ -137,12 +137,12 @@ func admin_list_lobbies(
 func admin_list_lobbies_threaded(
 	# title: String = ""   Eg: title_example
 	title = "",
-	# isHidden: String = ""   Eg: isHidden_example
-	isHidden = "",
-	# isLocked: String = ""   Eg: isLocked_example
-	isLocked = "",
-	# hasPassword: String = ""   Eg: hasPassword_example
-	hasPassword = "",
+	# isHidden: bool   Eg: true
+	isHidden = null,
+	# isLocked: bool   Eg: true
+	isLocked = null,
+	# hasPassword: bool   Eg: true
+	hasPassword = null,
 	# minUsers: int   Eg: 56
 	minUsers = null,
 	# maxUsers: int   Eg: 56

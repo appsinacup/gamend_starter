@@ -4,7 +4,6 @@ extends GamendServer
 @export var gamend_api: GamendApi
 
 func _ready():
-	gamend_api = GamendApi.new()
 	await gamend_api.authenticate_device_login("random_string")
 	var health_result = await gamend_api.health_index()
 	print(health_result.response.data.status)

@@ -53,6 +53,23 @@ var __is_admin__was__set := false
 
 # Required: False
 # isArray: false
+@export var is_online: bool:
+	set(value):
+		__is_online__was__set = true
+		is_online = value
+var __is_online__was__set := false
+
+#       (but it's actually a DateTime ; no timezones support in Gdscript)
+# Required: False
+# isArray: false
+@export var last_seen_at: String:
+	set(value):
+		__last_seen_at__was__set = true
+		last_seen_at = value
+var __last_seen_at__was__set := false
+
+# Required: False
+# isArray: false
 @export var lobby_id: int:
 	set(value):
 		__lobby_id__was__set = true
@@ -94,6 +111,10 @@ func bzz_normalize() -> Dictionary:
 		bzz_dictionary["inserted_at"] = self.inserted_at
 	if self.__is_admin__was__set:
 		bzz_dictionary["is_admin"] = self.is_admin
+	if self.__is_online__was__set:
+		bzz_dictionary["is_online"] = self.is_online
+	if self.__last_seen_at__was__set:
+		bzz_dictionary["last_seen_at"] = self.last_seen_at
 	if self.__lobby_id__was__set:
 		bzz_dictionary["lobby_id"] = self.lobby_id
 	if self.__metadata__was__set:
@@ -116,6 +137,10 @@ static func bzz_denormalize_single(from_dict: Dictionary):
 		me.inserted_at = from_dict["inserted_at"]
 	if from_dict.has("is_admin"):
 		me.is_admin = from_dict["is_admin"]
+	if from_dict.has("is_online"):
+		me.is_online = from_dict["is_online"]
+	if from_dict.has("last_seen_at"):
+		me.last_seen_at = from_dict["last_seen_at"]
 	if from_dict.has("lobby_id"):
 		me.lobby_id = from_dict["lobby_id"]
 	if from_dict.has("metadata"):

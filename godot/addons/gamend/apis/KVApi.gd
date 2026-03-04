@@ -23,6 +23,9 @@ func get_kv(
 	# userId: int   Eg: 56
 	# Optional owner user id
 	userId = null,
+	# lobbyId: int   Eg: 56
+	# Optional owner lobby id
+	lobbyId = null,
 	on_success: Callable = Callable(),  # func(response: ApiApiResponseClient)
 	on_failure: Callable = Callable(),  # func(error: ApiApiErrorClient)
 ):
@@ -45,6 +48,7 @@ func get_kv(
 	# Note: we do not support multiple values for a single param (for now), nor arrays
 	var bzz_query := Dictionary()
 	bzz_query["user_id"] = userId
+	bzz_query["lobby_id"] = lobbyId
 
 	var bzz_body = null
 
@@ -67,6 +71,9 @@ func get_kv_threaded(
 	# userId: int   Eg: 56
 	# Optional owner user id
 	userId = null,
+	# lobbyId: int   Eg: 56
+	# Optional owner lobby id
+	lobbyId = null,
 	on_success: Callable = Callable(),  # func(response: ApiApiResponseClient)
 	on_failure: Callable = Callable(),  # func(error: ApiApiErrorClient)
 ) -> Thread:
@@ -75,6 +82,7 @@ func get_kv_threaded(
 	bzz_callable.bind(
 		key,
 		userId,
+		lobbyId,
 		on_success,
 		on_failure,
 	)

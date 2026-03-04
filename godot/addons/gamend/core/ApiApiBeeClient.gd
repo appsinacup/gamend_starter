@@ -68,6 +68,10 @@ var _bzz_name: String:
 		return _bzz_get_api_name()
 
 
+# Keep HTTP connections open between requests.
+var _bzz_keep_alive := true
+
+
 # Constructor, where you probably want to inject your configuration,
 # and as Godot recommends re-using HTTP clients, your client as well.
 func _init(config : ApiApiConfigClient = null, client : HTTPClient = null):
@@ -103,6 +107,7 @@ func _bzz_connect_client_if_needed(
 		self._bzz_client.get_status() == HTTPClient.STATUS_BODY
 	):
 		on_success.call()
+		return
 
 	var connecting := self._bzz_client.connect_to_host(
 		self._bzz_config.host, self._bzz_config.port, self._bzz_config.tls_options
@@ -212,10 +217,11 @@ func _bzz_request_text(
 	body,  # Variant that will be serialized
 	on_success: Callable,  # func(response: ApiApiResponseClient)
 	on_failure: Callable,  # func(error: ApiApiErrorClient)
+	attempt := 0
 ):
 	_bzz_connect_client_if_needed(
 		func():
-			_bzz_do_request_text(method, path, headers, query, body, on_success, on_failure)
+			_bzz_do_request_text(method, path, headers, query, body, on_success, on_failure, attempt)
 			,
 		func(error):
 			on_failure.call(error)
@@ -231,8 +237,10 @@ func _bzz_do_request_text(
 	body,  # Variant that will be serialized
 	on_success: Callable,  # func(response: ApiApiResponseClient)
 	on_failure: Callable,  # func(error: ApiApiErrorClient)
+	attempt := 0
 ):
 
+	var raw_headers := headers.duplicate(true)
 	headers = headers.duplicate(true)
 	headers.merge(self._bzz_config.headers_base)
 	headers.merge(self._bzz_config.headers_override, true)
@@ -288,7 +296,7 @@ func _bzz_do_request_text(
 		on_failure.call(error)
 		return
 
-    # Keep polling for as long as the request is being processed.
+	# Keep polling for as long as the request is being processed.
 	while self._bzz_client.get_status() == HTTPClient.STATUS_REQUESTING:
 		self._bzz_config.log_debug("Requesting…")
 		if self._bzz_config.polling_interval_ms:
@@ -297,6 +305,12 @@ func _bzz_do_request_text(
 		self._bzz_client.poll()
 
 	if not self._bzz_client.has_response():
+		if _bzz_keep_alive and attempt < 1:
+			self._bzz_config.log_debug("%s: no response, retrying with fresh connection." % _bzz_name)
+			self._bzz_client.close()
+			await _bzz_next_loop_iteration()
+			_bzz_request_text(method, path, raw_headers, query, body, on_success, on_failure, attempt + 1)
+			return
 		var error := ApiApiErrorClient.new()
 		error.identifier = "apibee.request.no_response"
 		error.message = "%s: request to `%s' returned no response whatsoever. (status=%d)" % [
@@ -389,7 +403,8 @@ func _bzz_do_request_text(
 		return
 
 	# Should we close ?
-	self._bzz_client.close()
+	if not _bzz_keep_alive:
+		self._bzz_client.close()
 
 	on_success.call(response)
 

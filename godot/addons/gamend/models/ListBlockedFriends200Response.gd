@@ -20,7 +20,7 @@ var __data__was__set := false
 
 # Required: False
 # isArray: false
-@export var meta: ListLeaderboardRecords200ResponseMeta:
+@export var meta: AdminListNotifications200ResponseMeta:
 	set(value):
 		__meta__was__set = true
 		meta = value
@@ -47,7 +47,7 @@ static func bzz_denormalize_single(from_dict: Dictionary):
 	if from_dict.has("data"):
 		me.data = ListBlockedFriends200ResponseDataInner.bzz_denormalize_multiple(from_dict["data"])
 	if from_dict.has("meta"):
-		me.meta = ListLeaderboardRecords200ResponseMeta.bzz_denormalize_single(from_dict["meta"])
+		me.meta = AdminListNotifications200ResponseMeta.bzz_denormalize_single(from_dict["meta"])
 	return me
 
 
@@ -63,4 +63,3 @@ static func bzz_denormalize_multiple(from_array: Array):
 		else:
 			mes.append(element)
 	return mes
-

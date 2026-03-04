@@ -26,6 +26,22 @@ var __display_name__was__set := false
 		id = value
 var __id__was__set := false
 
+# Required: False
+# isArray: false
+@export var is_online: bool:
+	set(value):
+		__is_online__was__set = true
+		is_online = value
+var __is_online__was__set := false
+
+# Required: False
+# isArray: false
+@export var last_seen_at: String = "":
+	set(value):
+		__last_seen_at__was__set = true
+		last_seen_at = value
+var __last_seen_at__was__set := false
+
 
 func bzz_collect_missing_properties() -> Array:
 	var bzz_missing_properties := Array()
@@ -38,6 +54,10 @@ func bzz_normalize() -> Dictionary:
 		bzz_dictionary["display_name"] = self.display_name
 	if self.__id__was__set:
 		bzz_dictionary["id"] = self.id
+	if self.__is_online__was__set:
+		bzz_dictionary["is_online"] = self.is_online
+	if self.__last_seen_at__was__set:
+		bzz_dictionary["last_seen_at"] = self.last_seen_at
 	return bzz_dictionary
 
 
@@ -48,6 +68,10 @@ static func bzz_denormalize_single(from_dict: Dictionary):
 		me.display_name = from_dict["display_name"]
 	if from_dict.has("id"):
 		me.id = from_dict["id"]
+	if from_dict.has("is_online"):
+		me.is_online = from_dict["is_online"]
+	if from_dict.has("last_seen_at"):
+		me.last_seen_at = from_dict["last_seen_at"]
 	return me
 
 

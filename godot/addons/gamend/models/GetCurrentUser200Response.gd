@@ -45,6 +45,22 @@ var __id__was__set := false
 
 # Required: False
 # isArray: false
+@export var is_online: bool:
+	set(value):
+		__is_online__was__set = true
+		is_online = value
+var __is_online__was__set := false
+
+# Required: False
+# isArray: false
+@export var last_seen_at: String = "":
+	set(value):
+		__last_seen_at__was__set = true
+		last_seen_at = value
+var __last_seen_at__was__set := false
+
+# Required: False
+# isArray: false
 @export var linked_providers: GetCurrentUser200ResponseLinkedProviders:
 	set(value):
 		__linked_providers__was__set = true
@@ -67,6 +83,15 @@ var __lobby_id__was__set := false
 		__metadata__was__set = true
 		metadata = value
 var __metadata__was__set := false
+
+# Party ID when user is currently in a party. -1 means not currently in a party.
+# Required: False
+# isArray: false
+@export var party_id: int:
+	set(value):
+		__party_id__was__set = true
+		party_id = value
+var __party_id__was__set := false
 
 # Required: False
 # isArray: false
@@ -92,12 +117,18 @@ func bzz_normalize() -> Dictionary:
 		bzz_dictionary["has_password"] = self.has_password
 	if self.__id__was__set:
 		bzz_dictionary["id"] = self.id
+	if self.__is_online__was__set:
+		bzz_dictionary["is_online"] = self.is_online
+	if self.__last_seen_at__was__set:
+		bzz_dictionary["last_seen_at"] = self.last_seen_at
 	if self.__linked_providers__was__set:
 		bzz_dictionary["linked_providers"] = self.linked_providers
 	if self.__lobby_id__was__set:
 		bzz_dictionary["lobby_id"] = self.lobby_id
 	if self.__metadata__was__set:
 		bzz_dictionary["metadata"] = self.metadata
+	if self.__party_id__was__set:
+		bzz_dictionary["party_id"] = self.party_id
 	if self.__profile_url__was__set:
 		bzz_dictionary["profile_url"] = self.profile_url
 	return bzz_dictionary
@@ -114,12 +145,18 @@ static func bzz_denormalize_single(from_dict: Dictionary):
 		me.has_password = from_dict["has_password"]
 	if from_dict.has("id"):
 		me.id = from_dict["id"]
+	if from_dict.has("is_online"):
+		me.is_online = from_dict["is_online"]
+	if from_dict.has("last_seen_at"):
+		me.last_seen_at = from_dict["last_seen_at"]
 	if from_dict.has("linked_providers"):
 		me.linked_providers = GetCurrentUser200ResponseLinkedProviders.bzz_denormalize_single(from_dict["linked_providers"])
 	if from_dict.has("lobby_id"):
 		me.lobby_id = from_dict["lobby_id"]
 	if from_dict.has("metadata"):
 		me.metadata = from_dict["metadata"]
+	if from_dict.has("party_id"):
+		me.party_id = from_dict["party_id"]
 	if from_dict.has("profile_url"):
 		me.profile_url = from_dict["profile_url"]
 	return me
@@ -137,4 +174,3 @@ static func bzz_denormalize_multiple(from_array: Array):
 		else:
 			mes.append(element)
 	return mes
-

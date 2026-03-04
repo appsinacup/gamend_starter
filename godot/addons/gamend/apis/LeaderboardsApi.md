@@ -93,7 +93,7 @@ api.get_my_record(
 	# On Success
 	func(response):  # response is ApiApiResponseClient
 		prints("Success!", "get_my_record", response)
-		assert(response.data is list_leaderboard_records_200_response_data_inner)
+		assert(response.data is get_my_record_200_response)
 		pass  # do things, make stuff
 		,
 	# On Error
@@ -159,7 +159,7 @@ api.list_leaderboard_records(
 # **list_leaderboards**   { #list_leaderboards }
 <a name="list_leaderboards"></a>
 
-> `list_leaderboards(slug = "",active = "",orderBy = "ends_at",startsAfter = null,startsBefore = null,endsAfter = null,endsBefore = null,page = 1,pageSize = 25, on_success: Callable, on_failure: Callable)`
+> `list_leaderboards(slug = "",active = null,orderBy = "ends_at",startsAfter = null,startsBefore = null,endsAfter = null,endsBefore = null,page = 1,pageSize = 25, on_success: Callable, on_failure: Callable)`
 
 List leaderboards
 
@@ -188,8 +188,8 @@ api.list_leaderboards(
 	# slug: String = ""   Eg: slug_example
 	# Filter by slug (returns all seasons of that leaderboard, ordered by end date)
 	slug,
-	# active: String = ""   Eg: active_example
-	# Filter by active status - 'true' or 'false' (omit for all)
+	# active: bool   Eg: true
+	# Filter by active status (omit for all)
 	active,
 	# orderBy: String = "ends_at"   Eg: orderBy_example
 	# Order results by field. 'ends_at' (default) puts active first, then by end date. 'inserted_at' orders by creation date.

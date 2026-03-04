@@ -65,7 +65,7 @@ api.admin_create_kv_entry(
 # **admin_delete_kv**   { #admin_delete_kv }
 <a name="admin_delete_kv"></a>
 
-> `admin_delete_kv(key: String,userId = null, on_success: Callable, on_failure: Callable)`
+> `admin_delete_kv(key: String,userId = null,lobbyId = null, on_success: Callable, on_failure: Callable)`
 
 Delete KV by key (admin)
 
@@ -96,6 +96,8 @@ api.admin_delete_kv(
 	key,
 	# userId: int   Eg: 56
 	userId,
+	# lobbyId: int   Eg: 56
+	lobbyId,
 	# On Success
 	func(response):  # response is ApiApiResponseClient
 		prints("Success!", "admin_delete_kv", response)
@@ -159,7 +161,7 @@ api.admin_delete_kv_entry(
 # **admin_list_kv_entries**   { #admin_list_kv_entries }
 <a name="admin_list_kv_entries"></a>
 
-> `admin_list_kv_entries(page = null,pageSize = null,key = "",userId = null,globalOnly = "", on_success: Callable, on_failure: Callable)`
+> `admin_list_kv_entries(page = null,pageSize = null,key = "",userId = null,lobbyId = null,globalOnly = null, on_success: Callable, on_failure: Callable)`
 
 List KV entries (admin)
 
@@ -194,7 +196,9 @@ api.admin_list_kv_entries(
 	key,
 	# userId: int   Eg: 56
 	userId,
-	# globalOnly: String = ""   Eg: globalOnly_example
+	# lobbyId: int   Eg: 56
+	lobbyId,
+	# globalOnly: bool   Eg: true
 	globalOnly,
 	# On Success
 	func(response):  # response is ApiApiResponseClient

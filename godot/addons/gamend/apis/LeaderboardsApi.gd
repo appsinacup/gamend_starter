@@ -111,7 +111,7 @@ func get_my_record(
 	self._bzz_request(
 		bzz_method, bzz_path, bzz_headers, bzz_query, bzz_body,
 		func(bzz_response):
-			bzz_response.data = ListLeaderboardRecords200ResponseDataInner.bzz_denormalize_single(bzz_response.data)
+			bzz_response.data = GetMyRecord200Response.bzz_denormalize_single(bzz_response.data)
 			on_success.call(bzz_response)
 			,
 		func(bzz_error):
@@ -224,9 +224,9 @@ func list_leaderboards(
 	# slug: String = ""   Eg: slug_example
 	# Filter by slug (returns all seasons of that leaderboard, ordered by end date)
 	slug = "",
-	# active: String = ""   Eg: active_example
-	# Filter by active status - 'true' or 'false' (omit for all)
-	active = "",
+	# active: bool   Eg: true
+	# Filter by active status (omit for all)
+	active = null,
 	# orderBy: String = "ends_at"   Eg: orderBy_example
 	# Order results by field. 'ends_at' (default) puts active first, then by end date. 'inserted_at' orders by creation date.
 	orderBy = "ends_at",
@@ -297,9 +297,9 @@ func list_leaderboards_threaded(
 	# slug: String = ""   Eg: slug_example
 	# Filter by slug (returns all seasons of that leaderboard, ordered by end date)
 	slug = "",
-	# active: String = ""   Eg: active_example
-	# Filter by active status - 'true' or 'false' (omit for all)
-	active = "",
+	# active: bool   Eg: true
+	# Filter by active status (omit for all)
+	active = null,
 	# orderBy: String = "ends_at"   Eg: orderBy_example
 	# Order results by field. 'ends_at' (default) puts active first, then by end date. 'inserted_at' orders by creation date.
 	orderBy = "ends_at",
@@ -418,5 +418,3 @@ func list_records_around_user_threaded(
 	)
 	bzz_thread.start(bzz_callable)
 	return bzz_thread
-
-

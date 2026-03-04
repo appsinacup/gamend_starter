@@ -29,7 +29,7 @@ class_name ApiApiConfigClient
 const BEE_DEFAULT_HOST := "localhost"
 const BEE_DEFAULT_PORT_HTTP := 80
 const BEE_DEFAULT_PORT_HTTPS := 443
-const BEE_DEFAULT_POLLING_INTERVAL_MS := 1  # milliseconds
+const BEE_DEFAULT_POLLING_INTERVAL_MS := 16  # milliseconds
 
 
 # Configuration also handles logging because it's convenient.

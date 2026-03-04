@@ -43,6 +43,16 @@ var __inserted_at__was__set := false
 		key = value
 var __key__was__set := false
 
+# Owner lobby id; -1 means global/unowned
+# Required: False
+# Example: -1
+# isArray: false
+@export var lobby_id: int:
+	set(value):
+		__lobby_id__was__set = true
+		lobby_id = value
+var __lobby_id__was__set := false
+
 # Required: False
 # isArray: false
 @export var metadata: Dictionary:
@@ -60,7 +70,9 @@ var __metadata__was__set := false
 		updated_at = value
 var __updated_at__was__set := false
 
+# Owner user id; -1 means global/unowned
 # Required: False
+# Example: -1
 # isArray: false
 @export var user_id: int:
 	set(value):
@@ -84,6 +96,8 @@ func bzz_normalize() -> Dictionary:
 		bzz_dictionary["inserted_at"] = self.inserted_at
 	if self.__key__was__set:
 		bzz_dictionary["key"] = self.key
+	if self.__lobby_id__was__set:
+		bzz_dictionary["lobby_id"] = self.lobby_id
 	if self.__metadata__was__set:
 		bzz_dictionary["metadata"] = self.metadata
 	if self.__updated_at__was__set:
@@ -104,6 +118,8 @@ static func bzz_denormalize_single(from_dict: Dictionary):
 		me.inserted_at = from_dict["inserted_at"]
 	if from_dict.has("key"):
 		me.key = from_dict["key"]
+	if from_dict.has("lobby_id"):
+		me.lobby_id = from_dict["lobby_id"]
 	if from_dict.has("metadata"):
 		me.metadata = from_dict["metadata"]
 	if from_dict.has("updated_at"):

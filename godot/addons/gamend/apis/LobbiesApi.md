@@ -7,6 +7,7 @@ All URIs are relative to *http://localhost:4000*
 Method | HTTP request | Description
 ------------- | ------------- | -------------
 [**create_lobby**](#create_lobby) | **POST** `/api/v1/lobbies` | Create a lobby
+[**get_lobby**](#get_lobby) | **GET** `/api/v1/lobbies/{id}` | Get a single lobby
 [**join_lobby**](#join_lobby) | **POST** `/api/v1/lobbies/{id}/join` | Join a lobby
 [**kick_user**](#kick_user) | **POST** `/api/v1/lobbies/kick` | Kick a user from the lobby (host only)
 [**leave_lobby**](#leave_lobby) | **POST** `/api/v1/lobbies/leave` | Leave the current lobby
@@ -63,10 +64,56 @@ api.create_lobby(
 
 ```
 
+# **get_lobby**   { #get_lobby }
+<a name="get_lobby"></a>
+
+> `get_lobby(id: int, on_success: Callable, on_failure: Callable)`
+
+Get a single lobby
+
+Return details for a single lobby. Non-hidden lobbies can be viewed by anyone. Also returns the current member list.
+
+### Example
+
+
+```gdscript
+
+# Customize configuration
+var config := ApiApiConfigClient.new()
+config.host = "localhost"
+config.port = 8080
+#config.tls_enabled = true
+#config.trusted_chain = preload("res://my_cert_chain.crt")
+
+# Instantiate the api
+var api = LobbiesApi.new(config)
+# You can also provide your own HTTPClient, to re-use it across apis.
+#var api = LobbiesApi.new(config, client)
+
+
+# Invoke an endpoint
+api.get_lobby(
+	# id: int   Eg: 56
+	# Lobby ID
+	id,
+	# On Success
+	func(response):  # response is ApiApiResponseClient
+		prints("Success!", "get_lobby", response)
+		assert(response.data is get_lobby_200_response)
+		pass  # do things, make stuff
+		,
+	# On Error
+	func(error):  # error is ApiApiErrorClient
+		push_error(str(error))
+		,
+)
+
+```
+
 # **join_lobby**   { #join_lobby }
 <a name="join_lobby"></a>
 
-> `join_lobby(id: int,joinLobbyRequest = null, on_success: Callable, on_failure: Callable)`
+> `join_lobby(id: int,partyJoinLobbyRequest = null, on_success: Callable, on_failure: Callable)`
 
 Join a lobby
 
@@ -90,17 +137,17 @@ var api = LobbiesApi.new(config)
 # You can also provide your own HTTPClient, to re-use it across apis.
 #var api = LobbiesApi.new(config, client)
 
-var joinLobbyRequest = JoinLobbyRequest.new()
-# … fill model joinLobbyRequest with data
+var partyJoinLobbyRequest = PartyJoinLobbyRequest.new()
+# … fill model partyJoinLobbyRequest with data
 
 # Invoke an endpoint
 api.join_lobby(
 	# id: int   Eg: 56
 	# Lobby ID
 	id,
-	# joinLobbyRequest: JoinLobbyRequest
+	# partyJoinLobbyRequest: PartyJoinLobbyRequest
 	# Join parameters (optional)
-	joinLobbyRequest,
+	partyJoinLobbyRequest,
 	# On Success
 	func(response):  # response is ApiApiResponseClient
 		prints("Success!", "join_lobby", response)
@@ -211,7 +258,7 @@ api.leave_lobby(
 # **list_lobbies**   { #list_lobbies }
 <a name="list_lobbies"></a>
 
-> `list_lobbies(title = "",isPassworded = "",isLocked = "",minUsers = null,maxUsers = null,page = null,pageSize = null,metadataKey = "",metadataValue = "", on_success: Callable, on_failure: Callable)`
+> `list_lobbies(title = "",isPassworded = null,isLocked = null,minUsers = null,maxUsers = null,page = null,pageSize = null,metadataKey = "",metadataValue = "", on_success: Callable, on_failure: Callable)`
 
 List lobbies
 
@@ -240,11 +287,11 @@ api.list_lobbies(
 	# title: String = ""   Eg: title_example
 	# Search term for title
 	title,
-	# isPassworded: String = ""   Eg: isPassworded_example
-	# Filter by passworded lobbies - 'true' or 'false' (omit for any)
+	# isPassworded: bool   Eg: true
+	# Filter by passworded lobbies (omit for any)
 	isPassworded,
-	# isLocked: String = ""   Eg: isLocked_example
-	# Filter by locked status - 'true' or 'false' (omit for any)
+	# isLocked: bool   Eg: true
+	# Filter by locked status (omit for any)
 	isLocked,
 	# minUsers: int   Eg: 56
 	# Minimum max_users to include

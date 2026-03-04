@@ -90,6 +90,68 @@ func create_lobby_threaded(
 	return bzz_thread
 
 
+# Operation getLobby → GET /api/v1/lobbies/{id}
+# Get a single lobby
+#
+# Return details for a single lobby. Non-hidden lobbies can be viewed by anyone. Also returns the current member list.
+func get_lobby(
+	# id: int   Eg: 56
+	# Lobby ID
+	id: int,
+	on_success: Callable = Callable(),  # func(response: ApiApiResponseClient)
+	on_failure: Callable = Callable(),  # func(error: ApiApiErrorClient)
+):
+
+	# Convert the String HTTP method to a Constant Godot understands
+	var bzz_method := self._bzz_convert_http_method("GET")
+
+	# Compute the URL path to the API resource
+	var bzz_path := "/api/v1/lobbies/{id}".replace("{" + "id" + "}", _bzz_urlize_path_param(id))
+
+	# Collect the headers
+	var bzz_headers := Dictionary()
+	var bzz_mimes_produced_by_server := ['application/json']
+	for bzz_mime in BZZ_CONSUMABLE_CONTENT_TYPES:
+		if bzz_mime in bzz_mimes_produced_by_server:
+			bzz_headers["Accept"] = bzz_mime
+			break
+
+	# Collect the query parameters
+	# Note: we do not support multiple values for a single param (for now), nor arrays
+	var bzz_query := Dictionary()
+
+	var bzz_body = null
+
+	self._bzz_request(
+		bzz_method, bzz_path, bzz_headers, bzz_query, bzz_body,
+		func(bzz_response):
+			bzz_response.data = GetLobby200Response.bzz_denormalize_single(bzz_response.data)
+			on_success.call(bzz_response)
+			,
+		func(bzz_error):
+			on_failure.call(bzz_error)
+			,  # ざわ‥
+	)
+
+
+func get_lobby_threaded(
+	# id: int   Eg: 56
+	# Lobby ID
+	id: int,
+	on_success: Callable = Callable(),  # func(response: ApiApiResponseClient)
+	on_failure: Callable = Callable(),  # func(error: ApiApiErrorClient)
+) -> Thread:
+	var bzz_thread := Thread.new()
+	var bzz_callable := Callable(self, "get_lobby")
+	bzz_callable.bind(
+		id,
+		on_success,
+		on_failure,
+	)
+	bzz_thread.start(bzz_callable)
+	return bzz_thread
+
+
 # Operation joinLobby → POST /api/v1/lobbies/{id}/join
 # Join a lobby
 #
@@ -98,9 +160,9 @@ func join_lobby(
 	# id: int   Eg: 56
 	# Lobby ID
 	id: int,
-	# joinLobbyRequest: JoinLobbyRequest
+	# partyJoinLobbyRequest: PartyJoinLobbyRequest
 	# Join parameters (optional)
-	joinLobbyRequest = null,
+	partyJoinLobbyRequest = null,
 	on_success: Callable = Callable(),  # func(response: ApiApiResponseClient)
 	on_failure: Callable = Callable(),  # func(error: ApiApiErrorClient)
 ):
@@ -137,7 +199,7 @@ func join_lobby(
 	var bzz_query := Dictionary()
 
 	var bzz_body = null
-	bzz_body = joinLobbyRequest
+	bzz_body = partyJoinLobbyRequest
 
 	self._bzz_request(
 		bzz_method, bzz_path, bzz_headers, bzz_query, bzz_body,
@@ -154,9 +216,9 @@ func join_lobby_threaded(
 	# id: int   Eg: 56
 	# Lobby ID
 	id: int,
-	# joinLobbyRequest: JoinLobbyRequest
+	# partyJoinLobbyRequest: PartyJoinLobbyRequest
 	# Join parameters (optional)
-	joinLobbyRequest = null,
+	partyJoinLobbyRequest = null,
 	on_success: Callable = Callable(),  # func(response: ApiApiResponseClient)
 	on_failure: Callable = Callable(),  # func(error: ApiApiErrorClient)
 ) -> Thread:
@@ -164,7 +226,7 @@ func join_lobby_threaded(
 	var bzz_callable := Callable(self, "join_lobby")
 	bzz_callable.bind(
 		id,
-		joinLobbyRequest,
+		partyJoinLobbyRequest,
 		on_success,
 		on_failure,
 	)
@@ -309,12 +371,12 @@ func list_lobbies(
 	# title: String = ""   Eg: title_example
 	# Search term for title
 	title = "",
-	# isPassworded: String = ""   Eg: isPassworded_example
-	# Filter by passworded lobbies - 'true' or 'false' (omit for any)
-	isPassworded = "",
-	# isLocked: String = ""   Eg: isLocked_example
-	# Filter by locked status - 'true' or 'false' (omit for any)
-	isLocked = "",
+	# isPassworded: bool   Eg: true
+	# Filter by passworded lobbies (omit for any)
+	isPassworded = null,
+	# isLocked: bool   Eg: true
+	# Filter by locked status (omit for any)
+	isLocked = null,
 	# minUsers: int   Eg: 56
 	# Minimum max_users to include
 	minUsers = null,
@@ -382,12 +444,12 @@ func list_lobbies_threaded(
 	# title: String = ""   Eg: title_example
 	# Search term for title
 	title = "",
-	# isPassworded: String = ""   Eg: isPassworded_example
-	# Filter by passworded lobbies - 'true' or 'false' (omit for any)
-	isPassworded = "",
-	# isLocked: String = ""   Eg: isLocked_example
-	# Filter by locked status - 'true' or 'false' (omit for any)
-	isLocked = "",
+	# isPassworded: bool   Eg: true
+	# Filter by passworded lobbies (omit for any)
+	isPassworded = null,
+	# isLocked: bool   Eg: true
+	# Filter by locked status (omit for any)
+	isLocked = null,
 	# minUsers: int   Eg: 56
 	# Minimum max_users to include
 	minUsers = null,

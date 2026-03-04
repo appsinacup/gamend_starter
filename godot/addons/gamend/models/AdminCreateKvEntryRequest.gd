@@ -28,6 +28,14 @@ var __key__was__set := false
 
 # Required: False
 # isArray: false
+@export var lobby_id: int:
+	set(value):
+		__lobby_id__was__set = true
+		lobby_id = value
+var __lobby_id__was__set := false
+
+# Required: False
+# isArray: false
 @export var metadata: Dictionary:
 	set(value):
 		__metadata__was__set = true
@@ -58,6 +66,8 @@ func bzz_normalize() -> Dictionary:
 		bzz_dictionary["data"] = self.data
 	if self.__key__was__set:
 		bzz_dictionary["key"] = self.key
+	if self.__lobby_id__was__set:
+		bzz_dictionary["lobby_id"] = self.lobby_id
 	if self.__metadata__was__set:
 		bzz_dictionary["metadata"] = self.metadata
 	if self.__user_id__was__set:
@@ -72,6 +82,8 @@ static func bzz_denormalize_single(from_dict: Dictionary):
 		me.data = from_dict["data"]
 	if from_dict.has("key"):
 		me.key = from_dict["key"]
+	if from_dict.has("lobby_id"):
+		me.lobby_id = from_dict["lobby_id"]
 	if from_dict.has("metadata"):
 		me.metadata = from_dict["metadata"]
 	if from_dict.has("user_id"):
