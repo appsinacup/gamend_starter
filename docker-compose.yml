@@ -11,15 +11,9 @@ services:
       PHX_HOST: localhost
       # Disable this in prod
       MAILBOX_PREVIEW_ENABLED: true
-      # Godot (used by modules/plugins/godot_hook)
-      GODOT_BIN: /opt/godot/godot
-      GODOT_PROJECT_PATH: /app/godot
-      # Optional: override startup mode (default is export_and_run)
-      # GODOT_START_MODE: run
       # Use dev for localhost
       MIX_ENV: dev
     volumes:
-      - ./godot:/app/godot
       - ./modules:/app/modules
       - ./priv/static/images:/app/priv/static/images
       - ./priv/static/assets/css/theme:/app/priv/static/assets/css/theme

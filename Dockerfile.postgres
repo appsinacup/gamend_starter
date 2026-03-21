@@ -1,4 +1,4 @@
-FROM ghcr.io/appsinacup/game_server:latest
+FROM ghcr.io/appsinacup/game_server:latest-postgres
 
 WORKDIR /app
 
