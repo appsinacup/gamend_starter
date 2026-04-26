@@ -1,0 +1,242 @@
+<!-- Server-side scripting / Hooks -->
+<div class="card bg-base-100 shadow-sm collapsed" data-card-key="server_scripting">
+  <div class="card-body">
+    <h2 class="card-title text-2xl mb-4 flex items-center gap-3">
+      <svg class="w-12 h-8" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 3h18v4H3V3zm0 7h18v11H3V10z" />
+      </svg>
+      {doc_text("Server-side scripting & hooks")}
+      <a
+        href="https://appsinacup.com/game_server/GameServer.Hooks.html"
+        target="_blank"
+        class="btn btn-outline ml-auto"
+      >
+        {doc_text("Scripting Interface")}
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+          />
+        </svg>
+      </a>
+      <button
+        type="button"
+        data-action="toggle-card"
+        data-card-key="server_scripting"
+        aria-expanded="false"
+        class="btn btn-ghost btn-sm"
+        title={doc_text("Collapse/Expand")}
+      >
+        <svg class="w-4 h-4" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 8l4 4 4-4"
+          />
+        </svg>
+      </button>
+    </h2>
+
+    <div class="space-y-4">
+      <p class="text-sm text-base-content/80">
+        {doc_text("The application exposes a lightweight server-side scripting surface via the")}
+        <code class="font-mono">GameServer.Hooks</code>
+        {doc_text(
+          "behaviour. Hooks let you run custom code on lifecycle events (eg. user register/login, lobby create/update) and optionally expose RPC functions."
+        )}
+      </p>
+
+      <div class="step">
+        <h4 class="font-semibold">{doc_text("Add a lifecycle callback")}</h4>
+        <div class="ml-6 mt-2 space-y-2">
+          <p>
+            {doc_text("Implement the behaviour in a hooks module:")}
+          </p>
+          <div class="bg-base-300 p-4 rounded-lg font-mono text-sm highlight-code">
+            <pre><code class="language-elixir" phx-no-curly-interpolation><span class="code-comment"># your_hook_module.ex</span>
+
+<span class="code-keyword">defmodule</span> <span class="code-variable">MyApp.HooksImpl</span> <span class="code-keyword">do</span>
+    <span class="code-variable">@behaviour</span> <span class="code-variable">GameServer.Hooks</span>
+
+    <span class="code-variable">@impl</span> <span class="code-keyword">true</span>
+    <span class="code-keyword">def</span> <span class="code-function">after_user_register</span>(user) <span class="code-keyword">do</span>
+        <span class="code-comment"># safe database update (non-blocking in hooks is recommended)</span>
+        <span class="code-variable">GameServer.Accounts.update_user</span>(user, %{<span class="code-variable">metadata:</span> <span class="code-variable">Map.put</span>(user.metadata || %{}, <span class="code-string">"from_hook"</span>, <span class="code-keyword">true</span>)})
+    <span class="code-variable">:ok</span>
+    <span class="code-keyword">end</span>
+
+    <span class="code-variable">@impl</span> <span class="code-keyword">true</span>
+    <span class="code-keyword">def</span> <span class="code-function">after_user_updated</span>(_user) <span class="code-keyword">do</span>
+        <span class="code-comment"># React to any user profile change (metadata, display name, etc.)</span>
+        <span class="code-variable">:ok</span>
+    <span class="code-keyword">end</span>
+<span class="code-keyword">end</span>
+</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <h4 class="font-semibold">{doc_text("Loading hooks via OTP plugins")}</h4>
+        <div class="ml-6 mt-2 space-y-2">
+          <p>
+            {doc_text("Hooks are loaded from OTP plugin applications under")}
+            <code class="font-mono">modules/plugins/*</code>. {doc_text(
+              "You can override the plugins directory using:"
+            )}
+          </p>
+          <div class="bg-base-300 p-4 rounded-lg font-mono text-sm highlight-code">
+            <pre><code class="language-elixir" phx-no-curly-interpolation><span class="code-variable">GAME_SERVER_PLUGINS_DIR</span>=modules/plugins</code></pre>
+          </div>
+          <p>
+            {doc_text("Each plugin is an OTP app directory with an")}
+            <code class="font-mono">ebin</code>
+            {doc_text("folder containing a")}
+            <code class="font-mono">.app</code>
+            {doc_text("file and compiled")}
+            <code class="font-mono">.beam</code>
+            {doc_text("modules. The plugin's")}
+            <code class="font-mono">.app</code>
+            {doc_text("env must include a")}
+            <code class="font-mono">hooks_module</code>
+            {doc_text("entry pointing at the module name.")}
+          </p>
+        </div>
+      </div>
+
+      <div class="step">
+        <h4 class="font-semibold">{doc_text("Gating resource creation with before hooks")}</h4>
+        <div class="ml-6 mt-2 space-y-2">
+          <p>
+            {doc_text(
+              "\"Before\" hooks let you block operations or modify attributes before they are persisted. For example,"
+            )}
+            <code class="font-mono">before_group_create/2</code>
+            {doc_text(
+              "receives the full user struct and the group attributes map, so you can check metadata (coins, level, etc.) to decide whether the user is allowed to create a group:"
+            )}
+          </p>
+          <div class="bg-base-300 p-4 rounded-lg font-mono text-sm">
+            <pre><code class="language-elixir" phx-no-curly-interpolation>@impl true
+def before_group_create(user, attrs) do
+  coins = get_in(user.metadata, ["coins"]) || 0
+
+  if coins >= 50 do
+    {:ok, attrs}
+  else
+    {:error, :not_enough_coins}
+  end
+end</code></pre>
+          </div>
+          <p class="text-sm text-base-content/80">
+            {doc_text("Other \"before\" hooks follow the same pattern:")}
+            <code class="font-mono">before_lobby_create/1</code>, <code class="font-mono">before_lobby_join/3</code>, <code class="font-mono">before_group_join/3</code>. {doc_text(
+              "Return {:ok, attrs} (or the appropriate tuple) to allow, {:error, reason} to reject."
+            )}
+          </p>
+        </div>
+      </div>
+
+      <div class="step">
+        <h4 class="font-semibold">{doc_text("Reacting to achievement unlocks")}</h4>
+        <div class="ml-6 mt-2 space-y-2">
+          <p>
+            {doc_text(
+              "The after_achievement_unlocked/2 hook fires asynchronously whenever a user unlocks an achievement. Use it to reward players with in-game currency, items, or trigger other game logic:"
+            )}
+          </p>
+          <div class="bg-base-300 p-4 rounded-lg font-mono text-sm">
+            <pre><code class="language-elixir" phx-no-curly-interpolation>@impl true
+def after_achievement_unlocked(user_id, achievement) do
+<span class="code-comment"># Grant coins based on achievement metadata</span>
+  user = GameServer.Accounts.get_user(user_id)
+  coins = get_in(user.metadata, ["coins"]) || 0
+  reward = get_in(achievement.metadata, ["coin_reward"]) || 50
+
+  GameServer.Accounts.update_user(user, %{
+    metadata: Map.put(user.metadata || %{}, "coins", coins + reward)
+  })
+
+  :ok
+end</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <h4 class="font-semibold">{doc_text("Exposing an RPC function")}</h4>
+        <div class="ml-6 mt-2 space-y-2">
+          <p>
+            {doc_text("Hooks modules can also export arbitrary functions:")}
+          </p>
+
+          <div class="bg-base-300 p-4 rounded-lg font-mono text-sm">
+            <pre><code class="language-elixir" phx-no-curly-interpolation>defmodule MyApp.HooksImpl do
+  @behaviour GameServer.Hooks
+
+  def hello_world(name) do
+    {:ok, "Hello, #{name}!"}
+  end
+end</code></pre>
+          </div>
+          {doc_text(
+            "You can now call this function via the API (or better yet from the client SDK's), eg:"
+          )}
+          <div class="bg-base-300 p-4 rounded-lg font-mono text-sm">
+            <pre><code class="language-elixir" phx-no-curly-interpolation>curl -X POST https://your-game-server.com/api/v1/hooks/call \
+-d '{"plugin":"polyglot_hook","fn":"hello_world","args":["Alice"]}'</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <h4 class="font-semibold">{doc_text("Best practices & pitfalls")}</h4>
+        <div class="ml-6 mt-2 space-y-2 text-sm text-base-content/80">
+          <ul class="list-disc pl-5">
+            <li>
+              {doc_text(
+                "Keep hooks fast and resilient — avoid long blocking work in the main request path. Use"
+              )}
+              <code class="font-mono">Task.start</code>
+              {doc_text("for background processing.")}
+            </li>
+            <li>
+              {doc_text("When returning values from lifecycle hooks, prefer a")}
+              <code class="font-mono" phx-no-curly-interpolation>{:ok, map}</code>
+              {doc_text("shape for \"before\" hooks that may modify attrs. Return")}
+              <code class="font-mono" phx-no-curly-interpolation>{:error, reason}</code>
+              {doc_text("to reject flows; domain code will convert to")}
+              <code
+                class="font-mono"
+                phx-no-curly-interpolation
+              >{:hook_rejected, reason}</code>.
+            </li>
+            <li>
+              {doc_text(
+                "Do not return structs as hook results intended to be used as params — always return plain maps when you intend to pass modified params into changesets."
+              )}
+            </li>
+            <li>
+              {doc_text("Tests that modify global plugin configuration (eg.")}
+              <code class="font-mono">GAME_SERVER_PLUGINS_DIR</code>
+              {doc_text(") should run serially")} (<code class="font-mono">async: false</code>) and restore env via
+              <code class="font-mono">on_exit</code>
+              {doc_text("to avoid cross-test races.")}
+            </li>
+            <li>
+              {doc_text(
+                "Be careful modifying user or lobby data from hooks — reuse high-level domain functions (eg."
+              )}
+              <code class="font-mono">GameServer.Accounts.update_user/2</code>,
+              <code class="font-mono">GameServer.Lobbies.update_lobby/2</code>
+              {doc_text(") so changes are validated and broadcast consistently.")}
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

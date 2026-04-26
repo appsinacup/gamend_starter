@@ -1,0 +1,428 @@
+<!-- Data Schema -->
+<div class="card bg-base-100 shadow-sm collapsed" data-card-key="data_schema">
+  <div class="card-body">
+    <h2 class="card-title text-2xl mb-4 flex items-center gap-3">
+      <svg class="w-12 h-8" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M3 3h18v4H3V3zm0 7h18v11H3V10z" />
+      </svg>
+      {doc_text("Data Schema")}
+      <a
+        href={~p"/api/docs"}
+        target="_blank"
+        class="btn btn-outline ml-auto"
+      >
+        {doc_text("API Docs")}
+        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+          />
+        </svg>
+      </a>
+      <button
+        type="button"
+        data-action="toggle-card"
+        data-card-key="data_schema"
+        aria-expanded="false"
+        class="btn btn-ghost btn-sm"
+        title={doc_text("Collapse/Expand")}
+      >
+        <svg class="w-4 h-4" viewBox="0 0 20 20" fill="none" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 8l4 4 4-4"
+          />
+        </svg>
+      </button>
+    </h2>
+
+    <div class="space-y-4">
+      <p class="text-sm text-base-content/80">
+        {doc_text(
+          "This section describes the main database table shapes used by the platform - starting with the"
+        )}
+        <code class="font-mono">users</code>
+        {doc_text("table and the important fields you may rely on.")}
+      </p>
+
+      <h3 class="font-semibold">{doc_text("Users table")}</h3>
+      <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+        <pre>
+    users (
+      id             : integer (primary key)
+      email          : string (unique, nullable for provider-only accounts)
+      hashed_password: string (bcrypt hash, nullable for OAuth-only accounts)
+      authenticated_at: utc_datetime (last sudo login)
+      discord_id     : string (nullable)
+      google_id      : string (nullable)
+      facebook_id    : string (nullable)
+      steam_id       : string (nullable)
+      apple_id       : string (nullable)
+      device_id      : string (nullable)
+      profile_url    : string (avatar/profile image URL)
+      display_name   : string (human-friendly display name)
+      is_admin       : boolean
+      metadata       : map (JSON/Map for arbitrary user metadata)
+      lobby_id       : integer (foreign key to lobbies, nullable)
+      party_id       : integer (foreign key to parties, nullable)
+      confirmed_at   : utc_datetime
+      inserted_at    : utc_datetime
+      updated_at     : utc_datetime
+    )
+                </pre>
+      </div>
+
+      <h3 class="font-semibold mt-3">{doc_text("Friends")}</h3>
+      <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+        <pre>
+    friendships (
+      id          : integer (primary key)
+      requester_id: integer (user id of who made the request)
+      target_id   : integer (user id of the target)
+      status      : string ("pending" | "accepted" | "rejected" | "blocked")
+      inserted_at : utc_datetime
+      updated_at  : utc_datetime
+    )
+                </pre>
+      </div>
+
+      <h4 class="font-semibold mt-3">{doc_text("Lobbies")}</h4>
+      <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+        <pre>
+    lobbies (
+      id           : integer (primary key)
+      title        : string (display title)
+      host_id      : integer (user id of host, nullable for hostless)
+      hostless     : boolean (server-managed hostless lobbies)
+      max_users    : integer (maximum number of members)
+      is_hidden    : boolean (not returned by public lists)
+      is_locked    : boolean (fully locked - prevents joins)
+      password_hash: string (bcrypt hash, optional: requires password to join)
+      metadata     : jsonb/map (searchable metadata)
+      inserted_at  : utc_datetime
+      updated_at   : utc_datetime
+    )</pre>
+      </div>
+
+      <h4 class="font-semibold mt-3">{doc_text("Parties")}</h4>
+      <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+        <pre>
+    parties (
+      id          : integer (primary key)
+      leader_id   : integer (user id of the party leader/creator)
+      max_size    : integer (maximum number of members, default: 4)
+      metadata    : jsonb/map (arbitrary party metadata)
+      inserted_at : utc_datetime
+      updated_at  : utc_datetime
+    )</pre>
+      </div>
+      <p class="text-sm text-base-content/80 mt-1 pl-1">
+        {doc_text("Party membership is tracked via the")}
+        <code class="font-mono">party_id</code>
+        {doc_text("field on the users table. Party invites are stored in the dedicated")}
+        <code class="font-mono">party_invites</code>
+        {doc_text(
+          "table — independent from notifications. An informational notification is also sent when an invite is created, but deleting the notification does not affect the invite."
+        )}
+      </p>
+
+      <h4 class="font-semibold mt-3">{doc_text("Party Invites")}</h4>
+      <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+        <pre>
+    party_invites (
+      id           : integer (primary key)
+      party_id     : integer (FK to parties)
+      sender_id    : integer (FK to users, the inviting leader)
+      recipient_id : integer (FK to users, the invited user)
+      status       : string ("pending" | "accepted" | "declined" | "cancelled")
+      inserted_at  : utc_datetime
+      updated_at   : utc_datetime
+    )</pre>
+      </div>
+
+      <h4 class="font-semibold mt-3">{doc_text("Leaderboards")}</h4>
+      <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+        <pre>
+    leaderboards (
+      id          : integer (primary key)
+      slug        : string (unique identifier, e.g. "weekly_score_2024_w48")
+      title       : string (display name)
+      description : text (optional)
+      sort_order  : enum (asc, desc) - default: desc
+      operator    : enum (set, best, incr, decr) - default: best
+      starts_at   : utc_datetime (optional)
+      ends_at     : utc_datetime (optional, null = active)
+      metadata    : jsonb (optional)
+      inserted_at : utc_datetime
+      updated_at  : utc_datetime
+    )
+
+    leaderboard_records (
+      id             : bigint (primary key)
+      leaderboard_id : integer (FK to leaderboards)
+      user_id        : bigint (FK to users)
+      score          : bigint
+      metadata       : jsonb (optional)
+      inserted_at    : utc_datetime
+      updated_at     : utc_datetime
+    )</pre>
+      </div>
+
+      <h4 class="font-semibold mt-3">{doc_text("Achievements")}</h4>
+      <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+        <pre>
+    achievements (
+      id              : integer (primary key)
+      slug            : string (unique identifier, e.g. "first_lobby")
+      title           : string (display name)
+      description     : string (condition to unlock)
+      icon_url        : string (optional)
+      sort_order      : integer (display order, default: 0)
+      hidden          : boolean (only shown after unlock, default: false)
+      progress_target : integer (1 = one-shot, >1 = multi-step)
+      metadata        : jsonb (optional custom data)
+      inserted_at     : utc_datetime
+      updated_at      : utc_datetime
+    )
+
+    user_achievements (
+      id             : integer (primary key)
+      user_id        : integer (FK to users)
+      achievement_id : integer (FK to achievements)
+      progress       : integer (current progress, default: 0)
+      unlocked_at    : utc_datetime (nil until unlocked)
+      metadata       : jsonb (optional)
+      inserted_at    : utc_datetime
+      updated_at     : utc_datetime
+      -- unique index on (user_id, achievement_id)
+    )</pre>
+      </div>
+
+      <h4 class="font-semibold mt-3">{doc_text("Notifications")}</h4>
+      <div
+        class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto"
+        phx-no-curly-interpolation
+      >
+        <pre>
+    notifications (
+      id           : integer (primary key)
+      sender_id    : integer (FK to users)
+      recipient_id : integer (FK to users)
+      title        : string (notification type/category)
+      content      : string (message body)
+      metadata     : jsonb/map (optional, e.g. context data)
+      inserted_at  : utc_datetime
+      updated_at   : utc_datetime
+    )
+
+    Well-known notification titles:
+      "New Friend Request"    — metadata: {}
+      "New Group Invite"      — informational (invite stored in group_invites table)
+      "New Party Invite"      — informational (invite stored in party_invites table)
+      "Group Notification"    — metadata: { group_id, group_name }
+      "New messages from ..." — metadata: { chat_type, group_id|lobby_id }</pre>
+      </div>
+
+      <h4 class="font-semibold mt-3">{doc_text("Groups")}</h4>
+      <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+        <pre>
+    groups (
+      id          : integer (primary key)
+      title       : string (display name, unique)
+      description : string (optional)
+      type        : string ("public" | "private" | "hidden")
+      max_members : integer (default: 100)
+      metadata    : jsonb/map (optional)
+      creator_id  : integer (FK to users)
+      inserted_at : utc_datetime
+      updated_at  : utc_datetime
+    )
+
+    group_members (
+      id          : integer (primary key)
+      group_id    : integer (FK to groups)
+      user_id     : integer (FK to users)
+      role        : string ("admin" | "member")
+      inserted_at : utc_datetime
+      updated_at  : utc_datetime
+    )
+
+    group_join_requests (
+      id          : integer (primary key)
+      group_id    : integer (FK to groups)
+      user_id     : integer (FK to users)
+      status      : string ("pending" | "accepted" | "rejected")
+      inserted_at : utc_datetime
+      updated_at  : utc_datetime
+    )
+
+    group_invites (
+      id           : integer (primary key)
+      group_id     : integer (FK to groups)
+      sender_id    : integer (FK to users, the inviting admin)
+      recipient_id : integer (FK to users, the invited user)
+      status       : string ("pending" | "accepted" | "declined" | "cancelled")
+      inserted_at  : utc_datetime
+      updated_at   : utc_datetime
+    )</pre>
+      </div>
+
+      <h3 class="font-semibold mt-2">{doc_text("Notes / behavior")}</h3>
+      <ul class="list-disc pl-6 text-sm space-y-1 text-base-content/80">
+        <li>
+          <strong>{doc_text("Password auth:")}</strong>
+          {doc_text("Accounts created only via OAuth commonly have no")}
+          <code class="font-mono">hashed_password</code>. {doc_text(
+            "In that case password-based login does not work (we treat oauth-only accounts as passwordless unless a password is explicitly set by the user)."
+          )}
+        </li>
+        <li>
+          <strong>{doc_text("Display name:")}</strong>
+          The <code class="font-mono">display_name</code>
+          {doc_text(
+            "is a human-friendly name and may be populated from OAuth providers (when available). The app avoids overwriting a user-provided display name when linking providers."
+          )}
+        </li>
+        <li>
+          <strong>{doc_text("Profile image:")}</strong>
+          The <code class="font-mono">profile_url</code>
+          {doc_text(
+            "is used for avatars and may be populated from provider responses (Google picture, Facebook picture.data.url, Discord CDN)."
+          )}
+        </li>
+        <li>
+          <strong>{doc_text("Metadata:")}</strong>
+          The JSON <code class="font-mono">metadata</code>
+          {doc_text(
+            "field is for arbitrary application data (e.g. display preferences). It's returned by the public API at"
+          )}
+          <code class="font-mono">GET /api/v1/me</code>.
+        </li>
+      </ul>
+
+      <h3 class="font-semibold mt-3">{doc_text("Persisted data and tables")}</h3>
+      <div class="space-y-3 text-sm text-base-content/80">
+        <p>
+          {doc_text(
+            "The platform stores several tables worth of data that client integrations may need to be aware of."
+          )}
+        </p>
+
+        <h4 class="font-semibold">{doc_text("Users")}</h4>
+        <p class="pl-4">
+          The <code class="font-mono">users</code>
+          table is the primary identity store and contains
+          fields like <code class="font-mono">email</code>, <code class="font-mono">hashed_password</code>,
+          provider ids (<code class="font-mono">discord_id</code>, <code class="font-mono">google_id</code>, etc.), <code class="font-mono">profile_url</code>, <code class="font-mono">display_name</code>,
+          <code class="font-mono">metadata</code>
+          and admin flags and timestamps.
+        </p>
+
+        <h4 class="font-semibold">{doc_text("User tokens (users_tokens)")}</h4>
+        <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+          <pre>
+    users_tokens (
+      id              : integer (primary key)
+      token           : binary (hashed for email tokens; raw for session tokens)
+      context         : string ("session", "login", "change:..." etc.)
+      sent_to         : string (email address for email/magic link tokens)
+      authenticated_at: utc_datetime (when this session was created/used)
+      user_id         : integer (foreign key to users)
+      inserted_at     : utc_datetime
+    )</pre>
+        </div>
+        <p class="pl-4 mt-1">
+          The app persists session tokens to let users view/expiration/and revoke individual sessions. Email/magic-link tokens are hashed when stored for safety.
+        </p>
+
+        <h4 class="font-semibold">{doc_text("OAuth sessions (oauth_sessions)")}</h4>
+        <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+          <pre>
+    oauth_sessions (
+      id        : integer (primary key)
+      session_id: string (unique id used by SDKs to poll/signal status)
+      provider  : string ("discord" | "google" | "facebook" | "apple" | "steam")
+      status    : string ("pending" | "completed" | "failed")
+      data      : jsonb/map (provider response, debug info, or result payload)
+      inserted_at: utc_datetime
+      updated_at: utc_datetime
+    )</pre>
+        </div>
+        <p class="pl-4 mt-1">
+          OAuth sessions are tracked in the DB to support reliable polling flows from client SDKs and to provide safe, multi-step authorization from popups and mobile apps.
+        </p>
+
+        <h4 class="font-semibold">{doc_text("JWT tokens (access + refresh)")}</h4>
+        <p class="pl-4">
+          The API issues JSON Web Tokens (JWTs) for API authentication. Access tokens are short-lived and refresh tokens are longer-lived (configurable). The server uses Guardian for signing and verification. Refresh tokens are stateless JWTs (no DB lookup) while session tokens and email tokens are persisted where needed.
+        </p>
+
+        <h4 class="font-semibold">{doc_text("Chat messages (chat_messages)")}</h4>
+        <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+          <pre>
+    chat_messages (
+      id           : integer  (primary key)
+      content      : string   (message text, 1-4096 chars)
+      metadata     : map/json (arbitrary JSON: attachments, type, etc.)
+      sender_id    : integer  (FK → users.id)
+      chat_type    : string   ("lobby" | "group" | "friend")
+      chat_ref_id  : integer  (lobby_id, group_id, or friend's user_id)
+      inserted_at  : datetime (created timestamp)
+      updated_at   : datetime (updated timestamp, differs when edited)
+    )</pre>
+        </div>
+        <p class="pl-4 mt-1">
+          Chat messages support three types: <strong>lobby</strong>
+          (requires lobby membership), <strong>group</strong>
+          (requires group membership), and <strong>friend</strong>
+          (requires accepted friendship and no blocks). Edit/delete is restricted to the message sender.
+        </p>
+
+        <h4 class="font-semibold">{doc_text("Chat read cursors (chat_read_cursors)")}</h4>
+        <div class="bg-base-200 font-mono text-sm p-4 rounded-lg overflow-auto">
+          <pre>
+    chat_read_cursors (
+      id                  : integer  (primary key)
+      user_id             : integer  (FK → users.id)
+      chat_type           : string   ("lobby" | "group" | "friend")
+      chat_ref_id         : integer  (reference ID)
+      last_read_message_id: integer  (last message the user has read)
+      inserted_at         : datetime (created timestamp)
+      updated_at          : datetime (updated timestamp)
+    )</pre>
+        </div>
+        <p class="pl-4 mt-1">
+          Read cursors track which messages a user has already seen in each chat. Used to compute unread counts per chat. Upserted on mark-read operations.
+        </p>
+
+        <h4 class="font-semibold">{doc_text("Chat access rules")}</h4>
+        <ul class="list-disc pl-8 text-sm space-y-1 text-base-content/80">
+          <li>
+            <strong>Lobby chat:</strong>
+            User must currently be in the lobby (user.lobby_id matches)
+          </li>
+          <li>
+            <strong>Group chat:</strong> User must be a member of the group
+          </li>
+          <li>
+            <strong>Friend chat:</strong>
+            Users must have an accepted friendship and neither can have blocked the other
+          </li>
+          <li>
+            Edit/Delete: Only the message sender can modify or delete their own messages (returns 403 otherwise)
+          </li>
+          <li>
+            Messages have a maximum content length of 4096 characters
+          </li>
+          <li>
+            Metadata is optional and stored as a JSON map
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
