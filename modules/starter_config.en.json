@@ -9,6 +9,18 @@
   "useful_links": [
     { "title": "Discord", "url": "https://discord.com/invite/v649emcpAu", "icon": "hero-chat-bubble-left-ellipsis" }
   ],
+  "footer_links": [
+    { "label": "About", "href": "/about" }
+  ],
+  "about": {
+    "name": "Your Name",
+    "headline": "Builder, operator, and human behind this project.",
+    "bio": "Add a short introduction about yourself here.\n\nYou can share what you build, what you care about, and the best way for people to reach you.",
+    "github_url": "https://github.com/your-handle",
+    "github_label": "github.com/your-handle",
+    "linkedin_url": "https://www.linkedin.com/in/your-handle/",
+    "linkedin_label": "linkedin.com/in/your-handle/"
+  },
   "features": [
     { "title": "Starter", "description": "Change the default settings", "icon": "hero-lock-closed" }
   ]

@@ -388,6 +388,7 @@ defmodule GameServerHost.Router do
       live "/leaderboards/:slug", LeaderboardsLive, :show_active
       live "/users/log-in", UserLive.Login, :new
       live "/users/log-in/:token", UserLive.Confirmation, :new
+      live "/about", HostAboutLive, :index
       get "/users/confirm/:token", UserSessionController, :confirm
       live "/docs/setup", HostPublicDocs, :index
       live "/changelog", HostChangelogLive, :index
