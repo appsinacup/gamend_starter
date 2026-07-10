@@ -39,8 +39,6 @@ defmodule GameServerHost.Application do
       # Load hook plugins (OTP apps) shipped under modules/plugins/*
       GameServer.Hooks.PluginManager,
       GameServerWeb.Endpoint,
-      # Auto-create notifications for friend events (must start after PubSub)
-      GameServer.Notifications.FriendNotifier,
       # Periodically mark stale online users as offline (safety net for crashes)
       GameServer.Accounts.StalePresenceSweeper,
       # Quantum scheduler for cron-like jobs
