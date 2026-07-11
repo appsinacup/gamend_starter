@@ -1,6 +1,8 @@
 .env
 .DS_Store
-_build/
-deps/
-.elixir_ls/
 db/
+# Build artifacts (root and nested plugins) — rebuilt inside the image.
+**/_build/
+**/deps/
+**/.elixir_ls/
+**/ebin/

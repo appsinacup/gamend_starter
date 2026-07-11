@@ -1,34 +1,58 @@
-FROM ghcr.io/appsinacup/game_server:latest
+FROM elixir:1.20-slim
+
+# System deps: git (github deps), build tools + libssl/sqlite (native NIFs),
+# curl (rust installer), ca-certificates.
+RUN apt-get update && \
+    apt-get install -y git build-essential libsqlite3-dev sqlite3 pkg-config ca-certificates curl libssl-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+# Rust toolchain — required to build native NIFs (e.g. mdex_native).
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+ENV PATH="/root/.cargo/bin:${PATH}"
+
+RUN mix local.hex --force && mix local.rebar --force
 
 WORKDIR /app
 
-ENV MIX_ENV=prod
+# The compose file runs the app in dev; keep build and runtime env in sync.
+ARG MIX_ENV=dev
+ENV MIX_ENV=${MIX_ENV}
 
-COPY modules/ ./modules/
-COPY apps/game_server_web/priv/static/.well-known/ ./apps/game_server_web/priv/static/.well-known/
-COPY apps/game_server_web/priv/static/assets/css/theme/ ./apps/game_server_web/priv/static/assets/css/theme/
-COPY apps/game_server_web/priv/static/images/ ./apps/game_server_web/priv/static/images/
-COPY apps/game_server_web/priv/static/fonts/ ./apps/game_server_web/priv/static/fonts/
-COPY apps/game_server_web/priv/static/game/ ./apps/game_server_web/priv/static/game/
-# Override blog with our own
-RUN rm -rf ./blog
-COPY blog/ ./blog/
-COPY CHANGELOG.md ./CHANGELOG.md
+ARG DATABASE_ADAPTER=sqlite
+ENV DATABASE_ADAPTER=${DATABASE_ADAPTER}
 
-# Build any plugins shipped in this repo (overlay) so they're available at runtime.
+# Server plugins (hooks) shipped in this repo are discovered from here at
+# runtime. Baked into the image below so they load without a build step.
 ARG GAME_SERVER_PLUGINS_DIR=modules/plugins
 ENV GAME_SERVER_PLUGINS_DIR=${GAME_SERVER_PLUGINS_DIR}
 
-RUN if [ -d "${GAME_SERVER_PLUGINS_DIR}" ]; then \
-		for plugin_path in ${GAME_SERVER_PLUGINS_DIR}/*; do \
-			if [ -d "${plugin_path}" ] && [ -f "${plugin_path}/mix.exs" ]; then \
-				echo "Building plugin ${plugin_path}"; \
-				(cd "${plugin_path}" && mix deps.get && mix compile && mix plugin.bundle); \
-			fi; \
-		done; \
-	else \
-		echo "Plugin sources dir ${GAME_SERVER_PLUGINS_DIR} missing, skipping plugin builds"; \
-	fi
+ARG APP_VERSION=1.0.0
+ENV APP_VERSION=${APP_VERSION}
 
-RUN mix do --app game_server_web cmd mix phx.digest.clean --all
-RUN mix do --app game_server_web cmd mix phx.digest
+# Fetch top-level deps first for better layer caching.
+COPY mix.exs mix.lock ./
+COPY modules/plugins/starter_hook/mix.exs modules/plugins/starter_hook/mix.lock ./modules/plugins/starter_hook/
+RUN mix deps.get
+
+COPY . .
+RUN mix deps.get
+
+# Compile and bundle each shipped plugin so the server finds its <name>.app and
+# loads the hooks (fixes "starter_hook.app not found" at runtime).
+RUN if [ -d "${GAME_SERVER_PLUGINS_DIR}" ]; then \
+      for plugin_path in ${GAME_SERVER_PLUGINS_DIR}/*; do \
+        if [ -d "${plugin_path}" ] && [ -f "${plugin_path}/mix.exs" ]; then \
+          echo "Building plugin ${plugin_path}"; \
+          (cd "${plugin_path}" && mix deps.get && mix compile && mix plugin.bundle); \
+        fi; \
+      done; \
+    else \
+      echo "Plugin sources dir ${GAME_SERVER_PLUGINS_DIR} missing, skipping plugin builds"; \
+    fi
+
+RUN mix compile
+RUN mix assets.setup && mix assets.build
+
+EXPOSE 4000
+
+CMD ["sh", "-c", "mix ecto.create --quiet -r GameServer.Repo 2>/dev/null; mix db.migrate && mix phx.server"]

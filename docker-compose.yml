@@ -6,15 +6,17 @@ services:
     env_file:
       - .env
     environment:
-      # Run mix phx.gen.secret
+      # Run mix phx.gen.secret to generate your own.
       SECRET_KEY_BASE: 1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb
       PHX_HOST: localhost
-      # Disable this in prod
+      # Disable this in prod.
       MAILBOX_PREVIEW_ENABLED: true
-      # Use dev for localhost
+      # Use dev for localhost.
       MIX_ENV: dev
     volumes:
-      - ./modules:/app/modules
-      - ./priv/static/images:/app/priv/static/images
-      - ./priv/static/assets/css/theme:/app/priv/static/assets/css/theme
+      # Persist the SQLite dev database across restarts.
+      # Note: hooks, branding (modules/), and assets are baked into the image,
+      # so after editing them run `docker compose up --build`. Do NOT bind-mount
+      # ./modules here — it would hide the plugin ebin built into the image and
+      # the server would report "<plugin>.app not found".
       - ./db:/app/db
