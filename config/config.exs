@@ -26,7 +26,16 @@ config :game_server_host, ecto_repos: [GameServer.Repo]
 config :game_server_web,
   ecto_repos: [GameServer.Repo],
   generators: [timestamp_type: :utc_datetime],
-  environment: config_env()
+  environment: config_env(),
+  # The reusable game_server_web app provides GameServerWeb.Endpoint, layouts,
+  # and static/well-known serving. Point them at this host app and its router.
+  router: GameServerHost.Router,
+  host_router: GameServerHost.Router,
+  home_banner_link: "/play",
+  host_static_app: :game_server_host,
+  asset_static_app: :game_server_host,
+  well_known_static_app: :game_server_host,
+  host_static_paths: ~w(images game fonts audio favicon.ico robots.txt .well-known theme.css)
 
 # Adapter selection (compile-time). Override with DATABASE_ADAPTER=postgres
 # at build time for production Postgres deployments.
