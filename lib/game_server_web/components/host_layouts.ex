@@ -68,7 +68,7 @@ defmodule GameServerWeb.HostLayouts do
 
   @host_theme_css_path "/theme.css"
 
-  @home_banner_link "/docs/setup"
+  @home_banner_link "https://gamend.appsinacup.com/docs/setup"
 
   @app_version_fallback Mix.Project.config()[:version] || "1.0.0"
 

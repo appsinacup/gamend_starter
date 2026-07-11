@@ -12,8 +12,19 @@ Game + Backend = Gamend
 
 # Run locally
 
-1. Configure `.env` file (copy `.env.example` to `.env`).
-2. Run the following:
+1. Copy `.env.example` to `.env`.
+2. Install dependencies and start the app from the repo root:
+
+```sh
+mix deps.get
+mix dev.start
+```
+
+The app runs on `localhost:4000` (SQLite database, device auth enabled).
+
+## Run with Docker
+
+Alternatively, run it in a container:
 
 ```sh
 docker compose up
@@ -38,23 +49,11 @@ docker compose -f docker-compose.multi.yml up --scale app=2
 ## Configure
 
 You can configure the:
-- `starter_config.json`: This has settings in webpage (eg. titles), along the reference images and css it has.
-- `starter_hook.ex`: This has custom logic you can write to extend default behaviours.
-- `.env`: This contains secrets (eg. oauth/email/etc.)
-- `apps/game_server_web/priv/static/assets/css/theme/theme.css`: The theme.
-- `apps/game_server_web/priv/static/images`: The images used in website.
-
-## Module Elixir Highlight (compilation)
-
-Run:
-
-```sh
-cd modules/plugins/starter_hook
-mix deps.get
-mix deps.compile
-```
-
-Note: This can also be done from the admin console.
+- `modules/starter_config.en.json`: Website settings (title, tagline, links) and branding paths (logo, favicon, banner, css).
+- `modules/plugins/starter_hook`: An example Elixir plugin with custom hook logic. Build it so its hooks load locally: `cd modules/plugins/starter_hook && mix deps.get && mix deps.compile` (or reload it from the admin console). The Docker build compiles plugins automatically.
+- `.env`: Secrets (oauth/email/etc.).
+- `priv/static/theme.css`: The theme.
+- `priv/static/images`: The images used in the website.
 
 # Deploy
 

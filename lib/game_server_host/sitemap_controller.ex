@@ -15,7 +15,6 @@ defmodule GameServerHost.SitemapController do
     %{loc: "/blog", changefreq: "weekly", priority: "0.8"},
     %{loc: "/changelog", changefreq: "weekly", priority: "0.6"},
     %{loc: "/roadmap", changefreq: "monthly", priority: "0.5"},
-    %{loc: "/docs/setup", changefreq: "monthly", priority: "0.7"},
     %{loc: "/privacy", changefreq: "yearly", priority: "0.3"},
     %{loc: "/terms", changefreq: "yearly", priority: "0.3"},
     %{loc: "/data-deletion", changefreq: "yearly", priority: "0.3"},

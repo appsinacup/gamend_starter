@@ -2,7 +2,7 @@
   "title": "Gamend Starter",
   "tagline": "Starter Project",
   "description": "Starter project for Gamend.",
-  "css": "/assets/css/theme/theme.css",
+  "css": "/theme.css",
   "logo": "/images/logo.png",
   "favicon": "/images/favicon.ico",
   "banner": "/images/banner.png",
