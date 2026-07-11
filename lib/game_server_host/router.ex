@@ -24,7 +24,8 @@ defmodule GameServerHost.Router do
     }
 
     plug GameServerWeb.Plugs.ColorMode
-    plug :fetch_current_scope_for_user  end
+    plug :fetch_current_scope_for_user
+  end
 
   pipeline :api do
     plug :accepts, ["json"]
@@ -43,10 +44,12 @@ defmodule GameServerHost.Router do
     }
 
     plug GameServerWeb.Plugs.ColorMode
-    plug :fetch_current_scope_for_user  end
+    plug :fetch_current_scope_for_user
+  end
 
   pipeline :api_auth do
-    plug GameServerWeb.Auth.Pipeline  end
+    plug GameServerWeb.Auth.Pipeline
+  end
 
   pipeline :api_optional_auth do
     plug GameServerWeb.Auth.OptionalPipeline
@@ -72,7 +75,8 @@ defmodule GameServerHost.Router do
         "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: https:; connect-src 'self' wss:; font-src 'self' data:; frame-src 'self' blob:; frame-ancestors 'self'"
     }
 
-    plug :fetch_current_scope_for_user  end
+    plug :fetch_current_scope_for_user
+  end
 
   pipeline :openapi_gate do
     plug GameServerWeb.Plugs.FeatureGate, env: "OPENAPI_ENABLED", default: true
