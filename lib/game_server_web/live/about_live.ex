@@ -25,18 +25,21 @@ defmodule GameServerWeb.HostAboutLive do
     locale = Gettext.get_locale(GameServerWeb.Gettext) || "en"
     theme = HostLayouts.resolve_theme(locale)
     about = Map.get(theme, "about", %{})
+    name = Map.get(about, "name") || Map.get(theme, "title") || gettext("About")
 
     {:ok,
      socket
      |> assign(:page_title, gettext("About"))
-     |> assign(:about_name, Map.get(about, "name") || Map.get(theme, "title") || gettext("About"))
-     |> assign(:about_headline, Map.get(about, "headline") || @default_headline)
-     |> assign(:about_bio, bio_paragraphs(Map.get(about, "bio") || @default_bio))
-     |> assign(:github_url, Map.get(about, "github_url") || @default_github_url)
-     |> assign(:github_label, Map.get(about, "github_label") || @default_github_label)
-     |> assign(:linkedin_url, Map.get(about, "linkedin_url") || @default_linkedin_url)
-     |> assign(:linkedin_label, Map.get(about, "linkedin_label") || @default_linkedin_label)}
+     |> assign(:about_name, name)
+     |> assign(:about_headline, about_field(about, "headline", @default_headline))
+     |> assign(:about_bio, bio_paragraphs(about_field(about, "bio", @default_bio)))
+     |> assign(:github_url, about_field(about, "github_url", @default_github_url))
+     |> assign(:github_label, about_field(about, "github_label", @default_github_label))
+     |> assign(:linkedin_url, about_field(about, "linkedin_url", @default_linkedin_url))
+     |> assign(:linkedin_label, about_field(about, "linkedin_label", @default_linkedin_label))}
   end
+
+  defp about_field(about, key, default), do: Map.get(about, key) || default
 
   @impl true
   def render(assigns) do
