@@ -1,89 +1,62 @@
 defmodule GameServer.Modules.StarterHook do
   @moduledoc """
-  Example hooks implementation shipped as an OTP plugin.
+  Example hooks plugin.
 
-  This is intentionally kept out of the default plugins directory so it does not
-  affect test runs or production deployments.
+  `use GameServer.Hooks` pulls in default (no-op) implementations for every
+  lifecycle callback, so you only override the ones you care about. This module
+  shows a few common patterns:
 
-  To try it locally:
+    * overriding a lifecycle callback (`after_user_register/1`)
+    * a plain "hello world" custom RPC (`hello/1`)
+    * reading the calling user (`whoami/0`, `set_current_user_meta/2`)
 
-      export GAME_SERVER_PLUGINS_DIR=modules/plugins_examples
+  Any public function is callable by name from a client, e.g.
+  `starter_hook.hello("World")` — no registration needed.
 
-  Then restart the server and use the Admin Config page to reload plugins.
+  The plugin is loaded from `GAME_SERVER_PLUGINS_DIR` (default `modules/plugins`).
+  After editing, reload it from Admin → Config (or restart the server).
   """
 
-  @behaviour GameServer.Hooks
+  use GameServer.Hooks
 
+  alias GameServer.Accounts
+  alias GameServer.Hooks
+
+  # --- Lifecycle hook -------------------------------------------------------
+  # Override any callback declared in GameServer.Hooks. Here we grant every new
+  # user some starting coins by writing to their metadata.
   @impl true
-  def after_startup do
-    :ok
+  def after_user_register(user) do
+    Accounts.update_user(user, %{metadata: Map.put(user.metadata, "coins", 100)})
   end
 
-  @impl true
-  def before_stop, do: :ok
+  # --- Custom RPC functions -------------------------------------------------
 
-  @impl true
-  def after_user_register(_user), do: :ok
-
-  @impl true
-  def after_user_login(_user), do: :ok
-
-  @impl true
-  def before_lobby_create(attrs), do: {:ok, attrs}
-
-  @impl true
-  def after_lobby_create(_lobby), do: :ok
-
-  @impl true
-  def before_lobby_join(user, lobby, opts), do: {:ok, {user, lobby, opts}}
-
-  @impl true
-  def after_lobby_join(_user, _lobby), do: :ok
-
-  @impl true
-  def before_lobby_leave(user, lobby), do: {:ok, {user, lobby}}
-
-  @impl true
-  def after_lobby_leave(_user, _lobby), do: :ok
-
-  @impl true
-  def before_lobby_update(_lobby, attrs), do: {:ok, attrs}
-
-  @impl true
-  def after_lobby_update(_lobby), do: :ok
-
-  @impl true
-  def before_lobby_delete(lobby), do: {:ok, lobby}
-
-  @impl true
-  def after_lobby_delete(_lobby), do: :ok
-
-  @impl true
-  def before_user_kicked(host, target, lobby), do: {:ok, {host, target, lobby}}
-
-  @impl true
-  def after_user_kicked(_host, _target, _lobby), do: :ok
-
-  @impl true
-  def after_lobby_host_change(_lobby, _new_host_id), do: :ok
-
-  @doc "Say hi to a user"
+  @doc ~s|Hello world. Call from a client as `starter_hook.hello("World")`.|
   def hello(name) when is_binary(name) do
     "Hello, " <> name <> "!"
   end
 
-  @doc "Return an updated metadata map for the current caller"
+  @doc """
+  Getting the current user: returns the caller's public info.
+
+  `Hooks.caller_user/0` resolves the user for the current hook invocation — use
+  it instead of reading `Process.get(:game_server_hook_caller)` directly, since
+  it also resolves ids/maps to a full user struct on the server.
+  """
+  def whoami do
+    user = Hooks.caller_user()
+    {:ok, %{"id" => user.id, "display_name" => user.display_name, "metadata" => user.metadata}}
+  end
+
+  @doc """
+  Returns the caller's metadata with one key set.
+
+  This example does NOT persist; to save, call `Accounts.update_user/2` (see
+  `after_user_register/1` above).
+  """
   def set_current_user_meta(key, value) when is_binary(key) do
-    caller = Process.get(:game_server_hook_caller)
-
-    meta =
-      case caller do
-        %{metadata: m} when is_map(m) -> m
-        _ -> %{}
-      end
-
-    # This example intentionally does NOT write to the database.
-    # In a real hook you can call server context modules to persist changes.
-    {:ok, Map.put(meta, key, value)}
+    user = Hooks.caller_user()
+    {:ok, Map.put(user.metadata, key, value)}
   end
 end

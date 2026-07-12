@@ -32,6 +32,7 @@ ENV APP_VERSION=${APP_VERSION}
 # Fetch top-level deps first for better layer caching.
 COPY mix.exs mix.lock ./
 COPY modules/plugins/starter_hook/mix.exs modules/plugins/starter_hook/mix.lock ./modules/plugins/starter_hook/
+COPY modules/plugins/example_hook/mix.exs modules/plugins/example_hook/mix.lock ./modules/plugins/example_hook/
 RUN mix deps.get
 
 COPY . .
@@ -55,4 +56,15 @@ RUN mix assets.setup && mix assets.build
 
 EXPOSE 4000
 
-CMD ["sh", "-c", "mix ecto.create --quiet -r GameServer.Repo 2>/dev/null; mix db.migrate && mix phx.server"]
+# On container start, (re)build every plugin under GAME_SERVER_PLUGINS_DIR before
+# serving. This is incremental — a no-op when nothing changed — and picks up code
+# changes when a plugin's lib/ is bind-mounted for live editing (see docker-compose).
+CMD set -e; \
+    for plugin in "${GAME_SERVER_PLUGINS_DIR}"/*/; do \
+      [ -f "${plugin}mix.exs" ] || continue; \
+      echo "Rebuilding plugin ${plugin}"; \
+      ( cd "${plugin}" && mix compile && mix plugin.bundle ); \
+    done; \
+    mix ecto.create --quiet -r GameServer.Repo 2>/dev/null || true; \
+    mix db.migrate; \
+    mix phx.server

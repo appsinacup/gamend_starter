@@ -14,9 +14,12 @@ services:
       # Use dev for localhost.
       MIX_ENV: dev
     volumes:
+      # Live-edit the hook source. Only each plugin's lib/ is mounted so the
+      # image-built _build/deps/ebin stay intact (avoids "<plugin>.app not found"
+      # and host/container arch clashes). The Dockerfile CMD rebuilds the plugins
+      # on start, so a `docker compose restart app` picks up your code changes.
+      # You can also reload plugins from Admin → Config without a restart.
+      - ./modules/plugins/starter_hook/lib:/app/modules/plugins/starter_hook/lib
+      - ./modules/plugins/example_hook/lib:/app/modules/plugins/example_hook/lib
       # Persist the SQLite dev database across restarts.
-      # Note: hooks, branding (modules/), and assets are baked into the image,
-      # so after editing them run `docker compose up --build`. Do NOT bind-mount
-      # ./modules here — it would hide the plugin ebin built into the image and
-      # the server would report "<plugin>.app not found".
       - ./db:/app/db
