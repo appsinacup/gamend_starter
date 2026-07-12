@@ -14,7 +14,7 @@ Game + Backend = Gamend
 
 ## Prerequisites
 
-- **Elixir 1.20 & Erlang/OTP 29** — see [`.tool-versions`](.tool-versions);
+- **Elixir 1.20 & Erlang/OTP 29** — see [`.tool-versions`](.tool-versions)
 - **Rust** ([rustup](https://rustup.rs/)) — required to build the WebRTC native dependency (`ex_sctp`)
 - **PostgreSQL** — optional. Dev uses SQLite by default; set `POSTGRES_*` or `DATABASE_URL` in `.env` to use Postgres instead.
 
