@@ -55,6 +55,14 @@ You can configure the:
 - `priv/static/theme.css`: The theme.
 - `priv/static/images`: The images used in the website.
 
+# Godot client
+
+A minimal Godot demo project lives in [`godot/`](godot/README.md) — it logs in and
+calls the example `starter_hook.hello` function over HTTP, WebSocket, and WebRTC.
+See [`godot/README.md`](godot/README.md) for setup (install the Gamend SDK from the
+[Asset Library](https://store.godotengine.org/asset/appsinacup/gamend-sdk/), point
+it at your server, run).
+
 # Deploy
 
 1. Fork this repo.
