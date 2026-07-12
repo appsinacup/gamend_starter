@@ -12,6 +12,14 @@ Game + Backend = Gamend
 
 # Run locally
 
+## Prerequisites
+
+- **Elixir 1.20 & Erlang/OTP 29** — see [`.tool-versions`](.tool-versions); with [asdf](https://asdf-vm.com/) just run `asdf install`
+- **Rust** ([rustup](https://rustup.rs/)) — required to build the WebRTC native dependency (`ex_sctp`)
+- **PostgreSQL** — optional. Dev uses SQLite by default; set `POSTGRES_*` or `DATABASE_URL` in `.env` to use Postgres instead.
+
+## Run
+
 1. Copy `.env.example` to `.env`.
 2. Install dependencies and start the app from the repo root:
 
