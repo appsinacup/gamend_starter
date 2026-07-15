@@ -1,5 +1,13 @@
 import Config
 
+# .env is already loaded by config.exs during config evaluation; this is
+# kept as a safety net. (Code.require_file is a no-op when the file was
+# already required.)
+if config_env() == :dev do
+  Code.require_file("dotenv.exs", __DIR__)
+  GameServer.Dotenv.load(Path.expand("../.env", __DIR__))
+end
+
 default_theme_config = Path.expand("../modules/starter_config.json", __DIR__)
 
 # The starter ships with a packaged theme config. Older game_server_core builds
