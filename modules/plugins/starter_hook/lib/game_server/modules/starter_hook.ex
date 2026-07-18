@@ -59,4 +59,31 @@ defmodule GameServer.Modules.StarterHook do
     user = Hooks.caller_user()
     {:ok, Map.put(user.metadata, key, value)}
   end
+
+  # --- Protobuf: typed hooks and KV schemas ---------------------------------
+
+  @doc """
+  Typed protobuf hook (see `proto/starter_hook.proto`).
+
+  The `HelloProtoRequest`/`HelloProtoReply` message pair registers this hook's
+  schema by name, so the server converts at the boundary: protobuf clients call
+  it with encoded bytes, JSON clients with a plain object
+  (`{"name": "x", "repeat": 2}`). This function always receives the decoded
+  request struct and returns a reply struct.
+  """
+  def hello_proto(%StarterHook.V1.HelloProtoRequest{} = req) do
+    repeat = max(req.repeat, 1)
+    greeting = String.duplicate("Hello, #{req.name}! ", repeat) |> String.trim_trailing()
+
+    %StarterHook.V1.HelloProtoReply{greeting: greeting, name_length: byte_size(req.name)}
+  end
+
+  @doc """
+  KV data schemas: values stored under these keys are pushed as compact binary
+  (`KvEntry.data_pb`) on protobuf sockets instead of JSON. Exact keys or
+  `"prefix*"` patterns are supported.
+  """
+  def kv_schemas do
+    %{"starter_loadout" => StarterHook.V1.StarterLoadout}
+  end
 end

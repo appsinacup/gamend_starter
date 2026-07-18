@@ -3,4 +3,5 @@
   "game_server_plugin_tools": {:git, "https://github.com/appsinacup/game_server.git", "3a6772aff8885680885cacb44377fe7d1188d2f8", [sparse: "sdk_tools"]},
   "game_server_sdk": {:git, "https://github.com/appsinacup/game_server.git", "3a6772aff8885680885cacb44377fe7d1188d2f8", [sparse: "sdk"]},
   "game_server_sdk_tools": {:git, "https://github.com/appsinacup/game_server.git", "e5389261c82d2be22f27b2d8e5fc3716e759a8cd", [sparse: "sdk_tools"]},
+  "protobuf": {:hex, :protobuf, "0.17.0", "39e24e43c9648e148feba16ed51100b5b2028ea900b55460377b0476f6e10613", [:mix], [{:jason, "~> 1.2", [hex: :jason, repo: "hexpm", optional: true]}], "hexpm", "ca6c91f6f63e2c147b47f03eefd10b80538aa6fc55ff4b12b795efb786b0152f"},
 }

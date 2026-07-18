@@ -41,6 +41,8 @@ defmodule GameServerHost.Application do
       GameServerWeb.Endpoint,
       # Periodically mark stale online users as offline (safety net for crashes)
       GameServer.Accounts.StalePresenceSweeper,
+      # Tournament lifecycle: transitions, draws, match deadlines, recurrence
+      GameServer.Tournaments.Ticker,
       # Quantum scheduler for cron-like jobs
       GameServer.Schedule.Scheduler
     ]

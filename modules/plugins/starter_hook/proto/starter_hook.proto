@@ -1,0 +1,30 @@
+// Typed hook payloads for the starter plugin.
+//
+// Convention: a typed hook `foo_bar` names its messages FooBarRequest and
+// FooBarReply. The gamend server relays these bytes untouched (RtcEnvelope
+// args_raw / data_raw) — only this plugin and the game client know the
+// schema, and both sides use their own generated bindings.
+//
+// Regenerate after editing:
+//   protoc --elixir_out=lib --proto_path=proto proto/starter_hook.proto
+syntax = "proto3";
+
+package starter_hook.v1;
+
+message HelloProtoRequest {
+  string name = 1;
+  uint32 repeat = 2;
+}
+
+message HelloProtoReply {
+  string greeting = 1;
+  uint32 name_length = 2;
+}
+
+// KV data schema example, registered for the "starter_loadout" key via
+// kv_schemas/0 in the hooks module. Values stored under that key travel as
+// compact binary (KvEntry data_pb) on protobuf sockets instead of JSON.
+message StarterLoadout {
+  uint32 weapon_id = 1;
+  repeated uint32 perk_ids = 2;
+}
