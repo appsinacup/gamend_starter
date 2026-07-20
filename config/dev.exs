@@ -87,6 +87,13 @@ config :game_server_web, dev_routes: true
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
 
+# Also persist dev logs to a rotating file (10MB x 5, see
+# GameServerWeb.FileLogHandler). Without this the only copy of a run is the
+# terminal scrollback, so anything after the fact — grepping a run that already
+# finished — depends on having captured it by hand. Writes alongside stdout, so
+# the console is unchanged. LOG_FILE_PATH overrides the location.
+config :game_server_web, :log_file, "log/dev.log"
+
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
 config :phoenix, :stacktrace_depth, 20

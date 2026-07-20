@@ -9,7 +9,10 @@ defmodule GameServerHost.Router do
   use GameServerWeb, :router
 
   import GameServerWeb.UserAuth
+  import GameServerWeb.Router.Shared
   import Phoenix.LiveDashboard.Router
+
+  @require_admin_on_mount GameServerWeb.Router.Shared.require_admin_on_mount()
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -314,37 +317,12 @@ defmodule GameServerHost.Router do
     get "/metrics", PromEx.Plug, prom_ex_module: GameServerWeb.PromEx
   end
 
-  scope "/", GameServerWeb do
-    pipe_through [:browser, :require_admin_user]
-
-    live_session :require_admin,
-      on_mount: [
-        {GameServerWeb.OnMount.Locale, :default},
-        {GameServerWeb.UserAuth, :require_admin},
-        {GameServerWeb.OnMount.Theme, :mount_theme},
-        {GameServerWeb.OnMount.TrackConnection, :default}
-      ] do
-      live "/admin", AdminLive.Index, :index
-      live "/admin/config", AdminLive.Config, :index
-      live "/admin/kv", AdminLive.KV, :index
-      live "/admin/lobbies", AdminLive.Lobbies, :index
-      live "/admin/lobbies/live", LobbyLive.Index, :index
-      live "/admin/leaderboards", AdminLive.Leaderboards, :index
-      live "/admin/users", AdminLive.Users, :index
-      live "/admin/sessions", AdminLive.Sessions, :index
-      live "/admin/notifications", AdminLive.Notifications, :index
-      live "/admin/groups", AdminLive.Groups, :index
-      live "/admin/parties", AdminLive.Parties, :index
-      live "/admin/chat", AdminLive.Chat, :index
-      live "/admin/achievements", AdminLive.Achievements, :index
-      live "/admin/translations", AdminLive.Translations, :index
-      live "/admin/connections", AdminLive.Connections, :index
-      live "/admin/rate-limiting", AdminLive.RateLimiting, :index
-      live "/admin/logs", AdminLive.Logs, :index
-      live "/admin/geo", AdminLive.Geo, :index
-      live "/admin/system", AdminLive.System, :index
-    end
-  end
+  # Core owns the admin route list. This host used to keep a fork of it, which
+  # had drifted: /admin/tournaments, /admin/matchmaking, /admin/blacklist,
+  # /admin/payments, /admin/runtime and /admin/lobby-snapshots all 404'd here
+  # because pages added in core never reached this copy. Host-specific admin
+  # pages go in the block.
+  game_server_admin_live_routes(@require_admin_on_mount)
 
   scope "/", GameServerWeb do
     pipe_through [:browser, :require_authenticated_user]
