@@ -13,7 +13,7 @@ defmodule GameServer.Modules.ExampleHook do
   require Logger
 
   @impl true
-  def after_user_login(user) do
+  def after_user_logged_in(user) do
     Logger.info("example_hook: user #{user.id} logged in")
     :ok
   end
