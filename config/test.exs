@@ -93,3 +93,6 @@ config :game_server_web, GameServerWeb.Auth.Guardian,
 
 # Disable rate limiting in tests
 config :game_server_web, GameServerWeb.Plugs.RateLimiter, enabled: false
+
+# Oban runs inline in tests; use Oban.Testing helpers to drain when needed.
+config :game_server_core, Oban, testing: :manual

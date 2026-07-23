@@ -57,6 +57,18 @@ default_adapter =
 
 config :game_server_core, GameServer.Repo, adapter: default_adapter
 
+# Durable background jobs (GameServer.Jobs) + the per-minute Cron tick that
+# drives GameServer.Schedule. The engine (Basic/Lite) is chosen from the Repo
+# adapter by GameServer.Jobs.oban_config/0. Oban is supervised (unconditionally)
+# by GameServerWeb.HostSupervision, so this config is required to boot.
+config :game_server_core, Oban,
+  repo: GameServer.Repo,
+  queues: [default: 10, hooks: 20, mailers: 5, storage: 5, webhooks: 10],
+  plugins: [
+    {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
+    {Oban.Plugins.Cron, crontab: [{"* * * * *", GameServer.Schedule.TickWorker}]}
+  ]
+
 host_root = Path.expand("..", __DIR__)
 repo_root = Path.expand("../..", host_root)
 host_content_root = Path.join(host_root, "content")

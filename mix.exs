@@ -68,7 +68,6 @@ defmodule GameServerHost.MixProject do
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
       {:guardian, "~> 2.3"},
       {:ueberauth_steam_strategy, "~> 0.1.6"},
-      {:quantum, "~> 3.5"},
       {:corsica, "~> 2.0"},
       {:heroicons,
        github: "tailwindlabs/heroicons",
