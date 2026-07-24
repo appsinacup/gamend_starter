@@ -35,7 +35,10 @@ else
     database: database_path,
     adapter: Ecto.Adapters.SQLite3,
     pool: Ecto.Adapters.SQL.Sandbox,
-    pool_size: 1,
+    # 2, not 1: Oban runs a boot-time `verify_migrated!` query, and the host
+    # tree's periodic DB workers can hold the single connection long enough to
+    # starve it (Oban fails to start). The spare connection lets Oban boot.
+    pool_size: 2,
     pool_timeout: 10_000,
     queue_target: 10_000,
     queue_interval: 1_000,
