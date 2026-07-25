@@ -143,15 +143,15 @@ defmodule GameServerHost.Router do
   scope "/api/v1", GameServerWeb.Api.V1, as: :api_v1 do
     pipe_through [:api, :api_auth]
 
-    get "/achievements/me", AchievementController, :me
+    get "/me/quests", QuestController, :me
+    post "/me/quests/:key/claim", QuestController, :claim
   end
 
   scope "/api/v1", GameServerWeb.Api.V1, as: :api_v1 do
     pipe_through [:api, :api_optional_auth]
 
-    get "/achievements", AchievementController, :index
-    get "/achievements/user/:user_id", AchievementController, :user_achievements
-    get "/achievements/:slug", AchievementController, :show
+    get "/quests", QuestController, :index
+    get "/quests/user/:user_id", QuestController, :user_quests
   end
 
   scope "/api/v1", GameServerWeb.Api.V1, as: :api_v1 do
@@ -187,6 +187,7 @@ defmodule GameServerHost.Router do
     post "/lobbies", LobbyController, :create
     post "/lobbies/quick_join", LobbyController, :quick_join
     patch "/lobbies", LobbyController, :update
+    post "/lobbies/state", LobbyController, :set_state
     post "/lobbies/:id/join", LobbyController, :join
     post "/lobbies/leave", LobbyController, :leave
     post "/lobbies/kick", LobbyController, :kick
@@ -279,14 +280,15 @@ defmodule GameServerHost.Router do
     get "/chat", ChatController, :index
     delete "/chat/:id", ChatController, :delete
     delete "/chat/conversation", ChatController, :delete_conversation
-    get "/achievements", AchievementController, :index
-    post "/achievements", AchievementController, :create
-    patch "/achievements/:id", AchievementController, :update
-    delete "/achievements/:id", AchievementController, :delete
-    post "/achievements/grant", AchievementController, :grant
-    post "/achievements/revoke", AchievementController, :revoke
-    post "/achievements/unlock", AchievementController, :unlock
-    post "/achievements/increment", AchievementController, :increment
+    get "/quests", QuestController, :index
+    post "/quests", QuestController, :create
+    patch "/quests/:id", QuestController, :update
+    delete "/quests/:id", QuestController, :delete
+    get "/quests/progress", QuestController, :progress
+    post "/quests/grant", QuestController, :grant
+    post "/quests/reset", QuestController, :reset
+    post "/quests/claim", QuestController, :claim
+    get "/quests/:key/funnel", QuestController, :funnel
   end
 
   scope "/api/v1/auth", GameServerWeb do
@@ -356,7 +358,7 @@ defmodule GameServerHost.Router do
       live "/users/register", UserLive.Registration, :new
       live "/groups", GroupsLive, :index
       live "/groups/:id", GroupsLive, :show
-      live "/achievements", AchievementsLive, :index
+      live "/quests", QuestsLive, :index
       live "/leaderboards", LeaderboardsLive, :index
       live "/leaderboards/:slug/:id", LeaderboardsLive, :show
       live "/leaderboards/:slug", LeaderboardsLive, :show_active

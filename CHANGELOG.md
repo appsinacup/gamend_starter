@@ -1,5 +1,9 @@
 # July 2026
 
+- [added] **Data retention** — lobbies everyone has gone quiet in (never around a reconnect), expired auth tokens, resolved invites and matchmaking tickets are now pruned on a schedule; windows are `RETENTION_*` env vars (see `.env.example`), and Admin -> System shows the last run with a "Run now" action.
+- [added] **Lobby state** — server-owned `state` + `state_changed_at` on lobbies, `POST /lobbies/state` for hosts, and the `before_lobby_state_change` / `after_lobby_state_changed` hooks.
+- [added] **Quests / progression** — routes for `/me/quests`, claim, catalog and admin CRUD; the `/quests` page and `/admin/quests` come from core.
+- [breaking] **Achievements removed** — replaced by permanent quests categorised `"achievement"`. The `/achievements` routes, page and Godot `AchievementsApi` are gone; use the quest equivalents.
 - [added] **Lobby snapshots** — durable per-run record of lobby state, opt-in via `LOBBY_SNAPSHOTS_ENABLED`.
 - [added] **Matchmaking** (ticket queue), admin page and hooks.
 - [added] **Party matchmaking**, matched as one unit.
