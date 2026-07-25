@@ -10,7 +10,7 @@ services:
       GAMEND_AUTH_SECRET_KEY_BASE: 1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb
       GAMEND_HTTP_HOST: localhost
       # Disable this in prod.
-      MAILBOX_PREVIEW_ENABLED: true
+      GAMEND_FEATURES_MAILBOX_PREVIEW: true
       # Use dev for localhost.
       MIX_ENV: dev
     volumes:

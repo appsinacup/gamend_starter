@@ -31,7 +31,7 @@ services:
       GAMEND_AUTH_SECRET_KEY_BASE: 1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb
       GAMEND_HTTP_HOST: localhost
       # Disable this in prod
-      MAILBOX_PREVIEW_ENABLED: true
+      GAMEND_FEATURES_MAILBOX_PREVIEW: true
       # Postgres
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
@@ -39,9 +39,9 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: game_server_dev
       # Cache
-      CACHE_MODE: multi
-      CACHE_L2: redis
-      CACHE_REDIS_URL: redis://redis:6379/0
+      GAMEND_CACHE_MODE: multi
+      GAMEND_CACHE_L2: redis
+      GAMEND_CACHE_REDIS_URL: redis://redis:6379/0
       # Use dev for localhost
       MIX_ENV: dev
     volumes:
