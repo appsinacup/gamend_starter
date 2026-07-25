@@ -45,13 +45,13 @@ config :game_server_web,
   well_known_static_app: :game_server_host,
   host_static_paths: ~w(images game fonts audio favicon.ico robots.txt .well-known theme.css)
 
-# Adapter selection (compile-time). Override with DATABASE_ADAPTER=postgres
+# Adapter selection (compile-time). Override with GAMEND_DB_ADAPTER=postgres
 # at build time for production Postgres deployments. In dev, setting
 # POSTGRES_*/DATABASE_URL (shell or .env) makes dev.exs override this with
 # Postgres; after changing them, recompile:
 #   mix deps.clean game_server_core game_server_web --build && mix compile
 default_adapter =
-  if System.get_env("DATABASE_ADAPTER") == "postgres",
+  if System.get_env("GAMEND_DB_ADAPTER") == "postgres",
     do: Ecto.Adapters.Postgres,
     else: Ecto.Adapters.SQLite3
 

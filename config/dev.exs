@@ -109,17 +109,17 @@ config :phoenix_live_view,
   # Enable helpful, but potentially expensive runtime checks
   enable_expensive_runtime_checks: true
 
-# Enable SMTP in development when SMTP_PASSWORD is present, otherwise
+# Enable SMTP in development when GAMEND_MAIL_SMTP_PASSWORD is present, otherwise
 # keep the default Local adapter and disable Swoosh's API client.
-if System.get_env("SMTP_PASSWORD") do
+if System.get_env("GAMEND_MAIL_SMTP_PASSWORD") do
   config :game_server_core, GameServer.Mailer,
     adapter: Swoosh.Adapters.SMTP,
-    relay: System.get_env("SMTP_RELAY"),
-    username: System.get_env("SMTP_USERNAME"),
-    password: System.get_env("SMTP_PASSWORD"),
-    port: String.to_integer(System.get_env("SMTP_PORT") || "587"),
-    tls: String.to_existing_atom(System.get_env("SMTP_TLS") || "never"),
-    ssl: String.to_existing_atom(System.get_env("SMTP_SSL") || "true"),
+    relay: System.get_env("GAMEND_MAIL_SMTP_RELAY"),
+    username: System.get_env("GAMEND_MAIL_SMTP_USERNAME"),
+    password: System.get_env("GAMEND_MAIL_SMTP_PASSWORD"),
+    port: String.to_integer(System.get_env("GAMEND_MAIL_SMTP_PORT") || "587"),
+    tls: String.to_existing_atom(System.get_env("GAMEND_MAIL_SMTP_TLS") || "never"),
+    ssl: String.to_existing_atom(System.get_env("GAMEND_MAIL_SMTP_SSL") || "true"),
     auth: :always,
     no_mx_lookups: false,
     retries: 2,
@@ -132,7 +132,7 @@ if System.get_env("SMTP_PASSWORD") do
         match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
       ],
       server_name_indication:
-        if(sni = System.get_env("SMTP_SNI"), do: String.to_charlist(sni), else: :disable)
+        if(sni = System.get_env("GAMEND_MAIL_SMTP_SNI"), do: String.to_charlist(sni), else: :disable)
     ]
 
   # When using an SMTP adapter we may still need the HTTP API client for

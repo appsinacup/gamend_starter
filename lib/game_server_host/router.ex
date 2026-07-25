@@ -82,7 +82,7 @@ defmodule GameServerHost.Router do
   end
 
   pipeline :openapi_gate do
-    plug GameServerWeb.Plugs.FeatureGate, env: "OPENAPI_ENABLED", default: true
+    plug GameServerWeb.Plugs.FeatureGate, feature: :openapi
   end
 
   pipeline :metrics_auth do

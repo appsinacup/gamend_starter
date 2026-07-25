@@ -7,8 +7,8 @@ primary_region = 'lax'
 [env]
   MIX_ENV = 'dev'
   PORT = '4000'
-  SECRET_KEY_BASE = '1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb'
-  SQLITE_DATABASE_PATH = '/data/game_server_prod.db'
+  GAMEND_AUTH_SECRET_KEY_BASE = '1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb'
+  GAMEND_DB_SQLITE_PATH = '/data/game_server_prod.db'
 
 [[mounts]]
   source = 'game_server_data'

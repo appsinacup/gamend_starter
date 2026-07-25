@@ -13,7 +13,7 @@ defmodule GameServer.Modules.StarterHook do
   Any public function is callable by name from a client, e.g.
   `starter_hook.hello("World")` — no registration needed.
 
-  The plugin is loaded from `GAME_SERVER_PLUGINS_DIR` (default `modules/plugins`).
+  The plugin is loaded from `GAMEND_CONTENT_PLUGINS_DIR` (default `modules/plugins`).
   After editing, reload it from Admin → Config (or restart the server).
   """
 

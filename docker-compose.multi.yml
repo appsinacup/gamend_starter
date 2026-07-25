@@ -28,8 +28,8 @@ services:
       - .env
     environment:
       # Run mix phx.gen.secret
-      SECRET_KEY_BASE: 1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb
-      PHX_HOST: localhost
+      GAMEND_AUTH_SECRET_KEY_BASE: 1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb
+      GAMEND_HTTP_HOST: localhost
       # Disable this in prod
       MAILBOX_PREVIEW_ENABLED: true
       # Postgres

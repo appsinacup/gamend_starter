@@ -23,7 +23,7 @@ This also copies compiled dependency BEAMs into `deps/<dep>/ebin` (excluding `ga
 
 ## Run locally
 
-- Set `GAME_SERVER_PLUGINS_DIR=modules/plugins_examples` (or copy the built bundle into `modules/plugins/starter_hook`)
+- Set `GAMEND_CONTENT_PLUGINS_DIR=modules/plugins_examples` (or copy the built bundle into `modules/plugins/starter_hook`)
 - Open the Admin Config page and click **Reload plugins**
 - Call a function via the “Hooks - Test RPC” form using:
   - `plugin`: `starter_hook`

@@ -62,7 +62,7 @@ defmodule GameServerHost.Application do
       if AdvisoryLock.postgres?() == false &&
            (System.get_env("DATABASE_URL") ||
               (System.get_env("POSTGRES_HOST") && System.get_env("POSTGRES_USER"))) do
-        " [WARNING: Postgres env vars set but compiled with SQLite — rebuild with DATABASE_ADAPTER=postgres]"
+        " [WARNING: Postgres env vars set but compiled with SQLite — rebuild with GAMEND_DB_ADAPTER=postgres]"
       else
         ""
       end

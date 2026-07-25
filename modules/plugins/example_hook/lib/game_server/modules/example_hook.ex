@@ -4,7 +4,7 @@ defmodule GameServer.Modules.ExampleHook do
 
   It exists to demonstrate that multiple hook plugins load and run side by side
   with `starter_hook` — the server discovers every subdirectory of
-  `GAME_SERVER_PLUGINS_DIR` that has a `mix.exs`, and fans lifecycle hooks out to
+  `GAMEND_CONTENT_PLUGINS_DIR` that has a `mix.exs`, and fans lifecycle hooks out to
   all of them.
   """
 
