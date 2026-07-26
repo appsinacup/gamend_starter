@@ -29,7 +29,7 @@ defmodule GameServerHost.MixProject do
 
   def cli do
     [
-      preferred_envs: [precommit: :test]
+      preferred_envs: [precommit: :test, "precommit.full": :test]
     ]
   end
 
@@ -102,13 +102,17 @@ defmodule GameServerHost.MixProject do
       lint:
         ["format --check-formatted", "credo --strict"] ++
           local_web_commands([web_cmd("format --check-formatted"), web_cmd("credo --strict")]),
-      precommit:
-        [
-          "compile --warning-as-errors",
-          "format",
-          "test",
-          "credo --strict"
-        ] ++
+      # Light inner loop; the web-app compile/lint and audit live in
+      # precommit.full, run before a push.
+      precommit: [
+        "compile --warning-as-errors",
+        "format",
+        "test",
+        "credo --strict",
+        "gamend.api.lint"
+      ],
+      "precommit.full":
+        ["precommit"] ++
           local_web_commands([
             web_test_cmd("deps.get"),
             web_test_cmd("compile --warning-as-errors"),
