@@ -47,7 +47,7 @@ config :game_server_web,
 
 # Adapter selection (compile-time). Override with GAMEND_DB_ADAPTER=postgres
 # at build time for production Postgres deployments. In dev, setting
-# POSTGRES_*/DATABASE_URL (shell or .env) makes dev.exs override this with
+# POSTGRES_*/GAMEND_DB_URL (shell or .env) makes dev.exs override this with
 # Postgres; after changing them, recompile:
 #   mix deps.clean game_server_core game_server_web --build && mix compile
 default_adapter =

@@ -33,11 +33,11 @@ services:
       # Disable this in prod
       GAMEND_FEATURES_MAILBOX_PREVIEW: true
       # Postgres
-      POSTGRES_HOST: db
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: game_server_dev
+      GAMEND_DB_POSTGRES_HOST: db
+      GAMEND_DB_POSTGRES_PORT: 5432
+      GAMEND_DB_POSTGRES_USER: postgres
+      GAMEND_DB_POSTGRES_PASSWORD: postgres
+      GAMEND_DB_POSTGRES_DB: game_server_dev
       # Cache
       GAMEND_CACHE_MODE: multi
       GAMEND_CACHE_L2: redis

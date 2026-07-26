@@ -6,7 +6,7 @@ primary_region = 'lax'
 
 [env]
   MIX_ENV = 'dev'
-  PORT = '4000'
+  GAMEND_HTTP_PORT = '4000'
   GAMEND_AUTH_SECRET_KEY_BASE = '1DdaMAX56nUh1tvXniEEuQNsGNvgADndawxrJ3YFZlLXc9EOahC/NFDgowCDUFwb'
   GAMEND_DB_SQLITE_PATH = '/data/game_server_prod.db'
 

@@ -2,12 +2,12 @@ import Config
 
 # Configure your database
 # Use PostgreSQL if environment variables are set, otherwise use SQLite
-if System.get_env("DATABASE_URL") ||
-     (System.get_env("POSTGRES_HOST") && System.get_env("POSTGRES_USER")) do
+if System.get_env("GAMEND_DB_URL") ||
+     (System.get_env("GAMEND_DB_POSTGRES_HOST") && System.get_env("GAMEND_DB_POSTGRES_USER")) do
   # Use PostgreSQL when configured
   database_url =
-    System.get_env("DATABASE_URL") ||
-      "ecto://#{System.get_env("POSTGRES_USER")}:#{System.get_env("POSTGRES_PASSWORD")}@#{System.get_env("POSTGRES_HOST")}:#{System.get_env("POSTGRES_PORT", "5432")}/#{System.get_env("POSTGRES_DB", "game_server_dev")}"
+    System.get_env("GAMEND_DB_URL") ||
+      "ecto://#{System.get_env("GAMEND_DB_POSTGRES_USER")}:#{System.get_env("GAMEND_DB_POSTGRES_PASSWORD")}@#{System.get_env("GAMEND_DB_POSTGRES_HOST")}:#{System.get_env("GAMEND_DB_POSTGRES_PORT", "5432")}/#{System.get_env("GAMEND_DB_POSTGRES_DB", "game_server_dev")}"
 
   config :game_server_core, GameServer.Repo,
     url: database_url,
@@ -37,7 +37,7 @@ end
 config :game_server_web, GameServerWeb.Endpoint,
   # Binding to all interfaces to allow access from Docker host and other machines.
   # In Docker containers, bind to 0.0.0.0 to accept external connections.
-  http: [ip: {0, 0, 0, 0}, port: String.to_integer(System.get_env("PORT") || "4000")],
+  http: [ip: {0, 0, 0, 0}, port: String.to_integer(System.get_env("GAMEND_HTTP_PORT") || "4000")],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
