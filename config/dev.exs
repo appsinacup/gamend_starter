@@ -23,9 +23,21 @@ else
   config :game_server_core, GameServer.Repo,
     database: database_path,
     adapter: Ecto.Adapters.SQLite3,
+    # Match production: see the note in core's config/host_runtime.exs.
+    default_transaction_mode: :immediate,
     stacktrace: true,
     show_sensitive_data_on_connection_error: true,
-    pool_size: 10
+    pool_size: 10,
+    # Required with :immediate: taking the write lock up front means
+    # concurrent writers contend on every transaction, and without a busy
+    # timeout SQLite fails them instantly with "database is locked".
+    pragmas: [
+      foreign_keys: :on,
+      journal_mode: :wal,
+      synchronous: :normal,
+      temp_store: :memory,
+      busy_timeout: 10_000
+    ]
 end
 
 # For development, we disable any cache and enable
@@ -132,7 +144,10 @@ if System.get_env("GAMEND_MAIL_SMTP_PASSWORD") do
         match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
       ],
       server_name_indication:
-        if(sni = System.get_env("GAMEND_MAIL_SMTP_SNI"), do: String.to_charlist(sni), else: :disable)
+        if(sni = System.get_env("GAMEND_MAIL_SMTP_SNI"),
+          do: String.to_charlist(sni),
+          else: :disable
+        )
     ]
 
   # When using an SMTP adapter we may still need the HTTP API client for
