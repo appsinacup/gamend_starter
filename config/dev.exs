@@ -31,13 +31,13 @@ else
     # Required with :immediate: taking the write lock up front means
     # concurrent writers contend on every transaction, and without a busy
     # timeout SQLite fails them instantly with "database is locked".
-    pragmas: [
-      foreign_keys: :on,
-      journal_mode: :wal,
-      synchronous: :normal,
-      temp_store: :memory,
-      busy_timeout: 10_000
-    ]
+    # Top-level options, not a `pragmas:` list — ecto_sqlite3 has no such key
+    # and silently ignores it.
+    foreign_keys: :on,
+    journal_mode: :wal,
+    synchronous: :normal,
+    temp_store: :memory,
+    busy_timeout: 10_000
 end
 
 # For development, we disable any cache and enable

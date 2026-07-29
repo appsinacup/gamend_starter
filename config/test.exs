@@ -45,13 +45,13 @@ else
     queue_target: 10_000,
     queue_interval: 1_000,
     timeout: 15_000,
-    pragmas: [
-      foreign_keys: :on,
-      journal_mode: :wal,
-      synchronous: :normal,
-      temp_store: :memory,
-      busy_timeout: 10_000
-    ]
+    # Top-level options, not a `pragmas:` list — ecto_sqlite3 has no such key
+    # and silently ignores it.
+    foreign_keys: :on,
+    journal_mode: :wal,
+    synchronous: :normal,
+    temp_store: :memory,
+    busy_timeout: 10_000
 end
 
 # We don't run a server during test. If one is required,
