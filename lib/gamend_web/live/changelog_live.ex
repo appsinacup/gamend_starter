@@ -1,11 +1,11 @@
-defmodule GameServerWeb.HostChangelogLive do
+defmodule GamendWeb.HostChangelogLive do
   @moduledoc """
   Host-owned LiveView that renders the project changelog from Markdown content.
   """
 
-  use GameServerWeb, :live_view
+  use GamendWeb, :live_view
 
-  alias GameServer.Content
+  alias Gamend.Content
 
   @impl true
   def mount(_params, _session, socket) do
@@ -55,7 +55,7 @@ defmodule GameServerWeb.HostChangelogLive do
               {gettext("No results.")}
             </h2>
             <p class="text-base-content/40">
-              Add a changelog file under apps/game_server_host/content/CHANGELOG.md to display it here.
+              Add a changelog file under apps/gamend_host/content/CHANGELOG.md to display it here.
             </p>
           </div>
         <% end %>

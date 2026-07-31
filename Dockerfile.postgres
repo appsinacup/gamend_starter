@@ -1,15 +1,15 @@
-FROM ghcr.io/appsinacup/game_server:latest-postgres
+FROM ghcr.io/appsinacup/gamend:latest-postgres
 
 WORKDIR /app
 
 ENV MIX_ENV=prod
 
 COPY modules/ ./modules/
-COPY apps/game_server_web/priv/static/.well-known/ ./apps/game_server_web/priv/static/.well-known/
-COPY apps/game_server_web/priv/static/assets/css/theme/ ./apps/game_server_web/priv/static/assets/css/theme/
-COPY apps/game_server_web/priv/static/images/ ./apps/game_server_web/priv/static/images/
-COPY apps/game_server_web/priv/static/fonts/ ./apps/game_server_web/priv/static/fonts/
-COPY apps/game_server_web/priv/static/game/ ./apps/game_server_web/priv/static/game/
+COPY apps/gamend_web/priv/static/.well-known/ ./apps/gamend_web/priv/static/.well-known/
+COPY apps/gamend_web/priv/static/assets/css/theme/ ./apps/gamend_web/priv/static/assets/css/theme/
+COPY apps/gamend_web/priv/static/images/ ./apps/gamend_web/priv/static/images/
+COPY apps/gamend_web/priv/static/fonts/ ./apps/gamend_web/priv/static/fonts/
+COPY apps/gamend_web/priv/static/game/ ./apps/gamend_web/priv/static/game/
 # Override blog with our own
 RUN rm -rf ./blog
 COPY blog/ ./blog/
@@ -30,5 +30,5 @@ RUN if [ -d "${GAMEND_CONTENT_PLUGINS_DIR}" ]; then \
 		echo "Plugin sources dir ${GAMEND_CONTENT_PLUGINS_DIR} missing, skipping plugin builds"; \
 	fi
 
-RUN mix do --app game_server_web cmd mix phx.digest.clean --all
-RUN mix do --app game_server_web cmd mix phx.digest
+RUN mix do --app gamend_web cmd mix phx.digest.clean --all
+RUN mix do --app gamend_web cmd mix phx.digest

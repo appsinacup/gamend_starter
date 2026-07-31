@@ -34,13 +34,13 @@
 @import "tailwindcss" source(none);
 @source "../css";
 /* Monorepo layout (apps/): */
-@source "../../apps/game_server_web/assets/js";
-@source "../../apps/game_server_web/lib";
+@source "../../apps/gamend_web/assets/js";
+@source "../../apps/gamend_web/lib";
 /* Sparse dependency layouts under deps/: */
-@source "../../deps/game_server_web/assets/js";
-@source "../../deps/game_server_web/lib";
-@source "../../deps/game_server_web/apps/game_server_web/assets/js";
-@source "../../deps/game_server_web/apps/game_server_web/lib";
+@source "../../deps/gamend_web/assets/js";
+@source "../../deps/gamend_web/lib";
+@source "../../deps/gamend_web/apps/gamend_web/assets/js";
+@source "../../deps/gamend_web/apps/gamend_web/lib";
 @source "../../lib";
 
 /* Float animation for background icons — drift with increased movement range */
@@ -62,7 +62,7 @@
 /* Navbar auto-hide toggle button styling is handled in app.js NavbarAutohide hook */
 
 /* Stable host-side wrappers in assets/vendor resolve shared Tailwind plugins
-   from either apps/game_server_web or deps/game_server_web. */
+   from either apps/gamend_web or deps/gamend_web. */
 @plugin "../vendor/heroicons";
 
 /* daisyUI Tailwind Plugin. You can update this file by fetching the latest version with:

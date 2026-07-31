@@ -1,7 +1,7 @@
-defmodule GameServerHost.ContentPaths do
+defmodule GamendHost.ContentPaths do
   @moduledoc false
 
-  alias GameServer.Content
+  alias Gamend.Content
 
   @default_candidates [
     changelog: ["CHANGELOG.md"],
@@ -11,7 +11,7 @@ defmodule GameServerHost.ContentPaths do
 
   @spec register_defaults() :: :ok
   def register_defaults do
-    config = Application.get_env(:game_server_core, Content, []) || []
+    config = Application.get_env(:gamend_core, Content, []) || []
 
     Content.register_path(:changelog,
       kind: :file,

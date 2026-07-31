@@ -14,14 +14,14 @@ defmodule StarterHook.MixProject do
   def application do
     [
       extra_applications: [:logger],
-      env: [hooks_module: GameServer.Modules.StarterHook]
+      env: [hooks_module: Gamend.Modules.StarterHook]
     ]
   end
 
   defp deps do
     [
-      {:game_server_sdk, github: "appsinacup/game_server", sparse: "sdk", runtime: false},
-      {:game_server_plugin_tools, github: "appsinacup/game_server", sparse: "sdk_tools", runtime: false},
+      {:gamend_sdk, github: "appsinacup/gamend", sparse: "sdk", runtime: false},
+      {:gamend_plugin_tools, github: "appsinacup/gamend", sparse: "sdk_tools", runtime: false},
       # Typed hook payloads (see proto/starter_hook.proto).
       {:protobuf, "~> 0.17"}
     ]

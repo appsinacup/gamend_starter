@@ -14,11 +14,11 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=game_server_dev
+      - POSTGRES_DB=gamend_dev
     volumes:
       - pgdata:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d game_server_dev"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d gamend_dev"]
     networks:
       - web
 
@@ -37,7 +37,7 @@ services:
       GAMEND_DB_POSTGRES_PORT: 5432
       GAMEND_DB_POSTGRES_USER: postgres
       GAMEND_DB_POSTGRES_PASSWORD: postgres
-      GAMEND_DB_POSTGRES_DB: game_server_dev
+      GAMEND_DB_POSTGRES_DB: gamend_dev
       # Cache
       GAMEND_CACHE_MODE: multi
       GAMEND_CACHE_L2: redis

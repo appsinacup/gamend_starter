@@ -1,13 +1,13 @@
 # Rename this module to match your project, e.g. MyGame.MixProject
 # Also update: app: :my_game, name: "MyGame"
 # and the Application module reference in application/0 below.
-defmodule GameServerHost.MixProject do
+defmodule GamendHost.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :game_server_host,
-      name: "GameServer",
+      app: :gamend_host,
+      name: "Gamend",
       version: System.get_env("APP_VERSION") || "1.0.0",
       elixir: "~> 1.19",
       elixirc_paths: ["lib"],
@@ -20,7 +20,7 @@ defmodule GameServerHost.MixProject do
 
   def application do
     [
-      mod: {GameServerHost.Application, []},
+      mod: {GamendHost.Application, []},
       extra_applications:
         [:logger, :runtime_tools, :swoosh, :sentry] ++
           if(Mix.env() == :prod, do: [:os_mon], else: [])
@@ -35,8 +35,8 @@ defmodule GameServerHost.MixProject do
 
   defp deps do
     [
-      shared_dep(:game_server_core, "apps/game_server_core"),
-      shared_dep(:game_server_web, "apps/game_server_web"),
+      shared_dep(:gamend_core, "apps/gamend_core"),
+      shared_dep(:gamend_web, "apps/gamend_web"),
       {:phoenix, "~> 1.8.3"},
       {:phoenix_ecto, "~> 4.5"},
       {:phoenix_html, "~> 4.1"},
@@ -83,20 +83,20 @@ defmodule GameServerHost.MixProject do
     [
       setup: ["deps.get", "db.setup", "assets.setup", "assets.build"],
       "dev.start": [
-        "ecto.create --quiet -r GameServer.Repo",
+        "ecto.create --quiet -r Gamend.Repo",
         "db.migrate",
         "assets.build",
         "phx.server"
       ],
       "prod.start": ["assets.deploy", "db.setup", "phx.server"],
-      "db.migrate": ["host.migrate -r GameServer.Repo"],
-      "db.rollback": ["host.rollback -r GameServer.Repo"],
+      "db.migrate": ["host.migrate -r Gamend.Repo"],
+      "db.rollback": ["host.rollback -r Gamend.Repo"],
       "db.setup": ["host.db.setup"],
       "db.reset": ["host.db.reset"],
       test:
         [
-          "ecto.create --quiet -r GameServer.Repo",
-          "host.migrate --quiet -r GameServer.Repo",
+          "ecto.create --quiet -r Gamend.Repo",
+          "host.migrate --quiet -r Gamend.Repo",
           "test"
         ] ++ local_web_commands([web_test_cmd("deps.get"), web_test_cmd("test")]),
       lint:
@@ -120,10 +120,10 @@ defmodule GameServerHost.MixProject do
             web_cmd("credo --strict")
           ]) ++ ["deps.audit"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["compile", "tailwind game_server_web", "esbuild game_server_web"],
+      "assets.build": ["compile", "tailwind gamend_web", "esbuild gamend_web"],
       "assets.deploy": [
-        "tailwind game_server_web --minify",
-        "esbuild game_server_web --minify",
+        "tailwind gamend_web --minify",
+        "esbuild gamend_web --minify",
         "phx.digest"
       ]
     ]
@@ -136,9 +136,9 @@ defmodule GameServerHost.MixProject do
     if local_web_source?(), do: commands, else: []
   end
 
-  defp local_web_source?, do: File.dir?("apps/game_server_web")
+  defp local_web_source?, do: File.dir?("apps/gamend_web")
 
-  defp web_app_path, do: shared_app_path(:game_server_web, "apps/game_server_web")
+  defp web_app_path, do: shared_app_path(:gamend_web, "apps/gamend_web")
 
   defp shared_app_path(app, fallback) do
     dep_root = Mix.Project.deps_paths()[app]
@@ -156,7 +156,7 @@ defmodule GameServerHost.MixProject do
     if File.dir?(local_path) do
       {app, path: local_path}
     else
-      {app, github: "appsinacup/game_server", sparse: local_path, override: true}
+      {app, github: "appsinacup/gamend", sparse: local_path, override: true}
     end
   end
 end

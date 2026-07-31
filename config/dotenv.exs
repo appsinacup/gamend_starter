@@ -2,7 +2,7 @@
 # select compile-time settings like the database adapter) and at runtime
 # (host_runtime.exs). Loaded via Code.require_file — requiring the same path
 # twice is a no-op, so the module is defined once per VM.
-defmodule GameServer.Dotenv do
+defmodule Gamend.Dotenv do
   @moduledoc false
 
   # Parses KEY=VALUE lines — comments, "quoted values", multiline quoted

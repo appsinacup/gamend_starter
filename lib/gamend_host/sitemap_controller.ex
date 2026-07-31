@@ -1,4 +1,4 @@
-defmodule GameServerHost.SitemapController do
+defmodule GamendHost.SitemapController do
   @moduledoc """
   Host-owned `sitemap.xml` controller.
 
@@ -6,9 +6,9 @@ defmodule GameServerHost.SitemapController do
   custom docs, landing pages, or host-only routes.
   """
 
-  use GameServerWeb, :controller
+  use GamendWeb, :controller
 
-  alias GameServer.Content
+  alias Gamend.Content
 
   @static_pages [
     %{loc: "/", changefreq: "weekly", priority: "1.0"},
@@ -23,7 +23,7 @@ defmodule GameServerHost.SitemapController do
   ]
 
   def index(conn, _params) do
-    base_url = GameServerWeb.endpoint().url()
+    base_url = GamendWeb.endpoint().url()
     blog_posts = Content.list_blog_posts()
 
     urls =

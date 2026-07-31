@@ -1,4 +1,4 @@
-defmodule GameServerWeb.HostContentAssetController do
+defmodule GamendWeb.HostContentAssetController do
   @moduledoc """
   Serves static assets (images, etc.) from host-registered content sources.
 
@@ -7,9 +7,9 @@ defmodule GameServerWeb.HostContentAssetController do
     GET /content/changelog/*path
   """
 
-  use GameServerWeb, :controller
+  use GamendWeb, :controller
 
-  alias GameServer.Content
+  alias Gamend.Content
 
   def show(conn, %{"type" => type, "path" => path_parts})
       when is_list(path_parts) and path_parts != [] do

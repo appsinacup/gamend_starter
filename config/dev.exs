@@ -7,9 +7,9 @@ if System.get_env("GAMEND_DB_URL") ||
   # Use PostgreSQL when configured
   database_url =
     System.get_env("GAMEND_DB_URL") ||
-      "ecto://#{System.get_env("GAMEND_DB_POSTGRES_USER")}:#{System.get_env("GAMEND_DB_POSTGRES_PASSWORD")}@#{System.get_env("GAMEND_DB_POSTGRES_HOST")}:#{System.get_env("GAMEND_DB_POSTGRES_PORT", "5432")}/#{System.get_env("GAMEND_DB_POSTGRES_DB", "game_server_dev")}"
+      "ecto://#{System.get_env("GAMEND_DB_POSTGRES_USER")}:#{System.get_env("GAMEND_DB_POSTGRES_PASSWORD")}@#{System.get_env("GAMEND_DB_POSTGRES_HOST")}:#{System.get_env("GAMEND_DB_POSTGRES_PORT", "5432")}/#{System.get_env("GAMEND_DB_POSTGRES_DB", "gamend_dev")}"
 
-  config :game_server_core, GameServer.Repo,
+  config :gamend_core, Gamend.Repo,
     url: database_url,
     adapter: Ecto.Adapters.Postgres,
     stacktrace: true,
@@ -20,7 +20,7 @@ else
   database_path = Path.expand("../db/game_server_dev.db", __DIR__)
   File.mkdir_p!(Path.dirname(database_path))
 
-  config :game_server_core, GameServer.Repo,
+  config :gamend_core, Gamend.Repo,
     database: database_path,
     adapter: Ecto.Adapters.SQLite3,
     # Match production: see the note in core's config/host_runtime.exs.
@@ -46,7 +46,7 @@ end
 # The watchers configuration can be used to run external
 # watchers to your application. For example, we can use it
 # to bundle .js and .css sources.
-config :game_server_web, GameServerWeb.Endpoint,
+config :gamend_web, GamendWeb.Endpoint,
   # Binding to all interfaces to allow access from Docker host and other machines.
   # In Docker containers, bind to 0.0.0.0 to accept external connections.
   http: [ip: {0, 0, 0, 0}, port: String.to_integer(System.get_env("GAMEND_HTTP_PORT") || "4000")],
@@ -55,8 +55,8 @@ config :game_server_web, GameServerWeb.Endpoint,
   debug_errors: true,
   secret_key_base: "l/tTJZ4KUNjIfiUsNQDQLWOTgFlyiOz8RQ2EgSRa7mopMzPLJuu7/8s5pA7iiSgO",
   watchers: [
-    esbuild: {Esbuild, :install_and_run, [:game_server_web, ~w(--sourcemap=inline --watch)]},
-    tailwind: {Tailwind, :install_and_run, [:game_server_web, ~w(--watch)]}
+    esbuild: {Esbuild, :install_and_run, [:gamend_web, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:gamend_web, ~w(--watch)]}
   ]
 
 # ## SSL Support
@@ -83,28 +83,28 @@ config :game_server_web, GameServerWeb.Endpoint,
 # different ports.
 
 # Watch static and templates for browser reloading.
-config :game_server_web, GameServerWeb.Endpoint,
+config :gamend_web, GamendWeb.Endpoint,
   live_reload: [
     web_console_logger: true,
     patterns: [
-      ~r"(?:apps/game_server_web/)?priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
-      ~r"(?:apps/game_server_web/)?priv/gettext/.*(po)$",
-      ~r"(?:apps/game_server_web/)?lib/game_server_web/(?:controllers|live|components|router)/?.*\.(ex|heex)$"
+      ~r"(?:apps/gamend_web/)?priv/static/(?!uploads/).*(js|css|png|jpeg|jpg|gif|svg)$",
+      ~r"(?:apps/gamend_web/)?priv/gettext/.*(po)$",
+      ~r"(?:apps/gamend_web/)?lib/gamend_web/(?:controllers|live|components|router)/?.*\.(ex|heex)$"
     ]
   ]
 
 # Enable dev routes for dashboard and mailbox
-config :game_server_web, dev_routes: true
+config :gamend_web, dev_routes: true
 
 # Do not include metadata nor timestamps in development logs
 config :logger, :default_formatter, format: "[$level] $message\n"
 
 # Also persist dev logs to a rotating file (10MB x 5, see
-# GameServerWeb.FileLogHandler). Without this the only copy of a run is the
+# GamendWeb.FileLogHandler). Without this the only copy of a run is the
 # terminal scrollback, so anything after the fact — grepping a run that already
 # finished — depends on having captured it by hand. Writes alongside stdout, so
 # the console is unchanged. LOG_FILE_PATH overrides the location.
-config :game_server_web, :log_file, "log/dev.log"
+config :gamend_web, :log_file, "log/dev.log"
 
 # Set a higher stacktrace during development. Avoid configuring such
 # in production as building large stacktraces may be expensive.
@@ -124,7 +124,7 @@ config :phoenix_live_view,
 # Enable SMTP in development when GAMEND_MAIL_SMTP_PASSWORD is present, otherwise
 # keep the default Local adapter and disable Swoosh's API client.
 if System.get_env("GAMEND_MAIL_SMTP_PASSWORD") do
-  config :game_server_core, GameServer.Mailer,
+  config :gamend_core, Gamend.Mailer,
     adapter: Swoosh.Adapters.SMTP,
     relay: System.get_env("GAMEND_MAIL_SMTP_RELAY"),
     username: System.get_env("GAMEND_MAIL_SMTP_USERNAME"),
@@ -159,7 +159,7 @@ else
 end
 
 # Configure Guardian for development
-config :game_server_web, GameServerWeb.Auth.Guardian,
-  issuer: "game_server",
+config :gamend_web, GamendWeb.Auth.Guardian,
+  issuer: "gamend",
   secret_key: "l/tTJZ4KUNjIfiUsNQDQLWOTgFlyiOz8RQ2EgSRa7mopMzPLJuu7/8s5pA7iiSgO",
   ttl: {15, :minutes}

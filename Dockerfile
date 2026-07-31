@@ -65,6 +65,6 @@ CMD set -e; \
       echo "Rebuilding plugin ${plugin}"; \
       ( cd "${plugin}" && mix compile && mix plugin.bundle ); \
     done; \
-    mix ecto.create --quiet -r GameServer.Repo 2>/dev/null || true; \
+    mix ecto.create --quiet -r Gamend.Repo 2>/dev/null || true; \
     mix db.migrate; \
     mix phx.server

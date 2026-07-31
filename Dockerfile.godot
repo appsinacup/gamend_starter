@@ -1,4 +1,4 @@
-FROM ghcr.io/appsinacup/game_server:latest
+FROM ghcr.io/appsinacup/gamend:latest
 
 WORKDIR /app
 
@@ -78,8 +78,8 @@ RUN set -eux; \
 
 COPY modules/ ./modules/
 COPY godot/ ./godot/
-COPY apps/game_server_web/priv/static/assets/css/theme/ ./apps/game_server_web/priv/static/assets/css/theme/
-COPY apps/game_server_web/priv/static/images/ ./apps/game_server_web/priv/static/images/
+COPY apps/gamend_web/priv/static/assets/css/theme/ ./apps/gamend_web/priv/static/assets/css/theme/
+COPY apps/gamend_web/priv/static/images/ ./apps/gamend_web/priv/static/images/
 
 # Build any plugins shipped in this repo (overlay) so they're available at runtime.
 ARG GAMEND_CONTENT_PLUGINS_DIR=modules/plugins

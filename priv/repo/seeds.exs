@@ -1,4 +1,4 @@
-seed_path = Application.app_dir(:game_server_core, "priv/repo/seeds.exs")
+seed_path = Application.app_dir(:gamend_core, "priv/repo/seeds.exs")
 
 if File.exists?(seed_path) do
   Code.require_file(seed_path)

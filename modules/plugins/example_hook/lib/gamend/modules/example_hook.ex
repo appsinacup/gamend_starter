@@ -1,4 +1,4 @@
-defmodule GameServer.Modules.ExampleHook do
+defmodule Gamend.Modules.ExampleHook do
   @moduledoc """
   A second example plugin.
 
@@ -8,7 +8,7 @@ defmodule GameServer.Modules.ExampleHook do
   all of them.
   """
 
-  use GameServer.Hooks
+  use Gamend.Hooks
 
   require Logger
 

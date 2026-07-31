@@ -1,3 +1,5 @@
+# The app name and the database filename predate the Gamend rename. Changing
+# either creates a new Fly app / an empty database instead of reusing the volume.
 app = 'game-server-starter'
 primary_region = 'lax'
 
@@ -11,7 +13,7 @@ primary_region = 'lax'
   GAMEND_DB_SQLITE_PATH = '/data/game_server_prod.db'
 
 [[mounts]]
-  source = 'game_server_data'
+  source = 'gamend_data'
   destination = '/data'
 
 [http_service]

@@ -1,11 +1,11 @@
-defmodule GameServerWeb.HostAboutLive do
+defmodule GamendWeb.HostAboutLive do
   @moduledoc """
   Host-owned About page that reads profile details from the starter theme config.
   """
 
-  use GameServerWeb, :live_view
+  use GamendWeb, :live_view
 
-  alias GameServerWeb.HostLayouts
+  alias GamendWeb.HostLayouts
 
   @default_headline "Builder, operator, and human behind this project."
 
@@ -22,7 +22,7 @@ defmodule GameServerWeb.HostAboutLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    locale = Gettext.get_locale(GameServerWeb.Gettext) || "en"
+    locale = Gettext.get_locale(GamendWeb.Gettext) || "en"
     theme = HostLayouts.resolve_theme(locale)
     about = Map.get(theme, "about", %{})
     name = Map.get(about, "name") || Map.get(theme, "title") || gettext("About")

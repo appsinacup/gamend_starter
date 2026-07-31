@@ -12,88 +12,88 @@ import Config
 # most importantly the database adapter (see the Repo config in dev.exs).
 if config_env() == :dev do
   Code.require_file("dotenv.exs", __DIR__)
-  GameServer.Dotenv.load(Path.expand("../.env", __DIR__))
+  Gamend.Dotenv.load(Path.expand("../.env", __DIR__))
 end
 
-config :game_server_web, :scopes,
+config :gamend_web, :scopes,
   user: [
     default: true,
-    module: GameServer.Accounts.Scope,
+    module: Gamend.Accounts.Scope,
     assign_key: :current_scope,
     access_path: [:user, :id],
     schema_key: :user_id,
     schema_type: :binary_id,
     schema_table: :users,
-    test_data_fixture: GameServer.AccountsFixtures,
+    test_data_fixture: Gamend.AccountsFixtures,
     test_setup_helper: :register_and_log_in_user
   ]
 
-config :game_server_core, ecto_repos: [GameServer.Repo]
-config :game_server_host, ecto_repos: [GameServer.Repo]
+config :gamend_core, ecto_repos: [Gamend.Repo]
+config :gamend_host, ecto_repos: [Gamend.Repo]
 
-config :game_server_web,
-  ecto_repos: [GameServer.Repo],
+config :gamend_web,
+  ecto_repos: [Gamend.Repo],
   generators: [timestamp_type: :utc_datetime],
   environment: config_env(),
-  # The reusable game_server_web app provides GameServerWeb.Endpoint, layouts,
+  # The reusable gamend_web app provides GamendWeb.Endpoint, layouts,
   # and static/well-known serving. Point them at this host app and its router.
-  router: GameServerHost.Router,
-  host_router: GameServerHost.Router,
+  router: GamendHost.Router,
+  host_router: GamendHost.Router,
   home_banner_link: "/play",
-  host_static_app: :game_server_host,
-  asset_static_app: :game_server_host,
-  well_known_static_app: :game_server_host,
+  host_static_app: :gamend_host,
+  asset_static_app: :gamend_host,
+  well_known_static_app: :gamend_host,
   host_static_paths: ~w(images game fonts audio favicon.ico robots.txt .well-known theme.css)
 
 # Adapter selection (compile-time). Override with GAMEND_DB_ADAPTER=postgres
 # at build time for production Postgres deployments. In dev, setting
 # POSTGRES_*/GAMEND_DB_URL (shell or .env) makes dev.exs override this with
 # Postgres; after changing them, recompile:
-#   mix deps.clean game_server_core game_server_web --build && mix compile
+#   mix deps.clean gamend_core gamend_web --build && mix compile
 default_adapter =
   if System.get_env("GAMEND_DB_ADAPTER") == "postgres",
     do: Ecto.Adapters.Postgres,
     else: Ecto.Adapters.SQLite3
 
-config :game_server_core, GameServer.Repo, adapter: default_adapter
+config :gamend_core, Gamend.Repo, adapter: default_adapter
 
-# Durable background jobs (GameServer.Jobs) + the per-minute Cron tick that
-# drives GameServer.Schedule. The engine (Basic/Lite) is chosen from the Repo
-# adapter by GameServer.Jobs.oban_config/0. Oban is supervised (unconditionally)
-# by GameServerWeb.HostSupervision, so this config is required to boot.
-config :game_server_core, Oban,
-  repo: GameServer.Repo,
+# Durable background jobs (Gamend.Jobs) + the per-minute Cron tick that
+# drives Gamend.Schedule. The engine (Basic/Lite) is chosen from the Repo
+# adapter by Gamend.Jobs.oban_config/0. Oban is supervised (unconditionally)
+# by GamendWeb.HostSupervision, so this config is required to boot.
+config :gamend_core, Oban,
+  repo: Gamend.Repo,
   queues: [default: 10, hooks: 20, mailers: 5, storage: 5, webhooks: 10],
   plugins: [
     {Oban.Plugins.Pruner, max_age: 60 * 60 * 24 * 7},
-    {Oban.Plugins.Cron, crontab: [{"* * * * *", GameServer.Schedule.TickWorker}]}
+    {Oban.Plugins.Cron, crontab: [{"* * * * *", Gamend.Schedule.TickWorker}]}
   ]
 
 host_root = Path.expand("..", __DIR__)
 repo_root = Path.expand("../..", host_root)
 host_content_root = Path.join(host_root, "content")
 host_modules_root = Path.join(host_root, "modules")
-web_dep_root = Mix.Project.deps_paths()[:game_server_web]
+web_dep_root = Mix.Project.deps_paths()[:gamend_web]
 
 web_app_root =
   cond do
-    File.dir?(Path.join(host_root, "apps/game_server_web")) ->
-      Path.join(host_root, "apps/game_server_web")
+    File.dir?(Path.join(host_root, "apps/gamend_web")) ->
+      Path.join(host_root, "apps/gamend_web")
 
-    is_binary(web_dep_root) && File.dir?(Path.join(web_dep_root, "apps/game_server_web")) ->
-      Path.join(web_dep_root, "apps/game_server_web")
+    is_binary(web_dep_root) && File.dir?(Path.join(web_dep_root, "apps/gamend_web")) ->
+      Path.join(web_dep_root, "apps/gamend_web")
 
     is_binary(web_dep_root) ->
       web_dep_root
 
     true ->
-      Path.join(host_root, "apps/game_server_web")
+      Path.join(host_root, "apps/gamend_web")
   end
 
 web_assets_root = Path.join(web_app_root, "assets")
 host_assets_output_root = Path.join(host_root, "priv/static/assets/js")
 
-config :game_server_core, GameServer.Content,
+config :gamend_core, Gamend.Content,
   changelog_candidates: [
     Path.join(host_content_root, "CHANGELOG.md"),
     Path.join(repo_root, "CHANGELOG.md")
@@ -107,18 +107,18 @@ config :game_server_core, GameServer.Content,
     Path.join(repo_root, "blog")
   ]
 
-config :game_server_core, GameServer.Theme.JSONConfig,
+config :gamend_core, Gamend.Theme.JSONConfig,
   default_config_path: Path.join(host_modules_root, "starter_config.json")
 
 # Configures the endpoint
-config :game_server_web, GameServerWeb.Endpoint,
+config :gamend_web, GamendWeb.Endpoint,
   url: [host: "localhost"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
-    formats: [html: GameServerWeb.ErrorHTML, json: GameServerWeb.ErrorJSON],
+    formats: [html: GamendWeb.ErrorHTML, json: GamendWeb.ErrorJSON],
     layout: false
   ],
-  pubsub_server: GameServer.PubSub,
+  pubsub_server: Gamend.PubSub,
   live_view: [signing_salt: "ZPmggGLv"]
 
 # Extend Phoenix's default gzippable extensions to include Godot web export formats.
@@ -135,20 +135,20 @@ config :phoenix,
 #
 # For production it's recommended to configure a different adapter
 # at the `config/runtime.exs`.
-config :game_server_core, GameServer.Mailer, adapter: Swoosh.Adapters.Local
+config :gamend_core, Gamend.Mailer, adapter: Swoosh.Adapters.Local
 
 # Cache defaults (can be overridden in env-specific configs).
 # Default to a single-level local cache for dev simplicity.
-config :game_server_core, GameServer.Cache,
+config :gamend_core, Gamend.Cache,
   inclusion_policy: :inclusive,
   levels: [
-    {GameServer.Cache.L1, []}
+    {Gamend.Cache.L1, []}
   ]
 
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.25.4",
-  game_server_web: [
+  gamend_web: [
     args: [
       "js/app.js",
       "js/theme-init.js",
@@ -172,7 +172,7 @@ config :esbuild,
 # Configure tailwind (the version is required)
 config :tailwind,
   version: "4.1.7",
-  game_server_web: [
+  gamend_web: [
     args: ~w(
       --input=assets/css/app.css
       --output=priv/static/assets/css/app.css
@@ -192,12 +192,12 @@ config :phoenix, :json_library, Jason
 config :phoenix, :filter_parameters, ["password", "token", "secret", "authorization", "api_key"]
 
 # Configure Guardian for JWT authentication
-config :game_server_web, GameServerWeb.Auth.Guardian,
-  issuer: "game_server",
+config :gamend_web, GamendWeb.Auth.Guardian,
+  issuer: "gamend",
   secret_key: "REPLACE_THIS_IN_RUNTIME_CONFIG"
 
 # WebRTC DataChannel support (requires ex_webrtc + ex_sctp deps)
-config :game_server_web, :webrtc,
+config :gamend_web, :webrtc,
   enabled: true,
   ice_servers: [%{urls: "stun:stun.l.google.com:19302"}]
 
@@ -225,7 +225,7 @@ config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
 
 config :ueberauth, Ueberauth.Strategy.Apple.OAuth,
   client_id: System.get_env("APPLE_WEB_CLIENT_ID"),
-  client_secret: {GameServer.Apple, :client_secret}
+  client_secret: {Gamend.Apple, :client_secret}
 
 config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_id: System.get_env("GOOGLE_CLIENT_ID"),

@@ -1,24 +1,24 @@
-defmodule GameServerHost.Application do
+defmodule GamendHost.Application do
   @moduledoc false
 
   use Application
 
-  alias GameServer.Hooks.PluginManager
-  alias GameServer.Repo.AdvisoryLock
+  alias Gamend.Hooks.PluginManager
+  alias Gamend.Repo.AdvisoryLock
 
   @impl true
   def start(_type, _args) do
-    GameServerWeb.HostSupervision.init_runtime()
-    GameServerHost.ContentPaths.register_defaults()
+    GamendWeb.HostSupervision.init_runtime()
+    GamendHost.ContentPaths.register_defaults()
 
     # Core owns this list. This host used to keep its own copy and had drifted by
     # eight children — cache stats/sync, IP-ban mirroring, retention,
     # matchmaking, the lobby-snapshots writer — plus an unbounded task
     # supervisor. None of that errors when missing; it just silently does
     # nothing while the config still reads "on".
-    children = GameServerWeb.HostSupervision.children()
+    children = GamendWeb.HostSupervision.children()
 
-    opts = [strategy: :one_for_one, name: GameServerHost.Supervisor]
+    opts = [strategy: :one_for_one, name: GamendHost.Supervisor]
 
     result = Supervisor.start_link(children, opts)
 
@@ -29,7 +29,7 @@ defmodule GameServerHost.Application do
 
   @impl true
   def config_change(changed, _new, removed) do
-    GameServerWeb.Endpoint.config_change(changed, removed)
+    GamendWeb.Endpoint.config_change(changed, removed)
     :ok
   end
 
@@ -37,7 +37,7 @@ defmodule GameServerHost.Application do
     require Logger
 
     lines = [
-      "=== GameServer startup resources ===",
+      "=== Gamend startup resources ===",
       database_info(),
       cache_info(),
       mailer_info(),
@@ -54,9 +54,9 @@ defmodule GameServerHost.Application do
   end
 
   defp database_info do
-    repo_config = GameServer.Repo.config()
+    repo_config = Gamend.Repo.config()
 
-    adapter_name = GameServer.Repo.__adapter__() |> inspect() |> String.split(".") |> List.last()
+    adapter_name = Gamend.Repo.__adapter__() |> inspect() |> String.split(".") |> List.last()
 
     mismatch =
       if AdvisoryLock.postgres?() == false &&
@@ -80,7 +80,7 @@ defmodule GameServerHost.Application do
   end
 
   defp cache_info do
-    cache_config = Application.get_env(:game_server_core, GameServer.Cache, [])
+    cache_config = Application.get_env(:gamend_core, Gamend.Cache, [])
     bypass? = Keyword.get(cache_config, :bypass_mode, false)
 
     if bypass? do
@@ -102,7 +102,7 @@ defmodule GameServerHost.Application do
   end
 
   defp mailer_info do
-    mailer_config = Application.get_env(:game_server_core, GameServer.Mailer, [])
+    mailer_config = Application.get_env(:gamend_core, Gamend.Mailer, [])
     adapter = mailer_config[:adapter]
 
     case adapter do
@@ -126,7 +126,7 @@ defmodule GameServerHost.Application do
 
   defp jwt_info do
     guardian_config =
-      Application.get_env(:game_server_web, GameServerWeb.Auth.Guardian, [])
+      Application.get_env(:gamend_web, GamendWeb.Auth.Guardian, [])
 
     ttl = guardian_config[:ttl]
     ttl_str = if ttl, do: "#{elem(ttl, 0)} #{elem(ttl, 1)}", else: "default"
@@ -153,7 +153,7 @@ defmodule GameServerHost.Application do
   end
 
   defp clustering_info do
-    query = Application.get_env(:game_server_web, :dns_cluster_query)
+    query = Application.get_env(:gamend_web, :dns_cluster_query)
 
     if query && query != :ignore do
       "Clustering: DNS (#{query})"
@@ -191,14 +191,14 @@ defmodule GameServerHost.Application do
   end
 
   defp channels_info do
-    {:ok, modules} = :application.get_key(:game_server_web, :modules)
+    {:ok, modules} = :application.get_key(:gamend_web, :modules)
 
     channel_mods =
       modules
       |> Enum.filter(fn m ->
         case Atom.to_string(m) do
           "Elixir." <> rest ->
-            String.ends_with?(rest, "Channel") and String.starts_with?(rest, "GameServerWeb.")
+            String.ends_with?(rest, "Channel") and String.starts_with?(rest, "GamendWeb.")
 
           _ ->
             false
@@ -209,7 +209,7 @@ defmodule GameServerHost.Application do
   end
 
   defp endpoint_info do
-    endpoint_config = Application.get_env(:game_server_web, GameServerWeb.Endpoint, [])
+    endpoint_config = Application.get_env(:gamend_web, GamendWeb.Endpoint, [])
     url_config = endpoint_config[:url] || []
     host = url_config[:host] || "localhost"
     port = get_in(endpoint_config, [:http, :port]) || 4000

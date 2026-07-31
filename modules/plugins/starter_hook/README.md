@@ -19,7 +19,7 @@ To create a bundle directory you can drop into `modules/plugins/`:
 
 - `mix plugin.bundle`
 
-This also copies compiled dependency BEAMs into `deps/<dep>/ebin` (excluding `game_server_sdk`) so the server can load them if they are not already available in the server release.
+This also copies compiled dependency BEAMs into `deps/<dep>/ebin` (excluding `gamend_sdk`) so the server can load them if they are not already available in the server release.
 
 ## Run locally
 

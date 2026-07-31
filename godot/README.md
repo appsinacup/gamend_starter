@@ -20,7 +20,7 @@ and `addons/phoenix_channels` (realtime):
   → search **"Gamend SDK"** → Download → Install. Web page:
   <https://store.godotengine.org/asset/appsinacup/gamend-sdk/>
 - **Or from releases:** download `godot_addons.zip` from
-  <https://github.com/appsinacup/game_server/releases/tag/latest> and extract its
+  <https://github.com/appsinacup/gamend/releases/tag/latest> and extract its
   `addons/gamend` and `addons/phoenix_channels` into `godot/addons/`.
 
 ## 2. (Desktop only) Install WebRTC

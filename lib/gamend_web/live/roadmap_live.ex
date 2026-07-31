@@ -1,11 +1,11 @@
-defmodule GameServerWeb.HostRoadmapLive do
+defmodule GamendWeb.HostRoadmapLive do
   @moduledoc """
   Host-owned LiveView that renders the project roadmap from Markdown content.
   """
 
-  use GameServerWeb, :live_view
+  use GamendWeb, :live_view
 
-  alias GameServer.Content
+  alias Gamend.Content
 
   @impl true
   def mount(_params, _session, socket) do
@@ -55,7 +55,7 @@ defmodule GameServerWeb.HostRoadmapLive do
               {gettext("No results.")}
             </h2>
             <p class="text-base-content/40">
-              Add a roadmap file under apps/game_server_host/content/ROADMAP.md to display it here.
+              Add a roadmap file under apps/gamend_host/content/ROADMAP.md to display it here.
             </p>
           </div>
         <% end %>

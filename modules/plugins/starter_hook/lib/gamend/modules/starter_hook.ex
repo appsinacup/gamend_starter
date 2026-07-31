@@ -1,8 +1,8 @@
-defmodule GameServer.Modules.StarterHook do
+defmodule Gamend.Modules.StarterHook do
   @moduledoc """
   Example hooks plugin.
 
-  `use GameServer.Hooks` pulls in default (no-op) implementations for every
+  `use Gamend.Hooks` pulls in default (no-op) implementations for every
   lifecycle callback, so you only override the ones you care about. This module
   shows a few common patterns:
 
@@ -17,13 +17,13 @@ defmodule GameServer.Modules.StarterHook do
   After editing, reload it from Admin → Config (or restart the server).
   """
 
-  use GameServer.Hooks
+  use Gamend.Hooks
 
-  alias GameServer.Accounts
-  alias GameServer.Hooks
+  alias Gamend.Accounts
+  alias Gamend.Hooks
 
   # --- Lifecycle hook -------------------------------------------------------
-  # Override any callback declared in GameServer.Hooks. Here we grant every new
+  # Override any callback declared in Gamend.Hooks. Here we grant every new
   # user some starting coins by writing to their metadata.
   @impl true
   def after_user_register(user) do
@@ -41,7 +41,7 @@ defmodule GameServer.Modules.StarterHook do
   Getting the current user: returns the caller's public info.
 
   `Hooks.caller_user/0` resolves the user for the current hook invocation — use
-  it instead of reading `Process.get(:game_server_hook_caller)` directly, since
+  it instead of reading `Process.get(:gamend_hook_caller)` directly, since
   it also resolves ids/maps to a full user struct on the server.
   """
   def whoami do

@@ -1,4 +1,4 @@
-defmodule GameServerWeb.HostBlogLive do
+defmodule GamendWeb.HostBlogLive do
   @moduledoc """
   Host-owned LiveView for the blog section.
 
@@ -6,9 +6,9 @@ defmodule GameServerWeb.HostBlogLive do
   - `:show` renders an individual post with next/prev navigation
   """
 
-  use GameServerWeb, :live_view
+  use GamendWeb, :live_view
 
-  alias GameServer.Content
+  alias Gamend.Content
 
   @impl true
   def mount(_params, _session, socket) do
@@ -80,7 +80,7 @@ defmodule GameServerWeb.HostBlogLive do
               {gettext("No results.")}
             </h2>
             <p class="text-base-content/40">
-              Add blog Markdown files under apps/game_server_host/content/blog to display posts here.
+              Add blog Markdown files under apps/gamend_host/content/blog to display posts here.
             </p>
           </div>
         <% else %>
