@@ -22,7 +22,7 @@ defmodule GamendWeb.HostAboutLive do
 
   @impl true
   def mount(_params, _session, socket) do
-    locale = Gettext.get_locale(GamendWeb.Gettext) || "en"
+    locale = Gettext.get_locale(GamendWeb.Gettext)
     theme = HostLayouts.resolve_theme(locale)
     about = Map.get(theme, "about", %{})
     name = Map.get(about, "name") || Map.get(theme, "title") || gettext("About")
