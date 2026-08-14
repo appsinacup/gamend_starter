@@ -56,7 +56,7 @@ defmodule GamendHost.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.2.0"},
       {:ueberauth_discord, "~> 0.7"},
-      {:ueberauth_apple, github: "appsinacup/ueberauth_apple", branch: "master"},
+      {:ueberauth_apple, "~> 0.7"},
       {:ueberauth_google, "~> 0.12"},
       {:ueberauth_facebook, "~> 0.10"},
       {:bandit, "~> 1.9"},

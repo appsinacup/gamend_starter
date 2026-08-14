@@ -41,6 +41,47 @@ jobs:
       - name: Audit dependencies for known vulnerabilities
         run: mix deps.audit
 
+  dialyzer:
+    name: Dialyzer
+    runs-on: ubuntu-latest
+    container:
+      image: elixir:1.20.1-otp-29
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          apt-get update
+          apt-get install -y build-essential git libsqlite3-dev sqlite3 pkg-config libssl-dev curl
+
+      - name: Install Rust toolchain (native NIFs, e.g. mdex_native / ex_sctp)
+        run: |
+          curl https://sh.rustup.rs -sSf | sh -s -- -y
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Set up mix
+        working-directory: /tmp
+        run: |
+          mix local.hex --force
+          mix local.rebar --force
+
+      - name: Install dependencies
+        run: MIX_ENV=dev mix deps.get
+
+      # The .plt.hash is deliberately not cached: restoring it makes dialyxir
+      # report "PLT is up to date" and skip revalidation, so modules added
+      # since the cache was written would look like they do not exist.
+      - name: Cache PLTs
+        uses: actions/cache@v4
+        with:
+          path: _build/dev/*.plt
+          key: plt-${{ runner.os }}-${{ hashFiles('mix.lock') }}
+          restore-keys: |
+            plt-${{ runner.os }}-
+
+      - name: Run dialyzer
+        run: MIX_ENV=dev mix dialyzer --format github
+
   test:
     name: Build & test (SQLite)
     runs-on: ubuntu-latest

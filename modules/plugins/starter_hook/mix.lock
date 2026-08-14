@@ -1,5 +1,5 @@
 %{
-  "gamend_plugin_tools": {:git, "https://github.com/appsinacup/gamend.git", "d0da27596bf1f9c1fe1887aa179c0d14402a87bb", [sparse: "sdk_tools"]},
-  "gamend_sdk": {:git, "https://github.com/appsinacup/gamend.git", "d0da27596bf1f9c1fe1887aa179c0d14402a87bb", [sparse: "sdk"]},
+  "gamend_plugin_tools": {:git, "https://github.com/appsinacup/gamend.git", "b7dffdf2ac98351db1cd275100432837ef70f250", [sparse: "sdk_tools"]},
+  "gamend_sdk": {:git, "https://github.com/appsinacup/gamend.git", "b7dffdf2ac98351db1cd275100432837ef70f250", [sparse: "sdk"]},
   "protobuf": {:hex, :protobuf, "0.17.0", "39e24e43c9648e148feba16ed51100b5b2028ea900b55460377b0476f6e10613", [:mix], [{:jason, "~> 1.2", [hex: :jason, repo: "hexpm", optional: true]}], "hexpm", "ca6c91f6f63e2c147b47f03eefd10b80538aa6fc55ff4b12b795efb786b0152f"},
 }
