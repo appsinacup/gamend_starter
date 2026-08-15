@@ -4,6 +4,12 @@
 defmodule GamendHost.MixProject do
   use Mix.Project
 
+  # The engine checkout, when one sits beside this app. Anchored to __DIR__
+  # rather than the cwd: `apps/gamend_web` was looked for relative to *this*
+  # project, which is not an umbrella and so never has it, and local mode could
+  # not be reached even with the sibling right there.
+  @local_gamend_root Path.expand("../gamend", __DIR__)
+
   def project do
     [
       app: :gamend_host,
@@ -33,42 +39,23 @@ defmodule GamendHost.MixProject do
     ]
   end
 
+  # Only what this app adds on top of the engine — versions for everything else
+  # come from gamend_web/gamend_core, whether they resolve as a sibling path
+  # checkout or as sparse git deps. A dep earns a line here only if the engine
+  # does not declare it (sentry, castore, mix_audit), declares it `only: :dev`/
+  # `only: :test` (Mix does not propagate those to a parent), or it is not on
+  # Hex (heroicons).
   defp deps do
     [
       shared_dep(:gamend_core, "apps/gamend_core"),
       shared_dep(:gamend_web, "apps/gamend_web"),
-      {:phoenix, "~> 1.8.3"},
-      {:phoenix_ecto, "~> 4.5"},
-      {:phoenix_html, "~> 4.1"},
-      {:phoenix_live_reload, "~> 1.6.2", only: :dev},
-      {:phoenix_live_view, "~> 1.2.1"},
-      {:phoenix_live_dashboard, "~> 0.8.3"},
-      {:esbuild, "~> 0.10", runtime: Mix.env() == :dev},
-      {:tailwind, "~> 0.3", runtime: Mix.env() == :dev},
-      {:swoosh, "~> 1.20"},
+      {:phoenix_live_reload, "~> 1.6", only: :dev},
       {:castore, "~> 1.0"},
-      {:gen_smtp, "~> 1.0"},
-      {:req, "~> 0.6"},
       {:sentry, "~> 13.2"},
-      {:telemetry_metrics, "~> 1.0"},
-      {:telemetry_poller, "~> 1.0"},
-      {:gettext, "~> 1.0"},
-      {:jason, "~> 1.2"},
-      {:dns_cluster, "~> 0.2.0"},
-      {:ueberauth_discord, "~> 0.7"},
-      {:ueberauth_apple, "~> 0.7"},
-      {:ueberauth_google, "~> 0.12"},
-      {:ueberauth_facebook, "~> 0.10"},
-      {:bandit, "~> 1.9"},
-      {:ueberauth, "~> 0.10"},
-      {:open_api_spex, "~> 3.22"},
       {:credo, ">= 1.7.16", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},
-      {:guardian, "~> 2.3"},
-      {:ueberauth_steam_strategy, "~> 0.1.6"},
-      {:corsica, "~> 2.0"},
       {:heroicons,
        github: "tailwindlabs/heroicons",
        tag: "v2.2.0",
@@ -99,9 +86,17 @@ defmodule GamendHost.MixProject do
           "host.migrate --quiet -r Gamend.Repo",
           "test"
         ] ++ local_web_commands([web_test_cmd("deps.get"), web_test_cmd("test")]),
+      # gamend's CI runs `mix credo --strict` twice — once at the umbrella root,
+      # which sees both apps *and* their tests, and once inside apps/gamend_web.
+      # The per-app run alone leaves the root-only files unchecked, so a finding
+      # can pass here and fail there.
       lint:
         ["format --check-formatted", "credo --strict"] ++
-          local_web_commands([web_cmd("format --check-formatted"), web_cmd("credo --strict")]),
+          local_web_commands([
+            web_cmd("format --check-formatted"),
+            gamend_root_cmd("credo --strict"),
+            web_cmd("credo --strict")
+          ]),
       # Light inner loop; the web-app compile/lint and audit live in
       # precommit.full, run before a push.
       precommit: [
@@ -130,33 +125,46 @@ defmodule GamendHost.MixProject do
   end
 
   defp web_cmd(task), do: "cmd --cd #{web_app_path()} mix #{task}"
+
+  # The umbrella root itself — the scope gamend's CI credo runs in, which sees
+  # both apps plus their tests and so covers files no per-app run reaches.
+  defp gamend_root_cmd(task), do: "cmd --cd #{@local_gamend_root} mix #{task}"
   defp web_test_cmd(task), do: "cmd --cd #{web_app_path()} env MIX_ENV=test mix #{task}"
 
   defp local_web_commands(commands) do
     if local_web_source?(), do: commands, else: []
   end
 
-  defp local_web_source?, do: File.dir?("apps/gamend_web")
+  defp local_web_source?, do: source_app?(web_app_path())
 
   defp web_app_path, do: shared_app_path(:gamend_web, "apps/gamend_web")
 
   defp shared_app_path(app, fallback) do
     dep_root = Mix.Project.deps_paths()[app]
     nested_dep_path = dep_root && Path.join(dep_root, fallback)
+    sibling_path = Path.join(@local_gamend_root, fallback)
 
     cond do
-      File.dir?(fallback) -> fallback
-      nested_dep_path && File.dir?(nested_dep_path) -> nested_dep_path
-      dep_root -> dep_root
-      true -> fallback
+      source_app?(sibling_path) -> sibling_path
+      nested_dep_path && source_app?(nested_dep_path) -> nested_dep_path
+      dep_root && source_app?(dep_root) -> dep_root
+      true -> sibling_path
     end
   end
 
+  # Two modes, and both have to work: the sibling checkout when you have one,
+  # otherwise the sparse git dep a fresh clone and the Docker build use.
   defp shared_dep(app, local_path) do
-    if File.dir?(local_path) do
-      {app, path: local_path}
+    sibling_path = Path.join(@local_gamend_root, local_path)
+
+    if source_app?(sibling_path) do
+      {app, path: sibling_path}
     else
       {app, github: "appsinacup/gamend", sparse: local_path, override: true}
     end
   end
+
+  # A mix.exs is the proof it is really a source checkout — a bare directory
+  # left behind by an earlier build is not.
+  defp source_app?(path), do: File.regular?(Path.join(path, "mix.exs"))
 end

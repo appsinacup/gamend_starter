@@ -37,10 +37,14 @@ else
     # Match production: see the note in core's config/host_runtime.exs.
     default_transaction_mode: :immediate,
     pool: Ecto.Adapters.SQL.Sandbox,
-    # 2, not 1: Oban runs a boot-time `verify_migrated!` query, and the host
-    # tree's periodic DB workers can hold the single connection long enough to
-    # starve it (Oban fails to start). The spare connection lets Oban boot.
-    pool_size: 2,
+    # Oban runs a boot-time `verify_migrated!` outside the sandbox while the
+    # host tree's periodic DB workers hold connections alongside it. Two left
+    # nothing spare: checkouts were dropped after ~20s before a single test ran
+    # and Oban never started. Five is what the same tree needs elsewhere.
+    pool_size: 5,
+    # Boot-time seeding on a FRESH test DB runs minutes (bulk rows); the
+    # sandbox pool's default 120s ownership timeout killed it.
+    ownership_timeout: 600_000,
     pool_timeout: 10_000,
     queue_target: 10_000,
     queue_interval: 1_000,
