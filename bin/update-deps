@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+# Update every Mix lockfile in the repository, not just the root one.
+#
+# `mix deps.update --all` rewrites the lockfile of the project it runs in and
+# nothing else. Path deps (apps/*) and the sibling projects (sdk, sdk_tools,
+# modules/plugins/*) each carry their own mix.lock: a root-level run resolves
+# their *requirements* into ./mix.lock and ignores their lockfiles entirely.
+# CI builds several of those directories on their own, so a root-only update
+# leaves them resolving against stale pins — that is how guardian ended up at
+# 2.5.0 in ./mix.lock and 2.4.1 in both apps/*/mix.lock.
+#
+# Usage:
+#   bin/update-deps                 update every dependency in every project
+#   bin/update-deps guardian req    update only the named deps, where present
+#   bin/update-deps --check         report outdated deps everywhere, update nothing
+#
+# Projects are discovered by finding mix.exs, so this drops into any Elixir
+# repo unchanged. --check fetches deps first (hex.outdated needs them), which
+# can add missing lockfile entries exactly as `mix deps.get` on CI would.
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+check_only=false
+named=()
+for arg in "$@"; do
+  case "$arg" in
+    --check) check_only=true ;;
+    -h|--help) sed -n '2,19p' "$0" | cut -c3-; exit 0 ;;
+    -*) echo "update-deps: unknown flag '$arg'" >&2; exit 2 ;;
+    *) named+=("$arg") ;;
+  esac
+done
+
+# Root first, then shallowest-to-deepest, so the summary reads top-down.
+projects=()
+while IFS= read -r manifest; do
+  projects+=("$(dirname "$manifest")")
+done < <(
+  find . -name mix.exs \
+    -not -path "*/deps/*" -not -path "*/_build/*" \
+    -not -path "*/.git/*" -not -path "*/node_modules/*" |
+    awk -F/ '{print NF"\t"$0}' | sort -n -k1,1 -k2 | cut -f2-
+)
+
+if [ ${#projects[@]} -eq 0 ]; then
+  echo "update-deps: no mix.exs found under $PWD" >&2
+  exit 1
+fi
+
+echo "update-deps: ${#projects[@]} Mix project(s)"
+blocked=0
+
+for dir in "${projects[@]}"; do
+  printf '\n\033[1m==> %s\033[0m\n' "${dir#./}"
+
+  if $check_only; then
+    (cd "$dir" && mix deps.get >/dev/null 2>&1) || true
+    out=$(cd "$dir" && mix hex.outdated 2>&1) || true
+    printf '%s\n' "$out" | grep -vE "^\s*$|Run \`mix hex|To view the diff|https://hex.pm/l/"
+    # Mirror the CI gate: only "Update possible" is actionable, "Update not
+    # possible" is an upstream constraint nobody here can lift.
+    if printf '%s' "$out" | grep -q "Update possible"; then blocked=1; fi
+    continue
+  fi
+
+  # `mix deps.update foo` aborts the whole run when foo is not a dependency of
+  # this particular project, so narrow the list per project before calling it.
+  if [ ${#named[@]} -gt 0 ]; then
+    present=()
+    for dep in "${named[@]}"; do
+      if grep -q "^  \"$dep\":" "$dir/mix.lock" 2>/dev/null; then present+=("$dep"); fi
+    done
+    if [ ${#present[@]} -eq 0 ]; then
+      echo "    (none of the named deps are used here — skipped)"
+      continue
+    fi
+    (cd "$dir" && mix deps.update "${present[@]}")
+  else
+    (cd "$dir" && mix deps.update --all)
+  fi
+done
+
+if $check_only; then
+  printf '\n'
+  [ $blocked -eq 0 ] && echo "✅ no actionable updates" || echo "❌ actionable updates available — run bin/update-deps"
+  exit $blocked
+fi
+
+printf '\n\033[1mLockfiles changed:\033[0m\n'
+changed=$(git diff --name-only -- '*mix.lock')
+if [ -z "$changed" ]; then
+  echo "  (none — everything was already at the latest resolvable versions)"
+else
+  printf '%s\n' "$changed" | sed 's/^/  /'
+fi
