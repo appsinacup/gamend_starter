@@ -40,11 +40,20 @@ RUN mix deps.get
 
 # Compile and bundle each shipped plugin so the server finds its <name>.app and
 # loads the hooks (fixes "starter_hook.app not found" at runtime).
+#
+# `deps.unlock` on the two gamend deps first: they are declared `branch: "main"`
+# and a committed lock pins a SHA, so a rewritten commit upstream (a squash, an
+# amend) makes `deps.get` ask GitHub for a tree that no longer exists and the
+# whole image build dies with "fatal: unable to read tree". Unlocking them here
+# means the image always resolves main, whatever sha the lockfile happens to
+# carry; the lockfile still pins them for a local build, which is where
+# reproducibility is worth having. It is a no-op (a warning, exit 0) when they
+# are already unlocked.
 RUN if [ -d "${GAMEND_CONTENT_PLUGINS_DIR}" ]; then \
       for plugin_path in ${GAMEND_CONTENT_PLUGINS_DIR}/*; do \
         if [ -d "${plugin_path}" ] && [ -f "${plugin_path}/mix.exs" ]; then \
           echo "Building plugin ${plugin_path}"; \
-          (cd "${plugin_path}" && mix deps.get && mix compile && mix plugin.bundle); \
+          (cd "${plugin_path}" && mix deps.unlock gamend_sdk gamend_plugin_tools && mix deps.get && mix compile && mix plugin.bundle); \
         fi; \
       done; \
     else \

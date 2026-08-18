@@ -20,8 +20,8 @@ defmodule StarterHook.MixProject do
 
   defp deps do
     [
-      {:gamend_sdk, github: "appsinacup/gamend", sparse: "sdk", runtime: false},
-      {:gamend_plugin_tools, github: "appsinacup/gamend", sparse: "sdk_tools", runtime: false},
+      {:gamend_sdk, github: "appsinacup/gamend", sparse: "sdk", branch: "main", runtime: false},
+      {:gamend_plugin_tools, github: "appsinacup/gamend", sparse: "sdk_tools", branch: "main", runtime: false},
       # Typed hook payloads (see proto/starter_hook.proto).
       {:protobuf, "~> 0.17"}
     ]
