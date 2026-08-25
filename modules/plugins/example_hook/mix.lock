@@ -1,2 +1,4 @@
 %{
+  "gamend_plugin_tools": {:git, "https://github.com/appsinacup/gamend.git", "161c778b6cafa7b10ccf88f72e137696e8a7318e", [sparse: "sdk_tools", branch: "main"]},
+  "gamend_sdk": {:git, "https://github.com/appsinacup/gamend.git", "161c778b6cafa7b10ccf88f72e137696e8a7318e", [sparse: "sdk", branch: "main"]},
 }

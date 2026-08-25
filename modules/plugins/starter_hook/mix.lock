@@ -1,3 +1,5 @@
 %{
+  "gamend_plugin_tools": {:git, "https://github.com/appsinacup/gamend.git", "161c778b6cafa7b10ccf88f72e137696e8a7318e", [sparse: "sdk_tools", branch: "main"]},
+  "gamend_sdk": {:git, "https://github.com/appsinacup/gamend.git", "161c778b6cafa7b10ccf88f72e137696e8a7318e", [sparse: "sdk", branch: "main"]},
   "protobuf": {:hex, :protobuf, "0.17.0", "39e24e43c9648e148feba16ed51100b5b2028ea900b55460377b0476f6e10613", [:mix], [{:jason, "~> 1.2", [hex: :jason, repo: "hexpm", optional: true]}], "hexpm", "ca6c91f6f63e2c147b47f03eefd10b80538aa6fc55ff4b12b795efb786b0152f"},
 }
