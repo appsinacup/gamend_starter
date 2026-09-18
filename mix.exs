@@ -41,7 +41,7 @@ defmodule GamendHost.MixProject do
 
   # Only what this app adds on top of the engine — versions for everything else
   # come from gamend_web/gamend_core, whether they resolve as a sibling path
-  # checkout or as sparse git deps. A dep earns a line here only if the engine
+  # checkout or as Hex releases. A dep earns a line here only if the engine
   # does not declare it (sentry, castore, mix_audit), declares it `only: :dev`/
   # `only: :test` (Mix does not propagate those to a parent), or it is not on
   # Hex (heroicons).
@@ -100,7 +100,7 @@ defmodule GamendHost.MixProject do
       # Light inner loop; the web-app compile/lint and audit live in
       # precommit.full, run before a push.
       precommit: [
-        "compile --warning-as-errors",
+        "compile --warnings-as-errors",
         "format",
         "test",
         "credo --strict",
@@ -110,7 +110,7 @@ defmodule GamendHost.MixProject do
         ["precommit"] ++
           local_web_commands([
             web_test_cmd("deps.get"),
-            web_test_cmd("compile --warning-as-errors"),
+            web_test_cmd("compile --warnings-as-errors"),
             web_cmd("format"),
             web_cmd("credo --strict")
           ]) ++ ["deps.audit"],
@@ -135,32 +135,25 @@ defmodule GamendHost.MixProject do
     if local_web_source?(), do: commands, else: []
   end
 
+  # The engine's own suite and credo run only against a sibling checkout. A Hex
+  # package ships mix.exs but no tests and no dev dependencies, so treating one
+  # as a source checkout would run `mix test` in a directory that has none.
   defp local_web_source?, do: source_app?(web_app_path())
 
-  defp web_app_path, do: shared_app_path(:gamend_web, "apps/gamend_web")
-
-  defp shared_app_path(app, fallback) do
-    dep_root = Mix.Project.deps_paths()[app]
-    nested_dep_path = dep_root && Path.join(dep_root, fallback)
-    sibling_path = Path.join(@local_gamend_root, fallback)
-
-    cond do
-      source_app?(sibling_path) -> sibling_path
-      nested_dep_path && source_app?(nested_dep_path) -> nested_dep_path
-      dep_root && source_app?(dep_root) -> dep_root
-      true -> sibling_path
-    end
-  end
+  defp web_app_path, do: Path.join(@local_gamend_root, "apps/gamend_web")
 
   # Two modes, and both have to work: the sibling checkout when you have one,
-  # otherwise the sparse git dep a fresh clone and the Docker build use.
+  # otherwise the Hex release a fresh clone and the Docker build use. No
+  # `override:` on the Hex side — gamend_web asks for `gamend_core ~> 1.0`
+  # there, which is the same requirement this app states, so they converge on
+  # their own. Only the sibling path needs the engine's own source layout.
   defp shared_dep(app, local_path) do
     sibling_path = Path.join(@local_gamend_root, local_path)
 
     if source_app?(sibling_path) do
       {app, path: sibling_path}
     else
-      {app, github: "appsinacup/gamend", sparse: local_path, override: true}
+      {app, "~> 1.0"}
     end
   end
 

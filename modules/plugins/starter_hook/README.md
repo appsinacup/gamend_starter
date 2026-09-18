@@ -6,7 +6,7 @@ This is a minimal OTP hook plugin example.
 
 From the repo root:
 
-- `cd modules/plugins_examples/starter_hook`
+- `cd modules/plugins/starter_hook`
 - `mix deps.get`
 - `mix compile`
 
@@ -23,7 +23,7 @@ This also copies compiled dependency BEAMs into `deps/<dep>/ebin` (excluding `ga
 
 ## Run locally
 
-- Set `GAMEND_CONTENT_PLUGINS_DIR=modules/plugins_examples` (or copy the built bundle into `modules/plugins/starter_hook`)
+- Set `GAMEND_CONTENT_PLUGINS_DIR=modules/plugins` (or copy the built bundle into `modules/plugins/starter_hook`)
 - Open the Admin Config page and click **Reload plugins**
 - Call a function via the “Hooks - Test RPC” form using:
   - `plugin`: `starter_hook`

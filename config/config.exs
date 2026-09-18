@@ -45,6 +45,11 @@ config :gamend_web,
   well_known_static_app: :gamend_host,
   host_static_paths: ~w(images game fonts audio favicon.ico robots.txt .well-known theme.css)
 
+# What the site search palette holds. Leave it unset and the palette still
+# works, finding every navigation destination; `GamendHost.Search` adds this
+# host's own content on top. Set it to `false` to remove the feature entirely.
+config :gamend_web, :search_provider, GamendHost.Search
+
 # Adapter selection (compile-time). Override with GAMEND_DB_ADAPTER=postgres
 # at build time for production Postgres deployments. In dev, setting
 # POSTGRES_*/GAMEND_DB_URL (shell or .env) makes dev.exs override this with
@@ -75,15 +80,24 @@ host_content_root = Path.join(host_root, "content")
 host_modules_root = Path.join(host_root, "modules")
 web_dep_root = Mix.Project.deps_paths()[:gamend_web]
 
+# A mix.exs is the proof a directory really is the gamend_web app, the same
+# test `shared_dep/2` in mix.exs applies. `File.dir?/1` is not: an asset build
+# that once wrote to the wrong path leaves empty directories behind, and one
+# of those matching here sent esbuild to `.../apps/gamend_web/apps/gamend_web`.
+web_app? = fn
+  path when is_binary(path) -> File.regular?(Path.join(path, "mix.exs"))
+  _ -> false
+end
+
 web_app_root =
   cond do
-    File.dir?(Path.join(host_root, "apps/gamend_web")) ->
+    web_app?.(Path.join(host_root, "apps/gamend_web")) ->
       Path.join(host_root, "apps/gamend_web")
 
-    is_binary(web_dep_root) && File.dir?(Path.join(web_dep_root, "apps/gamend_web")) ->
+    is_binary(web_dep_root) and web_app?.(Path.join(web_dep_root, "apps/gamend_web")) ->
       Path.join(web_dep_root, "apps/gamend_web")
 
-    is_binary(web_dep_root) ->
+    web_app?.(web_dep_root) ->
       web_dep_root
 
     true ->

@@ -20,9 +20,8 @@ defmodule ExampleHook.MixProject do
 
   defp deps do
     [
-      {:gamend_sdk, github: "appsinacup/gamend", sparse: "sdk", branch: "main", runtime: false},
-      {:gamend_plugin_tools,
-       github: "appsinacup/gamend", sparse: "sdk_tools", branch: "main", runtime: false}
+      {:gamend_sdk, "~> 1.0", runtime: false},
+      {:gamend_plugin_tools, "~> 1.0", runtime: false}
     ]
   end
 end

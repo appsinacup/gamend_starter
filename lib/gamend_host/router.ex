@@ -39,10 +39,15 @@ defmodule GamendHost.Router do
   gamend_admin_live_routes(@require_admin_on_mount)
   gamend_authenticated_live_routes(@require_authenticated_on_mount)
 
+  # The changelog, roadmap and blog pages come from gamend_web
+  # (`GamendWeb.ContentPages`). This host used to carry its own copies of all
+  # three; they were copies, not customisations, and had drifted — the blog one
+  # rendered dates with `Calendar.strftime`, so they ignored the reader's
+  # timezone. Route your own module here instead if you want a different page.
   gamend_current_user_routes(@current_user_on_mount,
-    changelog: HostChangelogLive,
-    roadmap: HostRoadmapLive,
-    blog: HostBlogLive,
+    changelog: ChangelogLive,
+    roadmap: RoadmapLive,
+    blog: BlogLive,
     do: live("/about", HostAboutLive, :index)
   )
 

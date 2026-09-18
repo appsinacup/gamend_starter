@@ -1,5 +1,5 @@
 %{
-  "gamend_plugin_tools": {:git, "https://github.com/appsinacup/gamend.git", "161c778b6cafa7b10ccf88f72e137696e8a7318e", [sparse: "sdk_tools", branch: "main"]},
-  "gamend_sdk": {:git, "https://github.com/appsinacup/gamend.git", "161c778b6cafa7b10ccf88f72e137696e8a7318e", [sparse: "sdk", branch: "main"]},
+  "gamend_plugin_tools": {:hex, :gamend_plugin_tools, "1.0.1215", "750a23041eb93f2d3d71a07776537d87f20da0450b7b1f4f949bef74dbef0da1", [:mix], [], "hexpm", "ca596d1c1d4159f931e90a2c161428a10a5c390971f7298de2b2ea1037f87237"},
+  "gamend_sdk": {:hex, :gamend_sdk, "1.0.1215", "c60ade7d362a6e6bcac462ded1efbf85300be6526c500de3b3f1f20e4f248945", [:mix], [], "hexpm", "84dd646f1803d0f5fca6a5bf229c0f505fc73bc9b908da7ca484deb67f2cf588"},
   "protobuf": {:hex, :protobuf, "0.17.0", "39e24e43c9648e148feba16ed51100b5b2028ea900b55460377b0476f6e10613", [:mix], [{:jason, "~> 1.2", [hex: :jason, repo: "hexpm", optional: true]}], "hexpm", "ca6c91f6f63e2c147b47f03eefd10b80538aa6fc55ff4b12b795efb786b0152f"},
 }

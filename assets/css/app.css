@@ -33,10 +33,15 @@
 
 @import "tailwindcss" source(none);
 @source "../css";
-/* Monorepo layout (apps/): */
-@source "../../apps/gamend_web/assets/js";
-@source "../../apps/gamend_web/lib";
-/* Sparse dependency layouts under deps/: */
+/* Local sibling gamend checkout, which is how mix.exs resolves gamend_web
+   during development — a path dep is never copied into deps/, so without
+   these two lines none of core's navbar, palette or component classes are
+   scanned and the whole shell renders unstyled: */
+@source "../../../gamend/apps/gamend_web/assets/js";
+@source "../../../gamend/apps/gamend_web/lib";
+/* Hex dependency layouts under deps/, which is what a fresh clone and the
+   Docker build use. Tailwind v4 silently skips paths that don't exist, so
+   both sets are safe to keep — only the one that resolves is scanned: */
 @source "../../deps/gamend_web/assets/js";
 @source "../../deps/gamend_web/lib";
 @source "../../deps/gamend_web/apps/gamend_web/assets/js";

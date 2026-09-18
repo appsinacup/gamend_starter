@@ -1,16 +1,14 @@
-FROM ghcr.io/appsinacup/gamend:latest
+# The starter's image with Godot inside, for plugins that run it headless.
+#   docker build -t gamend-starter .
+#   docker build -f Dockerfile.godot -t gamend-starter-godot .
+ARG BASE=gamend-starter
+FROM ${BASE}
 
 WORKDIR /app
 
-# Install Godot inside the container so plugins don't require GODOT_BIN at runtime.
-#
-# Notes:
-# - Uses official Godot release ZIPs.
-# - Selects the correct binary for the target arch (amd64 vs arm64).
-# - You still need to provide GODOT_PROJECT_PATH (path to your Godot project inside the container).
-ARG GODOT_RELEASE=4.5.1-stable
+ARG GODOT_RELEASE=4.7.2-stable
 ENV GODOT_BIN=/opt/godot/godot
-# Default Godot project path inside the container (copied below)
+# The demo project the base image already carries.
 ENV GODOT_PROJECT_PATH=/app/godot
 
 RUN set -eux; \
@@ -75,23 +73,3 @@ RUN set -eux; \
 	rm -rf /tmp/godot_templates "$templates_zip"; \
 	# Sanity check a couple expected files for the current arch.
 	find "$templates_dest" -maxdepth 1 -type f -name 'linux_*' | head -n 20 || true
-
-COPY modules/ ./modules/
-COPY godot/ ./godot/
-COPY apps/gamend_web/priv/static/assets/css/theme/ ./apps/gamend_web/priv/static/assets/css/theme/
-COPY apps/gamend_web/priv/static/images/ ./apps/gamend_web/priv/static/images/
-
-# Build any plugins shipped in this repo (overlay) so they're available at runtime.
-ARG GAMEND_CONTENT_PLUGINS_DIR=modules/plugins
-ENV GAMEND_CONTENT_PLUGINS_DIR=${GAMEND_CONTENT_PLUGINS_DIR}
-
-RUN if [ -d "${GAMEND_CONTENT_PLUGINS_DIR}" ]; then \
-		for plugin_path in ${GAMEND_CONTENT_PLUGINS_DIR}/*; do \
-			if [ -d "${plugin_path}" ] && [ -f "${plugin_path}/mix.exs" ]; then \
-				echo "Building plugin ${plugin_path}"; \
-				(cd "${plugin_path}" && mix deps.get && mix compile && mix plugin.bundle); \
-			fi; \
-		done; \
-	else \
-		echo "Plugin sources dir ${GAMEND_CONTENT_PLUGINS_DIR} missing, skipping plugin builds"; \
-	fi
