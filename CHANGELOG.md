@@ -1,5 +1,9 @@
 # September 2026
 
+- [changed] **Elixir 1.20 required** — the root `mix.exs` and both plugins ask for `~> 1.20`, as gamend does; the Dockerfile and CI already built on 1.20 / OTP 29. A `.tool-versions` with gamend's pins (`elixir 1.20`, `erlang 29.0.2`) is added, so `asdf install` sets them up.
+- [added] **gamend's `.credo.exs`** — `credo --strict` runs gamend's checks instead of Credo's defaults, and covers `modules/plugins/*/lib/` too.
+- [added] **Static assets are served compressed** — `config/prod.exs` turns on `gzip_static` and `brotli_static`, and `assets.deploy` ends with `bin/compress-static` (gamend's), which writes the `.br` files when `brotli` is installed and skips them otherwise.
+- [fixed] **Assets are digested in prod** — `cache_static_manifest` was a bare path, which resolves against `:gamend_web`, whose priv holds no digest, so every asset URL went out undigested under a far-future cache header. It is pinned to `:gamend_host`; a fork that renames the app renames it here too.
 - [changed] **WebRTC ICE servers are settings** — `config/config.exs` no longer pins `ice_servers` for `:webrtc`, which overrode the engine's `GAMEND_WEBRTC_STUN_URLS` / `GAMEND_WEBRTC_TURN_*` settings. The default STUN server is the same Google one.
 - [changed] **Token lifetimes are settings** — the Guardian `ttl` key is gone from `config/dev.exs` and `config/test.exs` (the engine ignores it); set `GAMEND_AUTH_ACCESS_TOKEN_TTL_MINUTES` and `GAMEND_AUTH_REFRESH_TOKEN_TTL_DAYS`. The startup log shows both.
 - [changed] **Dependencies updated** — every lockfile is on the latest compatible releases (Phoenix 1.8.15, LiveView 1.2.12, Oban 2.24, ecto_sqlite3 0.25; mint 1.10.1 clears EEF-CVE-2026-82672), the plugins on `gamend_sdk` / `gamend_plugin_tools` 1.0.1265, and `mix.exs` asks for sentry `~> 13.5`, phoenix_live_reload `~> 1.7` and credo `>= 1.7.19`. The unused `ueberauth_discord`, `_facebook` and `_google` lock entries are gone.

@@ -5,7 +5,7 @@ defmodule ExampleHook.MixProject do
     [
       app: :example_hook,
       version: "0.1.0",
-      elixir: "~> 1.19",
+      elixir: "~> 1.20",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]

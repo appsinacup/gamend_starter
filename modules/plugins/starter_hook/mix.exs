@@ -5,7 +5,7 @@ defmodule StarterHook.MixProject do
     [
       app: :starter_hook,
       version: "0.1.1",
-      elixir: "~> 1.19",
+      elixir: "~> 1.20",
       start_permanent: Mix.env() == :prod,
       deps: deps()
     ]

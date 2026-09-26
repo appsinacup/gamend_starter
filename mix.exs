@@ -1,6 +1,7 @@
 # Rename this module to match your project, e.g. MyGame.MixProject
 # Also update: app: :my_game, name: "MyGame"
-# and the Application module reference in application/0 below.
+# and the Application module reference in application/0 below, and every
+# :gamend_host in config/ (config.exs, prod.exs).
 defmodule GamendHost.MixProject do
   use Mix.Project
 
@@ -15,7 +16,7 @@ defmodule GamendHost.MixProject do
       app: :gamend_host,
       name: "Gamend",
       version: System.get_env("APP_VERSION") || "1.0.0",
-      elixir: "~> 1.19",
+      elixir: "~> 1.20",
       elixirc_paths: ["lib"],
       start_permanent: Mix.env() == :prod,
       listeners: [Phoenix.CodeReloader],
@@ -119,7 +120,10 @@ defmodule GamendHost.MixProject do
       "assets.deploy": [
         "tailwind gamend_web --minify",
         "esbuild gamend_web --minify",
-        "phx.digest"
+        "phx.digest",
+        # After the digest, because it is the hashed copies that get served.
+        # phx.digest writes .gz; this adds the .br that brotli_static wants.
+        "cmd bin/compress-static"
       ]
     ]
   end

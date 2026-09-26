@@ -14,7 +14,7 @@ Game + Backend = Gamend
 
 ## Prerequisites
 
-- **Elixir 1.20 & Erlang/OTP 29** — the versions gamend's [`.tool-versions`](https://github.com/appsinacup/gamend/blob/main/.tool-versions) pins
+- **Elixir 1.20 & Erlang/OTP 29** — see [`.tool-versions`](.tool-versions), the same pins as gamend; with [asdf](https://asdf-vm.com/) just run `asdf install`
 - **Rust** ([rustup](https://rustup.rs/)) — required to build the WebRTC native dependency (`ex_sctp`)
 - **PostgreSQL** — optional. Dev uses SQLite by default; set `GAMEND_DB_POSTGRES_*` or `GAMEND_DB_URL` in `.env` to use Postgres instead, then `mix deps.clean gamend_core gamend_web --build && mix compile` (the adapter is chosen at compile time).
 

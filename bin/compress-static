@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+# Brotli-compresses the digested static assets, alongside the .gz files
+# phx.digest already writes. Plug.Static serves a .br only when the file is on
+# disk (see brotli_static in config/prod.exs), so this is what makes that
+# setting do anything.
+#
+# Runs after phx.digest: it compresses the hashed copies, which are the ones
+# actually served. Missing brotli is not fatal — the build proceeds and the
+# app falls back to gzip.
+set -uo pipefail
+cd "$(dirname "$0")/.." || exit 1
+
+if ! command -v brotli > /dev/null 2>&1; then
+  echo "brotli not found — static assets will be served with gzip only."
+  exit 0
+fi
+
+# Text formats only. Images, fonts and video are already compressed, and a
+# second pass on them costs build time to produce a larger file.
+before=0
+after=0
+count=0
+
+while IFS= read -r -d '' file; do
+  # -f overwrites a stale .br from an earlier build; -k keeps the original,
+  # which is still what a client without brotli support gets.
+  if brotli -f -q 11 -k "$file" 2> /dev/null; then
+    before=$((before + $(stat -f%z "$file" 2> /dev/null || stat -c%s "$file")))
+    after=$((after + $(stat -f%z "$file.br" 2> /dev/null || stat -c%s "$file.br")))
+    count=$((count + 1))
+  fi
+done < <(find priv/static \
+  \( -name '*.js' -o -name '*.css' -o -name '*.svg' -o -name '*.json' -o -name '*.txt' -o -name '*.xml' \) \
+  ! -name '*.gz' ! -name '*.br' -type f -print0)
+
+if [ "$count" -gt 0 ]; then
+  echo "Brotli: $count files, $((before / 1024))KB -> $((after / 1024))KB"
+else
+  echo "Brotli: nothing to compress"
+fi
