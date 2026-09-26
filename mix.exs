@@ -49,10 +49,10 @@ defmodule GamendHost.MixProject do
     [
       shared_dep(:gamend_core, "apps/gamend_core"),
       shared_dep(:gamend_web, "apps/gamend_web"),
-      {:phoenix_live_reload, "~> 1.6", only: :dev},
+      {:phoenix_live_reload, "~> 1.7", only: :dev},
       {:castore, "~> 1.0"},
-      {:sentry, "~> 13.2"},
-      {:credo, ">= 1.7.16", only: [:dev, :test], runtime: false},
+      {:sentry, "~> 13.5"},
+      {:credo, ">= 1.7.19", only: [:dev, :test], runtime: false},
       {:dialyxir, "~> 1.4", only: [:dev, :test], runtime: false},
       {:ex_doc, "~> 0.40", only: :dev, runtime: false},
       {:mix_audit, "~> 2.1", only: [:dev, :test], runtime: false},

@@ -210,10 +210,10 @@ config :gamend_web, GamendWeb.Auth.Guardian,
   issuer: "gamend",
   secret_key: "REPLACE_THIS_IN_RUNTIME_CONFIG"
 
-# WebRTC DataChannel support (requires ex_webrtc + ex_sctp deps)
-config :gamend_web, :webrtc,
-  enabled: true,
-  ice_servers: [%{urls: "stun:stun.l.google.com:19302"}]
+# WebRTC DataChannel support (requires ex_webrtc + ex_sctp deps). The ICE
+# servers are the GAMEND_WEBRTC_* settings; an `ice_servers:` list here would
+# replace them outright.
+config :gamend_web, :webrtc, enabled: true
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
@@ -224,29 +224,15 @@ config :mime, :types, %{
   "application/octet-stream" => ["pck"]
 }
 
+# Ueberauth drives Steam only: its OpenID 2.0 callback verification has no
+# OAuth-shaped equivalent. Discord, Google, Facebook, GitHub and Apple run through
+# GamendWeb.AuthController and Gamend.OAuth.Exchanger directly, as in gamend's
+# own config/host_config.exs.
 config :ueberauth, Ueberauth,
   providers: [
-    discord: {Ueberauth.Strategy.Discord, [default_scope: "identify email"]},
-    apple: {Ueberauth.Strategy.Apple, []},
-    google: {Ueberauth.Strategy.Google, []},
-    facebook: {Ueberauth.Strategy.Facebook, []},
     steam: {Ueberauth.Strategy.Steam, []}
   ]
 
-config :ueberauth, Ueberauth.Strategy.Discord.OAuth,
-  client_id: System.get_env("DISCORD_CLIENT_ID"),
-  client_secret: System.get_env("DISCORD_CLIENT_SECRET")
-
-config :ueberauth, Ueberauth.Strategy.Apple.OAuth,
-  client_id: System.get_env("APPLE_WEB_CLIENT_ID"),
-  client_secret: {Gamend.Apple, :client_secret}
-
-config :ueberauth, Ueberauth.Strategy.Google.OAuth,
-  client_id: System.get_env("GOOGLE_CLIENT_ID"),
-  client_secret: System.get_env("GOOGLE_CLIENT_SECRET")
-
-config :ueberauth, Ueberauth.Strategy.Facebook.OAuth,
-  client_id: System.get_env("FACEBOOK_CLIENT_ID"),
-  client_secret: System.get_env("FACEBOOK_CLIENT_SECRET")
-
-config :ueberauth, Ueberauth.Strategy.Steam, api_key: System.get_env("STEAM_API_KEY")
+# Provider credentials are not set here. Ueberauth reads them from its own
+# application env, which GamendWeb.HostRuntime fills at boot from the declared
+# GAMEND_OAUTH_* settings (Gamend.OAuth.Providers).

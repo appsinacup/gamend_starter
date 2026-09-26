@@ -77,7 +77,7 @@ docker compose -f docker-compose.multi.yml up --scale app=2
 You can configure the:
 - `modules/starter_config.json`: Website settings (title, tagline, links) and branding paths (logo, favicon, banner, css).
 - `modules/plugins/starter_hook`: An example Elixir plugin with custom hook logic. Build it so its hooks load locally: `cd modules/plugins/starter_hook && mix deps.get && mix compile && mix plugin.bundle` (or reload it from the admin console). The Docker build compiles plugins automatically.
-- `.env`: Secrets (oauth/email/etc.).
+- `.env`: Secrets (oauth/email/etc.). `.env.example` lists every `GAMEND_*` setting and is generated: run `mix gamend.settings.env_example` after a gamend update. It leaves out `SENTRY_DSN`, which the bundled Sentry client reads itself; nothing sends errors to Sentry until you add its logger handler (`Sentry.LoggerHandler`).
 - `priv/static/theme.css`: The theme.
 - `priv/static/images`: The images used in the website.
 

@@ -121,45 +121,11 @@ config :phoenix_live_view,
   # Enable helpful, but potentially expensive runtime checks
   enable_expensive_runtime_checks: true
 
-# Enable SMTP in development when GAMEND_MAIL_SMTP_PASSWORD is present, otherwise
-# keep the default Local adapter and disable Swoosh's API client.
-if System.get_env("GAMEND_MAIL_SMTP_PASSWORD") do
-  config :gamend_core, Gamend.Mailer,
-    adapter: Swoosh.Adapters.SMTP,
-    relay: System.get_env("GAMEND_MAIL_SMTP_RELAY"),
-    username: System.get_env("GAMEND_MAIL_SMTP_USERNAME"),
-    password: System.get_env("GAMEND_MAIL_SMTP_PASSWORD"),
-    port: String.to_integer(System.get_env("GAMEND_MAIL_SMTP_PORT") || "587"),
-    tls: String.to_existing_atom(System.get_env("GAMEND_MAIL_SMTP_TLS") || "never"),
-    ssl: String.to_existing_atom(System.get_env("GAMEND_MAIL_SMTP_SSL") || "true"),
-    auth: :always,
-    no_mx_lookups: false,
-    retries: 2,
-    sockopts: [
-      versions: [:"tlsv1.2", :"tlsv1.3"],
-      verify: :verify_peer,
-      cacerts: :public_key.cacerts_get(),
-      depth: 3,
-      customize_hostname_check: [
-        match_fun: :public_key.pkix_verify_hostname_match_fun(:https)
-      ],
-      server_name_indication:
-        if(sni = System.get_env("GAMEND_MAIL_SMTP_SNI"),
-          do: String.to_charlist(sni),
-          else: :disable
-        )
-    ]
-
-  # When using an SMTP adapter we may still need the HTTP API client for
-  # certain Swoosh adapters; enable Req which is used elsewhere in prod.
-  config :swoosh, :api_client, Swoosh.ApiClient.Req
-else
-  # Disable swoosh api client as it is only required for production adapters.
-  config :swoosh, :api_client, false
-end
+# The mailer is configured for every environment by GamendWeb.HostRuntime
+# (config/runtime.exs), from the declared Gamend.Mail settings: SMTP when
+# GAMEND_MAIL_SMTP_PASSWORD is set, the local mailbox otherwise.
 
 # Configure Guardian for development
 config :gamend_web, GamendWeb.Auth.Guardian,
   issuer: "gamend",
-  secret_key: "l/tTJZ4KUNjIfiUsNQDQLWOTgFlyiOz8RQ2EgSRa7mopMzPLJuu7/8s5pA7iiSgO",
-  ttl: {15, :minutes}
+  secret_key: "l/tTJZ4KUNjIfiUsNQDQLWOTgFlyiOz8RQ2EgSRa7mopMzPLJuu7/8s5pA7iiSgO"

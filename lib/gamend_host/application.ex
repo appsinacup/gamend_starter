@@ -4,7 +4,9 @@ defmodule GamendHost.Application do
   use Application
 
   alias Gamend.Hooks.PluginManager
+  alias Gamend.OAuth.Providers
   alias Gamend.Repo.AdvisoryLock
+  alias GamendWeb.Auth.Tokens
 
   @impl true
   def start(_type, _args) do
@@ -124,31 +126,22 @@ defmodule GamendHost.Application do
     end
   end
 
+  # The lifetimes are settings now (`GAMEND_AUTH_ACCESS_TOKEN_TTL_MINUTES`,
+  # `GAMEND_AUTH_REFRESH_TOKEN_TTL_DAYS`); Guardian's `ttl` key is ignored.
   defp jwt_info do
-    guardian_config =
-      Application.get_env(:gamend_web, GamendWeb.Auth.Guardian, [])
+    %{"access" => {access, access_unit}, "refresh" => {refresh, refresh_unit}} =
+      Tokens.ttls()
 
-    ttl = guardian_config[:ttl]
-    ttl_str = if ttl, do: "#{elem(ttl, 0)} #{elem(ttl, 1)}", else: "default"
-    "JWT: Guardian (TTL: #{ttl_str})"
+    "JWT: Guardian (access TTL: #{access} #{access_unit}, refresh TTL: #{refresh} #{refresh_unit})"
   end
 
   defp oauth_info do
-    providers =
-      [
-        {"Discord", "DISCORD_CLIENT_ID"},
-        {"Apple", "APPLE_WEB_CLIENT_ID"},
-        {"Google", "GOOGLE_CLIENT_ID"},
-        {"Facebook", "FACEBOOK_CLIENT_ID"},
-        {"Steam", "STEAM_API_KEY"}
-      ]
-      |> Enum.filter(fn {_name, env} -> System.get_env(env) not in [nil, ""] end)
-      |> Enum.map(fn {name, _} -> name end)
+    case Providers.enabled() do
+      [] ->
+        "OAuth: none configured"
 
-    if providers == [] do
-      "OAuth: none configured"
-    else
-      "OAuth: #{Enum.join(providers, ", ")}"
+      providers ->
+        "OAuth: #{Enum.map_join(providers, ", ", &String.capitalize(Atom.to_string(&1)))}"
     end
   end
 
@@ -168,13 +161,16 @@ defmodule GamendHost.Application do
     end
   end
 
+  # A DSN alone reports nothing: errors reach Sentry through its logger handler,
+  # which neither this host nor gamend installs. `Sentry.get_dsn/0` also sees a
+  # DSN given only as SENTRY_DSN, which the `:sentry` app env does not.
   defp sentry_info do
-    sentry_config = Application.get_env(:sentry, :dsn)
+    handler? = Enum.any?(:logger.get_handler_config(), &(&1.module == Sentry.LoggerHandler))
 
-    if sentry_config do
-      "Sentry: enabled"
-    else
-      "Sentry: disabled"
+    cond do
+      Sentry.get_dsn() in [nil, ""] -> "Sentry: disabled (no DSN)"
+      handler? -> "Sentry: enabled"
+      true -> "Sentry: DSN set, but no Sentry.LoggerHandler installed; nothing is reported"
     end
   end
 

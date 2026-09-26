@@ -97,11 +97,21 @@ config :phoenix_live_view,
 # Configure Guardian for testing
 config :gamend_web, GamendWeb.Auth.Guardian,
   issuer: "gamend",
-  secret_key: "dJoNJZBOt08JlBREyPV5xvuOdwgHPORxK9WHp/k3Cs+g0R9ctyheJ8/CMeg/AdI1",
-  ttl: {15, :minutes}
+  secret_key: "dJoNJZBOt08JlBREyPV5xvuOdwgHPORxK9WHp/k3Cs+g0R9ctyheJ8/CMeg/AdI1"
 
 # Disable rate limiting in tests
 config :gamend_web, GamendWeb.Plugs.RateLimiter, enabled: false
 
 # Oban runs inline in tests; use Oban.Testing helpers to drain when needed.
 config :gamend_core, Oban, testing: :manual
+
+# The engine's periodic workers run outside any sandbox connection, so they stay
+# supervised but idle in tests; on SQLite they also collide with a test's open
+# write transaction ("database is locked"). Retention covers both its cycles:
+# the live one every minute and the full one five minutes after boot.
+config :gamend_core, Gamend.Tournaments.Ticker, enabled: false
+config :gamend_core, Gamend.Retention, enabled: false
+config :gamend_core, Gamend.Matchmaking.Worker, enabled: false
+config :gamend_core, Gamend.Chat.Moderation.Sync, enabled: false
+config :gamend_core, Gamend.Accounts.StalePresenceSweeper, enabled: false
+config :gamend_web, GamendWeb.IpBanSync, enabled: false
