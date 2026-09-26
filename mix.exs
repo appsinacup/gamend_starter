@@ -145,15 +145,24 @@ defmodule GamendHost.MixProject do
   # Two modes, and both have to work: the sibling checkout when you have one,
   # otherwise the Hex release a fresh clone and the Docker build use. No
   # `override:` on the Hex side — gamend_web asks for `gamend_core ~> 1.0`
-  # there, which is the same requirement this app states, so they converge on
-  # their own. Only the sibling path needs the engine's own source layout.
+  # there, which this app's requirement narrows, so they converge on their
+  # own. Only the sibling path needs the engine's own source layout.
+  #
+  # The floor is the oldest release this code runs on. The lockfile holds no
+  # engine entry (it is a path dep locally), so a build takes whatever Hex has;
+  # without the floor a build that started before a release finished
+  # publishing compiled against the one before it and failed on a function
+  # that did not exist there yet. Raise it with any change that needs a newer
+  # engine.
+  @gamend_min "1.0.1266"
+
   defp shared_dep(app, local_path) do
     sibling_path = Path.join(@local_gamend_root, local_path)
 
     if source_app?(sibling_path) do
       {app, path: sibling_path}
     else
-      {app, "~> 1.0"}
+      {app, "~> 1.0 and >= #{@gamend_min}"}
     end
   end
 
