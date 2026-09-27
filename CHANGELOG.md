@@ -1,5 +1,6 @@
 # September 2026
 
+- [fixed] **The Docker image builds again** — the Dockerfile set `GAMEND_CONTENT_APP_VERSION=1.0.0` for the whole build, and gamend's `mix.exs` takes that variable as its own package version, so gamend_core and gamend_web compiled as 1.0.0 and the `>= 1.0.1266` floor rejected them ("Unchecked dependencies ... got 1.0.0"). The image no longer sets it; set it at runtime (`.env`) to change the version the API spec reports.
 - [changed] **Elixir 1.20 required** — the root `mix.exs` and both plugins ask for `~> 1.20`, as gamend does; the Dockerfile and CI already built on 1.20 / OTP 29. A `.tool-versions` with gamend's pins (`elixir 1.20`, `erlang 29.0.2`) is added, so `asdf install` sets them up.
 - [added] **gamend's `.credo.exs`** — `credo --strict` runs gamend's checks instead of Credo's defaults, and covers `modules/plugins/*/lib/` too.
 - [added] **Static assets are served compressed** — `config/prod.exs` turns on `gzip_static` and `brotli_static`, and `assets.deploy` ends with `bin/compress-static` (gamend's), which writes the `.br` files when `brotli` is installed and skips them otherwise.

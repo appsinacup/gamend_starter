@@ -26,8 +26,10 @@ ENV GAMEND_DB_ADAPTER=${GAMEND_DB_ADAPTER}
 ARG GAMEND_CONTENT_PLUGINS_DIR=modules/plugins
 ENV GAMEND_CONTENT_PLUGINS_DIR=${GAMEND_CONTENT_PLUGINS_DIR}
 
-ARG GAMEND_CONTENT_APP_VERSION=1.0.0
-ENV GAMEND_CONTENT_APP_VERSION=${GAMEND_CONTENT_APP_VERSION}
+# No GAMEND_CONTENT_APP_VERSION here, as an ARG or an ENV: gamend's own mix.exs
+# reads it as the engine's package version, so exporting it while the deps
+# compile builds gamend_core/gamend_web as that version, and mix.exs's
+# @gamend_min floor then rejects them. Set it at runtime (.env) instead.
 
 # Fetch top-level deps first for better layer caching.
 COPY mix.exs mix.lock ./
