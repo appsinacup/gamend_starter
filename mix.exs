@@ -81,25 +81,9 @@ defmodule GamendHost.MixProject do
       "db.rollback": ["host.rollback -r Gamend.Repo"],
       "db.setup": ["host.db.setup"],
       "db.reset": ["host.db.reset"],
-      test:
-        [
-          "ecto.create --quiet -r Gamend.Repo",
-          "host.migrate --quiet -r Gamend.Repo",
-          "test"
-        ] ++ local_web_commands([web_test_cmd("deps.get"), web_test_cmd("test")]),
-      # gamend's CI runs `mix credo --strict` twice — once at the umbrella root,
-      # which sees both apps *and* their tests, and once inside apps/gamend_web.
-      # The per-app run alone leaves the root-only files unchecked, so a finding
-      # can pass here and fail there.
-      lint:
-        ["format --check-formatted", "credo --strict"] ++
-          local_web_commands([
-            web_cmd("format --check-formatted"),
-            gamend_root_cmd("credo --strict"),
-            web_cmd("credo --strict")
-          ]),
-      # Light inner loop; the web-app compile/lint and audit live in
-      # precommit.full, run before a push.
+      test: ["ecto.create --quiet -r Gamend.Repo", "host.migrate --quiet -r Gamend.Repo", "test"],
+      lint: ["format --check-formatted", "credo --strict"],
+      # Light inner loop; precommit.full adds deps.audit, run before a push.
       precommit: [
         "compile --warnings-as-errors",
         "format",
@@ -107,14 +91,7 @@ defmodule GamendHost.MixProject do
         "credo --strict",
         "gamend.api.lint"
       ],
-      "precommit.full":
-        ["precommit"] ++
-          local_web_commands([
-            web_test_cmd("deps.get"),
-            web_test_cmd("compile --warnings-as-errors"),
-            web_cmd("format"),
-            web_cmd("credo --strict")
-          ]) ++ ["deps.audit"],
+      "precommit.full": ["precommit", "deps.audit"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["compile", "tailwind gamend_web", "esbuild gamend_web"],
       "assets.deploy": [
@@ -127,24 +104,6 @@ defmodule GamendHost.MixProject do
       ]
     ]
   end
-
-  defp web_cmd(task), do: "cmd --cd #{web_app_path()} mix #{task}"
-
-  # The umbrella root itself — the scope gamend's CI credo runs in, which sees
-  # both apps plus their tests and so covers files no per-app run reaches.
-  defp gamend_root_cmd(task), do: "cmd --cd #{@local_gamend_root} mix #{task}"
-  defp web_test_cmd(task), do: "cmd --cd #{web_app_path()} env MIX_ENV=test mix #{task}"
-
-  defp local_web_commands(commands) do
-    if local_web_source?(), do: commands, else: []
-  end
-
-  # The engine's own suite and credo run only against a sibling checkout. A Hex
-  # package ships mix.exs but no tests and no dev dependencies, so treating one
-  # as a source checkout would run `mix test` in a directory that has none.
-  defp local_web_source?, do: source_app?(web_app_path())
-
-  defp web_app_path, do: Path.join(@local_gamend_root, "apps/gamend_web")
 
   # Two modes, and both have to work: the sibling checkout when you have one,
   # otherwise the Hex release a fresh clone and the Docker build use. No

@@ -57,7 +57,7 @@ runtime config, content pages) drifted from the engine.
     mix test             # create and migrate the test database, then test
     mix lint             # format --check-formatted, credo --strict
     mix precommit        # compile, format, test, credo --strict, gamend.api.lint
-    mix precommit.full   # precommit, the engine web app's checks, deps.audit
+    mix precommit.full   # precommit, then deps.audit
     mix db.migrate | mix db.rollback | mix db.setup | mix db.reset
     mix gamend.settings.env_example     # regenerate .env.example
     bin/update-deps [--check] [dep...]  # every mix.lock, plugins included
@@ -77,10 +77,8 @@ Docker build. Run the mix steps before pushing.
 - `shared_dep/2` in `mix.exs` uses a path dep when
   `../gamend/apps/<app>/mix.exs` exists, and Hex `~> 1.0` otherwise. The
   sibling directory must be named `gamend`.
-- With the sibling, engine edits are live, and `mix test`, `mix lint` and
-  `mix precommit.full` also run in `../gamend`. In that mode
-  `mix test <file>` hands `<file>` to the gamend_web run, the alias's last
-  step.
+- With the sibling, engine edits are live. This app's aliases check this app
+  only: after an engine edit, run `mix precommit` in `../gamend` too.
 - Without it (a fresh clone, CI, Docker), gamend's CI publishes
   `1.0.<commit count>` on each green push to its `main`. Update with
   `mix deps.update gamend_core gamend_web`.
