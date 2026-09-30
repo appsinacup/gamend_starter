@@ -157,6 +157,25 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* `btn-surface`: the secondary button, beside `btn-primary`. The page's own
+   colour behind a dark hairline, the front page's second call to action; it
+   replaced `btn-outline`'s white border (2026-09-30).
+
+   A style, built the way daisyUI builds `btn-outline` and `btn-soft`: it sets
+   the RESTING fill and border and nothing else, so hover, focus, active and
+   disabled are `btn`'s own, and so are sizes. It leaves the text colour
+   alone, so `text-error` beside it just works. A `@utility` so
+   `sm:btn-surface` works: `btn-ghost sm:btn-surface` is an icon alone on a
+   phone and this from `sm` up. Not `btn-secondary`: that is daisyUI's
+   secondary colour. Core's templates use it, so every host stylesheet
+   declares it. */
+@utility btn-surface {
+  &:not(.btn-active, :hover, :active:focus, :focus-visible, :disabled, [disabled], .btn-disabled) {
+    --btn-bg: var(--color-base-100);
+    --btn-border: var(--color-base-300);
+  }
+}
+
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
 .card.collapsed .card-body > :not(.card-title):not(.card-actions) {
