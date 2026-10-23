@@ -6,6 +6,18 @@
   "logo": "/images/logo.png",
   "favicon": "/images/favicon.ico",
   "banner": "/images/banner.png",
+  "navigation": {
+    "layout": "auto",
+    "menu_button": "account",
+    "primary_links": [
+      { "label": "Play", "href": "/play", "icon": "hero-play-solid", "tone": "play", "feature": "play" },
+      { "label": "Leaderboards", "href": "/leaderboards", "icon": "hero-chart-bar-solid", "tone": "leaderboards", "match": "prefix" },
+      { "label": "Quests", "href": "/quests", "icon": "hero-trophy-solid", "tone": "quests", "match": "prefix" },
+      { "label": "Tournaments", "href": "/tournaments", "icon": "hero-bolt-solid", "tone": "tournaments", "match": "prefix", "feature": "web_tournaments" },
+      { "label": "Groups", "href": "/groups", "icon": "hero-user-group-solid", "tone": "groups", "match": "prefix", "feature": "web_groups" },
+      { "label": "Blog", "href": "/blog", "icon": "hero-newspaper-solid", "tone": "blog", "match": "prefix" }
+    ]
+  },
   "useful_links": [
     { "title": "Discord", "url": "https://discord.com/invite/v649emcpAu", "icon": "hero-chat-bubble-left-ellipsis" }
   ],

@@ -35,14 +35,17 @@ defmodule GamendHost.Search do
 
   @impl true
   def entries(context) do
-    SearchIndex.navigation_entries(context) ++ page_entries() ++ blog_entries()
+    navigation = SearchIndex.navigation_entries(context)
+    linked = MapSet.new(navigation, & &1.href)
+
+    navigation ++ Enum.reject(page_entries(), &MapSet.member?(linked, &1.href)) ++ blog_entries()
   end
 
-  # Routed by `GamendHost.Router` but absent from the theme's navigation, so
-  # the nav sweep cannot find them. A page nobody links to is exactly the page
-  # worth being able to search for. Listing one the nav *does* carry costs
-  # nothing — `GamendWeb.SearchIndex` dedupes by href and the nav row, which
-  # comes first, is the one that survives.
+  # Routed by `GamendHost.Router` but possibly absent from the theme's
+  # navigation, so the nav sweep may not find them. A page nobody links to is
+  # exactly the page worth being able to search for. One the nav does carry
+  # (Blog, in `modules/starter_config.json`) is left to the nav's row, so the
+  # catalogue lists each place once.
   defp page_entries do
     [
       {"About", "/about"},
