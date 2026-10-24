@@ -70,6 +70,7 @@ defmodule GamendHost.MixProject do
   defp aliases do
     [
       setup: ["deps.get", "db.setup", "assets.setup", "assets.build"],
+      "deps.get": &deps_get/1,
       "dev.start": [
         "ecto.create --quiet -r Gamend.Repo",
         "db.migrate",
@@ -103,6 +104,35 @@ defmodule GamendHost.MixProject do
         "cmd bin/compress-static"
       ]
     ]
+  end
+
+  # GitHub's release-download redirect now carries ~11 KB of headers (a 9 KB
+  # content-security-policy), past :httpc's 10240-byte default, so
+  # rustler_precompiled fails every NIF it fetches (lumis, mdex_native) with
+  # {:header_too_long, {:max, 10240}}: in Docker, on CI, on any machine without
+  # them cached. Raise the limit after each fetch, and drop a copy built before
+  # the patch so Mix rebuilds it. Remove once a rustler_precompiled release
+  # fixes https://github.com/philss/rustler_precompiled/issues/113; the raise
+  # says when the line it patches has moved.
+  defp deps_get(args) do
+    Mix.Tasks.Deps.Get.run(args)
+
+    file = Path.join(Mix.Project.deps_path(), "rustler_precompiled/lib/rustler_precompiled.ex")
+    unpatched = "options = [body_format: :binary]"
+    patched = "options = [body_format: :binary, max_header_size: 65_536]"
+
+    with {:ok, source} <- File.read(file), false <- source =~ patched do
+      unless source =~ unpatched,
+        do: Mix.raise("rustler_precompiled changed: revisit deps_get/1 in mix.exs")
+
+      File.write!(file, String.replace(source, unpatched, patched))
+
+      Mix.Project.build_path()
+      |> Path.dirname()
+      |> Path.join("*/lib/rustler_precompiled")
+      |> Path.wildcard()
+      |> Enum.each(&File.rm_rf!/1)
+    end
   end
 
   # Two modes, and both have to work: the sibling checkout when you have one,
