@@ -107,29 +107,38 @@ defmodule GamendHost.MixProject do
   end
 
   # GitHub's release-download redirect now carries ~11 KB of headers (a 9 KB
-  # content-security-policy), past :httpc's 10240-byte default, so
-  # rustler_precompiled fails every NIF it fetches (lumis, mdex_native) with
-  # {:header_too_long, {:max, 10240}}: in Docker, on CI, on any machine without
-  # them cached. Raise the limit after each fetch, and drop a copy built before
-  # the patch so Mix rebuilds it. Remove once a rustler_precompiled release
-  # fixes https://github.com/philss/rustler_precompiled/issues/113; the raise
-  # says when the line it patches has moved.
+  # content-security-policy), past :httpc's 10240-byte default, so every dep
+  # that fetches a release asset with :httpc fails with {:header_too_long,
+  # {:max, 10240}}: rustler_precompiled (the lumis and mdex_native NIFs) and
+  # elixir_make (exqlite's NIF, which then builds from source). In Docker, on
+  # CI, on any machine without them cached. Raise the limit in each after every
+  # fetch, and drop a copy built before the patch so Mix rebuilds it.
+  # Remove an entry once its dep ships a fix, as tailwind 0.5.2 did
+  # (rustler_precompiled: https://github.com/philss/rustler_precompiled/issues/113);
+  # the raise says when a patched line has moved.
+  @httpc_downloads [
+    rustler_precompiled: "lib/rustler_precompiled.ex",
+    elixir_make: "lib/elixir_make/downloader/httpc.ex"
+  ]
+
   defp deps_get(args) do
     Mix.Tasks.Deps.Get.run(args)
 
-    file = Path.join(Mix.Project.deps_path(), "rustler_precompiled/lib/rustler_precompiled.ex")
     unpatched = "options = [body_format: :binary]"
     patched = "options = [body_format: :binary, max_header_size: 65_536]"
 
-    with {:ok, source} <- File.read(file), false <- source =~ patched do
-      unless source =~ unpatched,
-        do: Mix.raise("rustler_precompiled changed: revisit deps_get/1 in mix.exs")
+    for {dep, path} <- @httpc_downloads,
+        file = Path.join([Mix.Project.deps_path(), Atom.to_string(dep), path]),
+        {:ok, source} <- [File.read(file)],
+        not String.contains?(source, patched) do
+      unless String.contains?(source, unpatched),
+        do: Mix.raise("#{dep} changed: revisit deps_get/1 in mix.exs")
 
       File.write!(file, String.replace(source, unpatched, patched))
 
       Mix.Project.build_path()
       |> Path.dirname()
-      |> Path.join("*/lib/rustler_precompiled")
+      |> Path.join("*/lib/#{dep}")
       |> Path.wildcard()
       |> Enum.each(&File.rm_rf!/1)
     end
