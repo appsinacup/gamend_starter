@@ -22,10 +22,3 @@ for entry <-
   end
 end
 
-# The starter ships a packaged theme, used unless the operator points somewhere
-# else. Checked against the resolved environment (not `Settings.get`, which
-# cannot see what the loop above staged), so an explicit value always wins.
-unless Gamend.Settings.resolve()[{Gamend.ContentSettings, :theme_config}] do
-  config :gamend_core, Gamend.ContentSettings,
-    theme_config: Path.expand("../modules/starter_config.json", __DIR__)
-end
