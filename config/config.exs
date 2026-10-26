@@ -124,6 +124,12 @@ config :gamend_core, Gamend.Content,
 config :gamend_core, Gamend.Theme.JSONConfig,
   default_config_path: Path.join(host_modules_root, "starter_config.json")
 
+# MDEx's NIF builds in the syntax highlighter only when told to at compile
+# time; without it any markdown with a fenced code block raises "Lumis is not
+# enabled": the changelog, the roadmap. After changing it:
+# `mix deps.compile mdex_native --force`.
+config :mdex_native, syntax_highlighter: :lumis
+
 # Configures the endpoint
 config :gamend_web, GamendWeb.Endpoint,
   url: [host: "localhost"],

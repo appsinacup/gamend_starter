@@ -88,6 +88,8 @@ defmodule GamendHost.MixProject do
       precommit: [
         "compile --warnings-as-errors",
         "format",
+        # The Dockerfile is Gamend's, filled in from this mix.exs.
+        "gamend.gen.dockerfile",
         "test",
         "credo --strict",
         "gamend.api.lint"

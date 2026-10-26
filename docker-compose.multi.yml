@@ -27,6 +27,7 @@ services:
       context: .
       args:
         GAMEND_DB_ADAPTER: postgres
+        MIX_ENV: dev
     env_file:
       - .env
     environment:
@@ -47,6 +48,8 @@ services:
       GAMEND_CACHE_REDIS_URL: redis://redis:6379/0
       # Use dev for localhost
       MIX_ENV: dev
+      # ./modules is mounted: build its plugins on start.
+      GAMEND_START_PLUGINS: "1"
     volumes:
       - ./modules:/app/modules
       - ./priv/static/images:/app/priv/static/images

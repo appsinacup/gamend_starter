@@ -21,4 +21,3 @@ for entry <-
     {app, key, value} -> config app, key, value
   end
 end
-

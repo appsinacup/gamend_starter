@@ -1,6 +1,10 @@
 services:
   app:
-    build: .
+    build:
+      context: .
+      args:
+        # A dev image: `mix assets.build`, no digest.
+        MIX_ENV: dev
     ports:
       - "4000:4000"
     env_file:
@@ -13,6 +17,8 @@ services:
       GAMEND_FEATURES_MAILBOX_PREVIEW: true
       # Use dev for localhost.
       MIX_ENV: dev
+      # Rebuild the plugins on start, so a restart picks up the mounted source.
+      GAMEND_START_PLUGINS: "1"
     volumes:
       # Live-edit the hook source. Only each plugin's lib/ is mounted so the
       # image-built _build/deps/ebin stay intact (avoids "<plugin>.app not found"
