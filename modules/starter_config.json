@@ -10,7 +10,6 @@
     "layout": "auto",
     "menu_button": "account",
     "primary_links": [
-      { "label": "Play", "href": "/play", "icon": "hero-play-solid", "tone": "play", "feature": "play" },
       { "label": "Leaderboards", "href": "/leaderboards", "icon": "hero-chart-bar-solid", "tone": "leaderboards", "match": "prefix" },
       { "label": "Quests", "href": "/quests", "icon": "hero-trophy-solid", "tone": "quests", "match": "prefix" },
       { "label": "Tournaments", "href": "/tournaments", "icon": "hero-bolt-solid", "tone": "tournaments", "match": "prefix", "feature": "web_tournaments" },

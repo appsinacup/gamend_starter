@@ -1,3 +1,8 @@
+# October 2026
+
+- [added] **Demo content** — on an empty server's first boot, `starter_hook`'s `after_startup/0` makes two leaderboards (High Scores, and Team Standings ranking labels), three quests (a welcome one paid at once, a chained one claimed by hand, a daily one) and a weekly recurring tournament, so the Leaderboards, Quests and Tournaments pages show how each works. A server with accounts or leaderboards already gets nothing. `starter_hook.submit_demo_score/1` puts the caller's score on High Scores, since clients cannot write scores themselves.
+- [removed] **Play from the navigation**, for now.
+
 # September 2026
 
 - [fixed] **The Docker image builds again** — the Dockerfile set `GAMEND_CONTENT_APP_VERSION=1.0.0` for the whole build, and gamend's `mix.exs` takes that variable as its own package version, so gamend_core and gamend_web compiled as 1.0.0 and the `>= 1.0.1266` floor rejected them ("Unchecked dependencies ... got 1.0.0"). The image no longer sets it; set it at runtime (`.env`) to change the version the API spec reports.
