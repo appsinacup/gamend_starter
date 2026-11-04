@@ -90,6 +90,8 @@ defmodule GamendHost.MixProject do
         "format",
         # The Dockerfile is Gamend's, filled in from this mix.exs.
         "gamend.gen.dockerfile",
+        # A release moves nothing Docker keys on: this commit takes it.
+        "gamend.latest",
         "test",
         "credo --strict",
         "gamend.api.lint"

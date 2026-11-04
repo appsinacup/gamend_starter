@@ -6,6 +6,20 @@
   "logo": "/images/logo.png",
   "favicon": "/images/favicon.ico",
   "banner": "/images/banner.png",
+  "pages": {
+    "home": {
+      "path": "/",
+      "hero": {
+        "title": "Gamend Starter",
+        "text": "Starter project for Gamend.",
+        "image": { "light": "/images/banner.png", "alt": "Gamend Starter" },
+        "buttons": [
+          { "label": "Go to Gamend.org", "href": "https://gamend.org", "icon": "hero-arrow-top-right-on-square-solid", "style": "primary", "external": true }
+        ]
+      },
+      "sections": []
+    }
+  },
   "navigation": {
     "layout": "auto",
     "menu_button": "account",

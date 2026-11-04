@@ -1,3 +1,8 @@
+# November 2026
+
+- [added] **Release images on GHCR** — every push to `main` publishes `ghcr.io/appsinacup/gamend_starter:<commit>-<sqlite|postgres>` (and `latest-<adapter>`), for `linux/amd64` and `linux/arm64`. Gamend Cloud pulls these instead of compiling every dependency for a new server.
+- [added] **A link to gamend.org on the home page** — a "Go to Gamend.org" button under the hero, in `modules/starter_config.json`.
+
 # October 2026
 
 - [added] **Demo content** — on an empty server's first boot, `starter_hook`'s `after_startup/0` makes two leaderboards (High Scores, and Team Standings ranking labels), three quests (a welcome one paid at once, a chained one claimed by hand, a daily one) and a weekly recurring tournament, so the Leaderboards, Quests and Tournaments pages show how each works. A server with accounts or leaderboards already gets nothing. `starter_hook.submit_demo_score/1` puts the caller's score on High Scores, since clients cannot write scores themselves.
