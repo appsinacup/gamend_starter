@@ -2,6 +2,8 @@ services:
   app:
     build:
       context: .
+      # The builder running `mix phx.server`; a bare build is the release.
+      target: full
       args:
         # A dev image: `mix assets.build`, no digest.
         MIX_ENV: dev

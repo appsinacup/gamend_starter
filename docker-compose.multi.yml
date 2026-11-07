@@ -25,6 +25,8 @@ services:
   app:
     build:
       context: .
+      # The builder running `mix phx.server`; a bare build is the release.
+      target: full
       args:
         GAMEND_DB_ADAPTER: postgres
         MIX_ENV: dev

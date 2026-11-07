@@ -53,7 +53,7 @@ docker compose up
 ```
 
 For server plugins that run Godot headless, `Dockerfile.godot` adds Godot 4.7
-on top of this image: build `docker build -t gamend-starter .` first, then
+on top of this image: build `docker build --target full -t gamend-starter .` first, then
 `docker build -f Dockerfile.godot .`.
 
 You should now see on `localhost:4000`:

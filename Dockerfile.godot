@@ -1,5 +1,5 @@
 # The starter's image with Godot inside, for plugins that run it headless.
-#   docker build -t gamend-starter .
+#   docker build --target full -t gamend-starter .
 #   docker build -f Dockerfile.godot -t gamend-starter-godot .
 ARG BASE=gamend-starter
 FROM ${BASE}
