@@ -71,6 +71,10 @@ defmodule GamendHost.MixProject do
     [
       setup: ["deps.get", "db.setup", "assets.setup", "assets.build"],
       "deps.get": &deps_get/1,
+      # `mix deps.update --all` only rewrites the lockfile of the project it
+      # runs in. The plugins under modules/plugins are Mix projects of their
+      # own, so a root-only update leaves them pinned to stale versions.
+      "deps.update.all": ["cmd bin/update-deps"],
       "dev.start": [
         "ecto.create --quiet -r Gamend.Repo",
         "db.migrate",
