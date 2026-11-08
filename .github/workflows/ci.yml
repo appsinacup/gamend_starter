@@ -16,7 +16,7 @@ jobs:
       - name: Install system dependencies
         run: |
           apt-get update
-          apt-get install -y build-essential git libsqlite3-dev sqlite3 pkg-config libssl-dev curl
+          apt-get install -y build-essential cmake git libsqlite3-dev sqlite3 pkg-config libssl-dev curl
 
       - name: Install Rust toolchain (native NIFs, e.g. mdex_native / ex_sctp)
         run: |
@@ -55,7 +55,7 @@ jobs:
       - name: Install system dependencies
         run: |
           apt-get update
-          apt-get install -y build-essential git libsqlite3-dev sqlite3 pkg-config libssl-dev curl
+          apt-get install -y build-essential cmake git libsqlite3-dev sqlite3 pkg-config libssl-dev curl
 
       - name: Install Rust toolchain (native NIFs, e.g. mdex_native / ex_sctp)
         run: |
@@ -101,7 +101,7 @@ jobs:
       - name: Install system dependencies
         run: |
           apt-get update
-          apt-get install -y build-essential git libsqlite3-dev sqlite3 pkg-config libssl-dev curl
+          apt-get install -y build-essential cmake git libsqlite3-dev sqlite3 pkg-config libssl-dev curl
 
       - name: Install Rust toolchain (native NIFs, e.g. mdex_native / ex_sctp)
         run: |
