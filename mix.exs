@@ -98,7 +98,8 @@ defmodule GamendHost.MixProject do
         "gamend.latest",
         "test",
         "credo --strict",
-        "gamend.api.lint"
+        "gamend.api.lint",
+        "gamend.literal.lint"
       ],
       "precommit.full": ["precommit", "deps.audit"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
@@ -164,7 +165,7 @@ defmodule GamendHost.MixProject do
   # publishing compiled against the one before it and failed on a function
   # that did not exist there yet. Raise it with any change that needs a newer
   # engine.
-  @gamend_min "1.0.1266"
+  @gamend_min "1.1.1403"
 
   defp shared_dep(app, local_path) do
     sibling_path = Path.join(@local_gamend_root, local_path)

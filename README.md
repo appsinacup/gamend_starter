@@ -92,6 +92,6 @@ it at your server, run).
 # Deploy
 
 1. Fork this repo.
-2. Go to fly.io (or another docker provider).
+2. Go to a docker provider.
 3. Connect the app with the repo you forked.
-4. Launch the app and set your secrets. The `GAMEND_AUTH_SECRET_KEY_BASE` in `fly.toml` and `docker-compose.yml` is a public placeholder: generate your own with `mix phx.gen.secret`.
+4. Launch the app and set your secrets. The `GAMEND_AUTH_SECRET_KEY_BASE` in `docker-compose.yml` is a public placeholder: generate your own with `mix phx.gen.secret`.

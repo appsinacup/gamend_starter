@@ -56,7 +56,7 @@ runtime config, content pages) drifted from the engine.
     mix dev.start        # create and migrate the database, build assets, serve on :4000
     mix test             # create and migrate the test database, then test
     mix lint             # format --check-formatted, credo --strict
-    mix precommit        # compile, format, test, credo --strict, gamend.api.lint
+    mix precommit        # compile, format, test, credo --strict, gamend.api.lint, gamend.literal.lint
     mix precommit.full   # precommit, then deps.audit
     mix db.migrate | mix db.rollback | mix db.setup | mix db.reset
     mix gamend.settings.env_example     # regenerate .env.example
