@@ -20,8 +20,8 @@ defmodule ExampleHook.MixProject do
 
   defp deps do
     [
-      {:gamend_sdk, "~> 1.0", runtime: false},
-      {:gamend_plugin_tools, "~> 1.0", runtime: false}
+      {:gamend_sdk, "~> 1.0 and >= 1.1.1413", runtime: false},
+      {:gamend_plugin_tools, "~> 1.0 and >= 1.1.1413", runtime: false}
     ]
   end
 end

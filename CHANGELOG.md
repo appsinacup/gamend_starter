@@ -1,5 +1,6 @@
 # November 2026
 
+- [changed] **Nav links no longer carry `"feature"`**, which core dropped: a page you do not want is left out of the router with `except:`.
 - [changed] **Gamend's muted colours** in place of the bright pink: `assets/css/app.css` carries the same palette as gamend's, and `priv/static/theme.css` overrides nothing.
 - [added] **A redemption code on the home page** — `WELCOME-CODE` pays every player 100 gold once, at `/redeem`, which joins the sidebar. `starter_hook` makes it at boot on any server that lacks it. Needs a gamend with redemption codes.
 - [added] **`mix precommit` runs core's `gamend.literal.lint`**: a status or an action typed out across modules fails it (Gamend's `CONTRIBUTING.md`, Named strings).

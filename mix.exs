@@ -165,7 +165,7 @@ defmodule GamendHost.MixProject do
   # publishing compiled against the one before it and failed on a function
   # that did not exist there yet. Raise it with any change that needs a newer
   # engine.
-  @gamend_min "1.1.1409"
+  @gamend_min "1.1.1413"
 
   defp shared_dep(app, local_path) do
     sibling_path = Path.join(@local_gamend_root, local_path)
