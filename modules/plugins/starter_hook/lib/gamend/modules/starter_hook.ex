@@ -8,6 +8,7 @@ defmodule Gamend.Modules.StarterHook do
 
     * demo content made at startup (`after_startup/0`): a leaderboard, quests
       and a weekly tournament, so a new server's pages show how each works
+    * the redemption code the home page offers (`WELCOME-CODE`)
     * overriding a lifecycle callback (`after_user_register/1`)
     * a plain "hello world" custom RPC (`hello/1`)
     * reading the calling user (`whoami/0`, `set_current_user_meta/2`)
@@ -32,6 +33,8 @@ defmodule Gamend.Modules.StarterHook do
   require Logger
 
   @demo_board "demo_scores"
+  @welcome_quest "welcome_gift"
+  @welcome_code "WELCOME-CODE"
 
   # --- Startup: demo content ------------------------------------------------
   # A new server opens with one of each, so its Leaderboards, Quests and
@@ -45,9 +48,41 @@ defmodule Gamend.Modules.StarterHook do
       if Accounts.count_users() == 0 and Leaderboards.count_leaderboards() == 0 do
         seed_demo()
       end
+
+      ensure_welcome_code()
     end)
 
     :ok
+  end
+
+  # The code the home page offers (`modules/starter_config.json`). Unlike the
+  # demo content it is made on any server that lacks it, since the page promises
+  # it. Every player can redeem it once. An admin can stop it by revoking the
+  # code; deleted, it comes back on the next boot. Take it off the home page
+  # when you delete this.
+  defp ensure_welcome_code do
+    quest = Quests.get_quest_by_key(@welcome_quest) || create_welcome_quest()
+
+    if Quests.count_codes(quest.key, search: @welcome_code) == 0 do
+      case Quests.create_code(quest, %{token: @welcome_code, max_uses: nil}) do
+        {:ok, _} -> Logger.info("starter_hook: made the welcome code")
+        {:error, reason} -> Logger.warning("starter_hook: no welcome code: #{inspect(reason)}")
+      end
+    end
+  end
+
+  defp create_welcome_quest do
+    {:ok, quest} =
+      Quests.create_quest(%{
+        key: @welcome_quest,
+        title: "Welcome gift",
+        description: "For everyone with the code on the home page.",
+        category: "Getting started",
+        code_only: true,
+        rewards: [%{type: "currency", code: "gold", amount: 100}]
+      })
+
+    quest
   end
 
   defp seed_demo do

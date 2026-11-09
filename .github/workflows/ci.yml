@@ -41,6 +41,12 @@ jobs:
       - name: Credo (strict)
         run: mix credo --strict
 
+      - name: API conventions
+        run: mix gamend.api.lint
+
+      - name: Named strings
+        run: mix gamend.literal.lint
+
       - name: Audit dependencies for known vulnerabilities
         run: mix deps.audit
 

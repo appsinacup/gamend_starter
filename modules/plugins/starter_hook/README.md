@@ -19,6 +19,9 @@ deleted. A client puts the caller's score on High Scores with
 `starter_hook.submit_demo_score(1200)`. Delete `after_startup/0` for a server
 that starts empty.
 
+Any server, in use or not, also gets the redemption code the home page offers:
+`WELCOME-CODE`, on the quest `welcome_gift` (100 gold, every player once).
+
 ## Build
 
 From the repo root:

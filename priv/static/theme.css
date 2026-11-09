@@ -1,11 +1,19 @@
+/* Host-owned theme overrides.
+   The colours come from assets/css/app.css, the same as gamend's own. Set a
+   variable here to recolour the app without forking that file. */
+
 :root {
-  --color-primary: #e90ecc;
-  --color-accent: #22b83b;
+  /* Example overrides:
+  --color-primary: oklch(72% 0.17 200);
+  --color-accent: oklch(78% 0.15 85);
+  */
 }
 
 [data-theme="dark"] {
-  --color-primary: #e90ecc;
-  --color-accent: #22b83b;
+  /* Example dark-mode overrides:
+  --color-primary: oklch(78% 0.16 200);
+  --color-base-100: oklch(24% 0.01 250);
+  */
 }
 
 /* The sections' colours in the navbar, the sidebar and the phone's tab bar.

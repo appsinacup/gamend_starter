@@ -11,9 +11,10 @@
       "path": "/",
       "hero": {
         "title": "Gamend Starter",
-        "text": "Starter project for Gamend.",
+        "text": "Starter project for Gamend.\n\nTry the code **WELCOME-CODE** for a welcome gift.",
         "image": { "light": "/images/banner.png", "alt": "Gamend Starter" },
         "buttons": [
+          { "label": "Redeem a code", "href": "/redeem?quest=welcome_gift", "icon": "hero-ticket-solid" },
           { "label": "Go to Gamend.org", "href": "https://gamend.org", "icon": "hero-arrow-top-right-on-square-solid", "style": "primary", "external": true }
         ]
       },
@@ -26,6 +27,7 @@
     "primary_links": [
       { "label": "Leaderboards", "href": "/leaderboards", "icon": "hero-chart-bar-solid", "tone": "leaderboards", "match": "prefix" },
       { "label": "Quests", "href": "/quests", "icon": "hero-trophy-solid", "tone": "quests", "match": "prefix" },
+      { "label": "Redeem", "href": "/redeem", "icon": "hero-ticket-solid", "tone": "quests", "match": "prefix", "feature": "web_redeem" },
       { "label": "Tournaments", "href": "/tournaments", "icon": "hero-bolt-solid", "tone": "tournaments", "match": "prefix", "feature": "web_tournaments" },
       { "label": "Groups", "href": "/groups", "icon": "hero-user-group-solid", "tone": "groups", "match": "prefix", "feature": "web_groups" },
       { "label": "Blog", "href": "/blog", "icon": "hero-newspaper-solid", "tone": "blog", "match": "prefix" }
