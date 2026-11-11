@@ -21,6 +21,9 @@ defmodule GamendHost.MixProject do
       start_permanent: Mix.env() == :prod,
       listeners: [Phoenix.CodeReloader],
       aliases: aliases(),
+      # Writes `assets/vendor/gamend/`, the pointers `assets/css/app.css` loads
+      # Gamend core's stylesheet through (`mix gamend.assets`).
+      compilers: Mix.compilers() ++ [:gamend_assets],
       deps: deps()
     ]
   end

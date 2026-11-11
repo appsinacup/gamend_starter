@@ -29,6 +29,10 @@ gamend_host-*.tar
 # Ignore assets that are produced by build tools.
 /priv/static/assets/
 
+# Pointers to Gamend core's stylesheet, written by `mix gamend.assets` on
+# every compile (the `gamend_assets` compiler).
+/assets/vendor/gamend/
+
 # Ignore digested assets cache.
 /priv/static/cache_manifest.json
 /priv/static/**/*.gz

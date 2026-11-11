@@ -1,5 +1,6 @@
 # November 2026
 
+- [changed] **`app.css` is only this site's look.** Core's stylesheet (Tailwind, core's sources and classes, heroicons, the base styles of its pages) is one `@import "../vendor/gamend/gamend.css"`, through pointers the `gamend_assets` compiler writes on every compile (`assets/vendor/gamend/`, ignored by git); daisyUI loads through them too. The copied blocks, the old vendor wrappers' use and the unused card-toggle rules are gone. Needs a Gamend with `assets/css/gamend.css`. The stylesheet had lost `text-muted`, `card-hover` and `max-w-narrow`; core's now brings them.
 - [changed] **Go to Gamend.org moves and comes first** (core's `nudge`, the hero button's `"nudge": true`). Needs a Gamend with `nudge`.
 - [changed] **Nav links no longer carry `"feature"`**, which core dropped: a page you do not want is left out of the router with `except:`.
 - [changed] **Gamend's muted colours** in place of the bright pink: `assets/css/app.css` carries the same palette as gamend's, and `priv/static/theme.css` overrides nothing.
