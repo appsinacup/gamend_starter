@@ -14,8 +14,8 @@
         "text": "Starter project for Gamend.\n\nTry the code **WELCOME-CODE** for a welcome gift.",
         "image": { "light": "/images/banner.png", "alt": "Gamend Starter" },
         "buttons": [
-          { "label": "Redeem a code", "href": "/redeem?quest=welcome_gift", "icon": "hero-ticket-solid" },
-          { "label": "Go to Gamend.org", "href": "https://gamend.org", "icon": "hero-arrow-top-right-on-square-solid", "style": "primary", "external": true }
+          { "label": "Go to Gamend.org", "href": "https://gamend.org", "icon": "hero-arrow-top-right-on-square-solid", "style": "primary", "external": true, "nudge": true },
+          { "label": "Redeem a code", "href": "/redeem?quest=welcome_gift", "icon": "hero-ticket-solid" }
         ]
       },
       "sections": []
