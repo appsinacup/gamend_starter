@@ -1,4 +1,4 @@
 %{
-  "gamend_plugin_tools": {:hex, :gamend_plugin_tools, "1.1.1440", "cfe45573e106deb60f3a9a07b65b9866b21d76ebd93e716a37e690cc8a86999d", [:mix], [], "hexpm", "7cbb95e698597c5ca2c4f2f4cedabc83b610d1972a02aedc3c5489ee28fc3f5a"},
-  "gamend_sdk": {:hex, :gamend_sdk, "1.1.1440", "7fbe9c98fd9f9d0cf25ca49495d5bbeceefb18c8e750cc54ca2211f723862c7d", [:mix], [], "hexpm", "b5ca8ea98dea5e5425e8b6289a0936f27d3f3e8080bd412c774d9fe984addc32"},
+  "gamend_plugin_tools": {:hex, :gamend_plugin_tools, "1.1.1462", "fbc2492af7a00c97ddc0b2131e1fff095d829c2a51c33455e3711998e3228482", [:mix], [], "hexpm", "15b49ebfc0dda49c8ab777e031888c5a0451afa78b3d3fc7193092881e8242e1"},
+  "gamend_sdk": {:hex, :gamend_sdk, "1.1.1462", "d914f0b391ac4aa984f8cb80c2084a6438638a12833044f8cfb3ea4256954afe", [:mix], [], "hexpm", "8a0c62788b45af7cf41e16448fbed8717308cf34e113fd943510b6090a3a750f"},
 }
