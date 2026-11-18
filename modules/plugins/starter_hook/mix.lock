@@ -1,5 +1,5 @@
 %{
-  "gamend_plugin_tools": {:hex, :gamend_plugin_tools, "1.1.1462", "fbc2492af7a00c97ddc0b2131e1fff095d829c2a51c33455e3711998e3228482", [:mix], [], "hexpm", "15b49ebfc0dda49c8ab777e031888c5a0451afa78b3d3fc7193092881e8242e1"},
-  "gamend_sdk": {:hex, :gamend_sdk, "1.1.1462", "d914f0b391ac4aa984f8cb80c2084a6438638a12833044f8cfb3ea4256954afe", [:mix], [], "hexpm", "8a0c62788b45af7cf41e16448fbed8717308cf34e113fd943510b6090a3a750f"},
+  "gamend_plugin_tools": {:hex, :gamend_plugin_tools, "1.1.1474", "2e94f535e44779dfd117629fa94d45246d8a653ea6a88601011ec5c65a412c33", [:mix], [], "hexpm", "c87330fb46ca70c8955f4162a388f2d179d8364839187587423831846705efb0"},
+  "gamend_sdk": {:hex, :gamend_sdk, "1.1.1474", "2ac66ac64256646a452d9caeb4bab5d36778d615d117e8b1e3c58d3eef42c1ee", [:mix], [], "hexpm", "a4038c8889fd5069d8afb35bc4ebdd2a0cb783900b8a3b072ea384b98665f8d0"},
   "protobuf": {:hex, :protobuf, "0.17.1", "5c058a4abbdf3c094bbdab142022b22950dd25214fcfdc624ae9bf0c60f9346f", [:mix], [{:jason, "~> 1.2", [hex: :jason, repo: "hexpm", optional: true]}], "hexpm", "76770ecda0ef057e540932f15b5a143ba8877875e88727f53429a7dc4dbf8b6c"},
 }
